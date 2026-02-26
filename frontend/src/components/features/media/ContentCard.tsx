@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import type { MediaContent } from '../../../types';
 
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:1337';
+
 interface ContentCardProps {
   content: MediaContent;
 }
@@ -40,7 +42,9 @@ function getMetaText(content: MediaContent): string {
 }
 
 export function ContentCard({ content }: ContentCardProps) {
-  const imageUrl = content.thumbnailImage?.url;
+  const imageUrl = content.thumbnailImage?.url
+    ? `${API_BASE}${content.thumbnailImage.url}`
+    : undefined;
   const detailPath = getDetailPath(content);
 
   return (
