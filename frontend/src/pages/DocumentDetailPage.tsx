@@ -1,3 +1,3 @@
 export function DocumentDetailPage() {
-	return <div>Document Detail</div>;
+  return <div>Document Detail</div>;
 }

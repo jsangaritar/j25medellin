@@ -1,91 +1,93 @@
-import { BookOpen, Calendar, Clock, MapPin } from "lucide-react";
-import type { Course, CourseStatus } from "../../../types";
-import { Tag } from "../../ui/Tag";
+import { UserPlus } from 'lucide-react';
+import type { Course, CourseStatus } from '../../../types';
 
 interface CourseCardProps {
-	course: Course;
-	onRegister?: (course: Course) => void;
+  course: Course;
+  onRegister?: (course: Course) => void;
 }
 
 const statusConfig: Record<
-	CourseStatus,
-	{ label: string; variant: "accent" | "amber" | "purple" }
+  CourseStatus,
+  { label: string; color: string; bgColor: string }
 > = {
-	DRAFT: { label: "Borrador", variant: "purple" },
-	COMING_SOON: { label: "Pr\u00f3ximamente", variant: "amber" },
-	ACTIVE: { label: "Activo", variant: "accent" },
-	COMPLETED: { label: "Completado", variant: "purple" },
-	ARCHIVED: { label: "Archivado", variant: "purple" },
+  DRAFT: { label: 'Borrador', color: '#A78BFA', bgColor: '#7C3AED1A' },
+  COMING_SOON: {
+    label: 'Próximamente',
+    color: '#FBBF24',
+    bgColor: '#F59E0B1A',
+  },
+  ACTIVE: { label: 'Activo', color: '#4ADE80', bgColor: '#16A34A1A' },
+  COMPLETED: { label: 'Completado', color: '#A78BFA', bgColor: '#7C3AED1A' },
+  ARCHIVED: { label: 'Archivado', color: '#71717A', bgColor: '#3F3F461A' },
 };
 
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:1337';
+
 export function CourseCard({ course, onRegister }: CourseCardProps) {
-	const imageUrl = course.image?.url;
-	const config = statusConfig[course.status];
+  const imageUrl = course.image?.url
+    ? `${API_BASE}${course.image.url}`
+    : undefined;
+  const config = statusConfig[course.status];
+  const canRegister =
+    (course.status === 'ACTIVE' || course.status === 'COMING_SOON') &&
+    !!onRegister;
 
-	return (
-		<div className="flex flex-col overflow-hidden rounded-[14px] border border-border bg-bg-card">
-			{imageUrl && (
-				<div className="h-[140px] w-full overflow-hidden md:h-[200px]">
-					<img
-						src={imageUrl}
-						alt={course.title}
-						className="h-full w-full object-cover"
-					/>
-				</div>
-			)}
-			<div className="flex flex-1 flex-col gap-3 p-4 md:p-5">
-				<Tag variant={config.variant} icon={BookOpen}>
-					{config.label}
-				</Tag>
-				<h3 className="font-display text-[17px] font-bold text-text-primary md:text-lg">
-					{course.title}
-				</h3>
-				{course.description && (
-					<p className="text-[13px] leading-[1.4] text-text-secondary line-clamp-3">
-						{course.description}
-					</p>
-				)}
+  return (
+    <article className="flex flex-col overflow-hidden rounded-xl border border-border bg-bg-card lg:rounded-[14px]">
+      {imageUrl && (
+        <div className="h-[120px] w-full overflow-hidden lg:h-[160px]">
+          <img
+            src={imageUrl}
+            alt={course.title}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      )}
+      <div className="flex flex-1 flex-col gap-3 p-4 lg:p-5">
+        {/* Tag */}
+        <span
+          className="inline-flex items-center gap-1.5 self-start rounded-xl px-2.5 py-1 font-body text-[10px] font-semibold"
+          style={{ backgroundColor: config.bgColor, color: config.color }}
+        >
+          <span
+            className="h-[5px] w-[5px] rounded-full"
+            style={{ backgroundColor: config.color }}
+          />
+          {config.label.toUpperCase()}
+        </span>
 
-				{/* Meta info */}
-				<div className="mt-auto flex flex-col gap-1.5 text-[11px] text-text-muted">
-					{course.schedule && (
-						<div className="flex items-center gap-1.5">
-							<Clock size={12} />
-							<span>{course.schedule}</span>
-						</div>
-					)}
-					{course.location && (
-						<div className="flex items-center gap-1.5">
-							<MapPin size={12} />
-							<span>{course.location}</span>
-						</div>
-					)}
-					{course.startDate && (
-						<div className="flex items-center gap-1.5">
-							<Calendar size={12} />
-							<span>
-								Inicia{" "}
-								{new Date(course.startDate).toLocaleDateString("es-CO", {
-									month: "long",
-									day: "numeric",
-								})}
-							</span>
-						</div>
-					)}
-				</div>
+        {/* Title */}
+        <h3 className="font-display text-[17px] font-bold text-text-primary">
+          {course.title}
+        </h3>
 
-				{/* Register button for active/coming soon courses */}
-				{(course.status === "ACTIVE" || course.status === "COMING_SOON") &&
-					onRegister && (
-						<button
-							type="button"
-							onClick={() => onRegister(course)}
-							className="mt-2 w-full rounded-[10px] bg-accent-bright py-3 text-sm font-semibold text-bg-primary transition-colors hover:bg-accent-muted"
-						>
-							Inscribirme
-						</button>
-					)}
-			</div>
-		</div>
-	);
+        {/* Description */}
+        {course.description && (
+          <p className="line-clamp-3 font-body text-[13px] leading-[1.5] text-text-secondary">
+            {course.description}
+          </p>
+        )}
+
+        {/* Schedule */}
+        {course.schedule && (
+          <p className="font-body text-[11px] text-text-muted">
+            {course.schedule}
+          </p>
+        )}
+
+        {/* Register button */}
+        {canRegister && (
+          <button
+            type="button"
+            onClick={() => onRegister(course)}
+            className="mt-auto flex w-full items-center justify-center gap-1.5 rounded-[10px] py-2.5 font-body text-xs font-semibold text-bg-primary transition-colors hover:opacity-90"
+            style={{ backgroundColor: config.color }}
+          >
+            <UserPlus size={14} />
+            Inscribirse
+          </button>
+        )}
+      </div>
+    </article>
+  );
 }

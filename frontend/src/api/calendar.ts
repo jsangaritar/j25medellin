@@ -1,10 +1,10 @@
-import type { CalendarEvent } from "../types";
-import { apiFetch } from "./client";
+import type { CalendarEvent } from '../types';
+import { apiFetch } from './client';
 
 interface CalendarResponse {
-	events: CalendarEvent[];
+  events: CalendarEvent[];
 }
 
 export function getCalendarEvents() {
-	return apiFetch<CalendarResponse>("/calendar-proxy");
+  return apiFetch<CalendarResponse>('/calendar-proxy');
 }

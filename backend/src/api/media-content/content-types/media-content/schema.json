@@ -1,58 +1,58 @@
 {
-	"kind": "collectionType",
-	"collectionName": "media_contents",
-	"info": {
-		"singularName": "media-content",
-		"pluralName": "media-contents",
-		"displayName": "Media Content",
-		"description": "Videos, audios, and documents"
-	},
-	"options": {
-		"draftAndPublish": true
-	},
-	"attributes": {
-		"title": {
-			"type": "string",
-			"required": true
-		},
-		"slug": {
-			"type": "uid",
-			"targetField": "title",
-			"required": true
-		},
-		"description": {
-			"type": "richtext"
-		},
-		"type": {
-			"type": "enumeration",
-			"enum": ["VIDEO", "AUDIO", "DOCUMENT"],
-			"required": true
-		},
-		"thumbnailImage": {
-			"type": "media",
-			"multiple": false,
-			"allowedTypes": ["images"]
-		},
-		"externalUrl": {
-			"type": "string"
-		},
-		"file": {
-			"type": "media",
-			"multiple": false,
-			"allowedTypes": ["files"]
-		},
-		"tags": {
-			"type": "json"
-		},
-		"featured": {
-			"type": "boolean",
-			"default": false
-		},
-		"episodeCount": {
-			"type": "integer"
-		},
-		"platform": {
-			"type": "string"
-		}
-	}
+  "kind": "collectionType",
+  "collectionName": "media_contents",
+  "info": {
+    "singularName": "media-content",
+    "pluralName": "media-contents",
+    "displayName": "Media Content",
+    "description": "Videos, audios, and documents"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": ["VIDEO", "AUDIO", "DOCUMENT"],
+      "required": true
+    },
+    "thumbnailImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "externalUrl": {
+      "type": "string"
+    },
+    "file": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["files"]
+    },
+    "tags": {
+      "type": "json"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "episodeCount": {
+      "type": "integer"
+    },
+    "platform": {
+      "type": "string"
+    }
+  }
 }

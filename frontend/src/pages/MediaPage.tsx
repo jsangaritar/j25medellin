@@ -1,3 +1,3 @@
 export function MediaPage() {
-	return <div>Media Hub</div>;
+  return <div>Media Hub</div>;
 }

@@ -1,39 +1,39 @@
 {
-	"kind": "collectionType",
-	"collectionName": "registrations",
-	"info": {
-		"singularName": "registration",
-		"pluralName": "registrations",
-		"displayName": "Registration",
-		"description": "Event and course registrations"
-	},
-	"options": {
-		"draftAndPublish": false
-	},
-	"attributes": {
-		"fullName": {
-			"type": "string",
-			"required": true
-		},
-		"whatsApp": {
-			"type": "string",
-			"required": true
-		},
-		"email": {
-			"type": "email",
-			"required": true
-		},
-		"event": {
-			"type": "relation",
-			"relation": "manyToOne",
-			"target": "api::event.event",
-			"inversedBy": "registrations"
-		},
-		"course": {
-			"type": "relation",
-			"relation": "manyToOne",
-			"target": "api::course.course",
-			"inversedBy": "registrations"
-		}
-	}
+  "kind": "collectionType",
+  "collectionName": "registrations",
+  "info": {
+    "singularName": "registration",
+    "pluralName": "registrations",
+    "displayName": "Registration",
+    "description": "Event and course registrations"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "fullName": {
+      "type": "string",
+      "required": true
+    },
+    "whatsApp": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "event": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::event.event",
+      "inversedBy": "registrations"
+    },
+    "course": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "inversedBy": "registrations"
+    }
+  }
 }
