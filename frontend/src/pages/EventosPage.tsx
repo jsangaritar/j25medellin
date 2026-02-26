@@ -1,3 +1,60 @@
+import { EventCard } from '../components/features/events/EventCard';
+import { FeaturedEvent } from '../components/features/events/FeaturedEvent';
+import { PageBanner } from '../components/layout/PageBanner';
+import { useEvents, useFeaturedEvents } from '../hooks/useEvents';
+import { useSiteConfig } from '../hooks/useSiteConfig';
+
 export function EventosPage() {
-  return <div>Eventos</div>;
+  const { data: config } = useSiteConfig();
+  const { data: featuredEvents } = useFeaturedEvents();
+  const { data: events, isLoading } = useEvents();
+
+  const featured = featuredEvents?.[0];
+  const upcomingEvents = events?.filter((e) => !e.featured) ?? [];
+
+  return (
+    <>
+      <PageBanner
+        tag="EVENTOS 25+"
+        title="Eventos"
+        subtitle="Conferencias, retiros y encuentros para crecer juntos."
+      />
+
+      {/* Featured event */}
+      {featured && (
+        <FeaturedEvent
+          event={featured}
+          whatsappNumber={config?.whatsappNumber}
+        />
+      )}
+
+      {/* Upcoming events grid */}
+      <section className="px-5 py-8 lg:px-14 lg:py-12">
+        <h3 className="mb-6 font-display text-[22px] font-bold tracking-[-0.3px] text-text-primary lg:mb-8">
+          Próximos Eventos
+        </h3>
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+            {[1, 2, 3].map((n) => (
+              <div
+                key={n}
+                className="h-[300px] animate-pulse rounded-[14px] bg-bg-card"
+              />
+            ))}
+          </div>
+        ) : upcomingEvents.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+            {upcomingEvents.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        ) : (
+          <p className="py-16 text-center font-body text-text-muted">
+            No hay eventos próximos por el momento.
+          </p>
+        )}
+      </section>
+    </>
+  );
 }

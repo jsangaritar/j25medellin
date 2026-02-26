@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import type { Event } from '../../../types';
+import { getStrapiMediaUrl } from '../../../utils/media';
 
 interface EventCardProps {
   event: Event;
@@ -12,7 +13,7 @@ export function EventCard({ event }: EventCardProps) {
   const day = format(eventDate, 'd');
   const month = format(eventDate, 'MMM', { locale: es }).toUpperCase();
   const timeStr = format(eventDate, 'EEE · h:mm a', { locale: es });
-  const imageUrl = event.image?.url;
+  const imageUrl = getStrapiMediaUrl(event.image);
 
   return (
     <Link
