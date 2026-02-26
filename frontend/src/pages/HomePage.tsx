@@ -13,7 +13,7 @@ export function HomePage() {
       <HeroSection config={config} />
 
       {/* Calendar Section */}
-      <section className="flex flex-col gap-6 px-5 py-10 lg:gap-10 lg:px-14 lg:py-16">
+      <section className="flex flex-col gap-6 px-5 py-10 md:gap-8 md:px-10 md:py-12 lg:gap-10 lg:px-14 lg:py-16">
         <MonthlyCalendar events={calendarEvents ?? []} />
         <UpcomingHighlights events={calendarEvents ?? []} />
       </section>

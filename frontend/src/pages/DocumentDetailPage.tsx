@@ -28,12 +28,12 @@ export function DocumentDetailPage() {
   const relatedItems = related?.filter((r) => r.slug !== slug).slice(0, 3);
 
   return (
-    <div className="flex flex-col gap-8 px-5 py-8 lg:flex-row lg:gap-14 lg:px-14 lg:py-14">
+    <div className="flex flex-col gap-8 px-5 py-8 md:px-10 md:py-10 lg:flex-row lg:gap-14 lg:px-14 lg:py-14">
       {/* Main content */}
       <div className="flex flex-1 flex-col gap-8">
         {/* Document preview */}
-        <div className="flex items-center justify-center rounded-2xl border border-border bg-bg-card p-8 lg:h-[480px]">
-          <div className="flex h-[280px] w-[220px] flex-col gap-4 rounded-xl bg-white p-7 lg:h-[440px] lg:w-[340px]">
+        <div className="flex items-center justify-center rounded-2xl border border-border bg-bg-card p-8 md:h-[400px] lg:h-[480px]">
+          <div className="flex h-[280px] w-[220px] flex-col gap-4 rounded-xl bg-white p-7 md:h-[340px] md:w-[260px] lg:h-[440px] lg:w-[340px]">
             <div className="h-3 w-3/4 rounded bg-gray-200" />
             <div className="h-2 w-full rounded bg-gray-100" />
             <div className="h-2 w-5/6 rounded bg-gray-100" />

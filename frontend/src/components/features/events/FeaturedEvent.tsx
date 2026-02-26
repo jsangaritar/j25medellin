@@ -14,7 +14,7 @@ export function FeaturedEvent({ event, whatsappNumber }: FeaturedEventProps) {
   const imageUrl = getStrapiMediaUrl(event.image);
 
   return (
-    <section className="relative h-[360px] w-full overflow-hidden border-b border-border lg:h-[420px]">
+    <section className="relative h-[360px] w-full overflow-hidden border-b border-border md:h-[390px] lg:h-[420px]">
       {/* Background image */}
       {imageUrl && (
         <img
@@ -33,7 +33,7 @@ export function FeaturedEvent({ event, whatsappNumber }: FeaturedEventProps) {
       />
 
       {/* Content */}
-      <div className="relative flex h-full flex-col justify-end gap-5 px-5 pb-8 lg:justify-start lg:gap-6 lg:px-14 lg:pt-14">
+      <div className="relative flex h-full flex-col justify-end gap-5 px-5 pb-8 md:px-10 lg:justify-start lg:gap-6 lg:px-14 lg:pt-14">
         {/* Badge */}
         <span className="inline-flex items-center gap-1.5 self-start rounded-full bg-accent-bright px-3.5 py-1.5 font-body text-[10px] font-bold tracking-[1.5px] text-bg-primary">
           <span className="h-1.5 w-1.5 rounded-full bg-bg-primary" />
@@ -41,7 +41,7 @@ export function FeaturedEvent({ event, whatsappNumber }: FeaturedEventProps) {
         </span>
 
         {/* Title */}
-        <h2 className="font-display text-3xl font-extrabold leading-[1.05] tracking-[-1px] text-text-primary lg:text-5xl lg:tracking-[-2px]">
+        <h2 className="font-display text-3xl font-extrabold leading-[1.05] tracking-[-1px] text-text-primary md:text-4xl md:tracking-[-1.5px] lg:text-5xl lg:tracking-[-2px]">
           {event.title}
         </h2>
 

@@ -12,7 +12,7 @@ export function VideoDetailPage() {
   if (isLoading) {
     return (
       <div className="animate-pulse">
-        <div className="h-[300px] bg-bg-card lg:h-[560px]" />
+        <div className="h-[300px] bg-bg-card md:h-[400px] lg:h-[560px]" />
         <div className="px-5 py-8 lg:px-14 lg:py-12">
           <div className="h-8 w-2/3 rounded bg-bg-card" />
         </div>
@@ -34,7 +34,7 @@ export function VideoDetailPage() {
   return (
     <>
       {/* Video player / thumbnail area */}
-      <div className="relative h-[220px] w-full overflow-hidden bg-bg-card lg:h-[560px]">
+      <div className="relative h-[220px] w-full overflow-hidden bg-bg-card md:h-[400px] lg:h-[560px]">
         {thumbnailUrl && (
           <img
             src={thumbnailUrl}
@@ -45,7 +45,7 @@ export function VideoDetailPage() {
       </div>
 
       {/* Content area */}
-      <div className="flex flex-col gap-8 px-5 py-8 lg:flex-row lg:gap-12 lg:px-14 lg:py-12">
+      <div className="flex flex-col gap-8 px-5 py-8 md:px-10 md:py-10 lg:flex-row lg:gap-12 lg:px-14 lg:py-12">
         {/* Main content */}
         <div className="flex flex-1 flex-col gap-6">
           <div className="flex flex-col gap-3">

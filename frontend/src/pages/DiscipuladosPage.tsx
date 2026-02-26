@@ -17,9 +17,9 @@ export function DiscipuladosPage() {
         subtitle="Crece en tu fe a través de líneas de profundización con cupo limitado."
       />
 
-      <section className="px-5 py-8 lg:px-14 lg:py-12">
+      <section className="px-5 py-8 md:px-10 md:py-10 lg:px-14 lg:py-12">
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {[1, 2, 3].map((n) => (
               <div
                 key={n}
@@ -28,7 +28,7 @@ export function DiscipuladosPage() {
             ))}
           </div>
         ) : courses && courses.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {courses.map((course) => (
               <CourseCard
                 key={course.id}

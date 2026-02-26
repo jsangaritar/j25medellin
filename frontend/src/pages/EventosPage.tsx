@@ -29,7 +29,7 @@ export function EventosPage() {
       )}
 
       {/* Upcoming events grid */}
-      <section className="px-5 py-8 lg:px-14 lg:py-12">
+      <section className="px-5 py-8 md:px-10 md:py-10 lg:px-14 lg:py-12">
         <h3 className="mb-6 font-display text-[22px] font-bold tracking-[-0.3px] text-text-primary lg:mb-8">
           Próximos Eventos
         </h3>

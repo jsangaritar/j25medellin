@@ -28,7 +28,7 @@ export function AudioDetailPage() {
   const relatedItems = related?.filter((r) => r.slug !== slug).slice(0, 4);
 
   return (
-    <div className="flex flex-col gap-8 px-5 py-8 lg:flex-row lg:gap-14 lg:px-14 lg:py-14">
+    <div className="flex flex-col gap-8 px-5 py-8 md:px-10 md:py-10 lg:flex-row lg:gap-14 lg:px-14 lg:py-14">
       {/* Main content */}
       <div className="flex flex-1 flex-col gap-8">
         {/* Player card */}

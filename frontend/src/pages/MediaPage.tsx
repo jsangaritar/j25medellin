@@ -27,7 +27,7 @@ export function MediaPage() {
 
       <FilterBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <section className="px-5 py-8 lg:px-14 lg:py-12">
+      <section className="px-5 py-8 md:px-10 md:py-10 lg:px-14 lg:py-12">
         {isLoading ? (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((n) => (
