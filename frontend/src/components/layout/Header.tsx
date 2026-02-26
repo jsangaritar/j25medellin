@@ -5,7 +5,7 @@ import { Link, NavLink } from 'react-router-dom';
 const navItems = [
   { to: '/', label: 'Inicio' },
   { to: '/discipulados', label: 'Discipulados' },
-  { to: '/media', label: 'Contenido' },
+  { to: '/media', label: 'Media' },
   { to: '/eventos', label: 'Eventos' },
 ];
 
@@ -41,7 +41,7 @@ export function Header() {
           href="https://wa.me/"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-[10px] bg-accent-bright px-7 py-3.5 text-sm font-semibold text-bg-primary transition-colors hover:bg-accent-muted"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-accent-bright px-3.5 py-2 text-xs font-semibold text-bg-primary transition-colors hover:bg-accent-muted"
         >
           <MessageCircle size={16} />
           Contáctanos

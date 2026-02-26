@@ -18,7 +18,7 @@ export function EventCard({ event }: EventCardProps) {
   return (
     <Link
       to={`/eventos#${event.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[14px] border border-border bg-bg-card transition-colors hover:border-text-dim"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-bg-card transition-colors hover:border-text-dim"
     >
       {/* Image with date badge */}
       <div className="relative h-[140px] w-full overflow-hidden md:h-[180px]">

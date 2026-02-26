@@ -23,7 +23,7 @@ export function DiscipuladosPage() {
             {[1, 2, 3].map((n) => (
               <div
                 key={n}
-                className="h-[360px] animate-pulse rounded-xl bg-bg-card lg:rounded-[14px]"
+                className="h-[360px] animate-pulse rounded-2xl bg-bg-card"
               />
             ))}
           </div>

@@ -14,7 +14,7 @@ export function ContactCTA() {
 
         {/* Title */}
         <h2 className="font-display text-xl font-extrabold text-text-primary md:text-[28px] md:tracking-[-0.5px]">
-          &iquest;Preguntas? Cont&aacute;ctanos
+          &iquest;Tienes preguntas? Cont&aacute;ctanos
         </h2>
 
         {/* Description */}

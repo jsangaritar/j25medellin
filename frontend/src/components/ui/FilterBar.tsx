@@ -11,7 +11,7 @@ interface FilterBarProps {
 
 export function FilterBar({ tabs, activeTab, onTabChange }: FilterBarProps) {
   return (
-    <div className="flex w-full border-b border-border bg-bg-primary">
+    <div className="flex w-full border-b border-border bg-bg-primary px-5 lg:px-14">
       {tabs.map((tab) => {
         const isActive = tab.key === activeTab;
         return (

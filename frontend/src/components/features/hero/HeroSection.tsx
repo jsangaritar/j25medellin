@@ -47,7 +47,7 @@ export function HeroSection({ config }: HeroSectionProps) {
         <div className="flex items-center gap-1.5 rounded-full bg-accent-dim px-3 py-1.5 self-start lg:gap-2 lg:px-3.5">
           <span className="h-1.5 w-1.5 rounded-full bg-accent-bright" />
           <span className="font-body text-[11px] font-semibold text-accent-bright lg:text-xs">
-            Comunidad 25+
+            Comunidad J+
           </span>
         </div>
 

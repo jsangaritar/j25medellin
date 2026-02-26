@@ -12,78 +12,130 @@ interface FeaturedEventProps {
 
 export function FeaturedEvent({ event, whatsappNumber }: FeaturedEventProps) {
   const imageUrl = getStrapiMediaUrl(event.image);
+  const whatsappUrl = whatsappNumber
+    ? buildWhatsAppUrl(
+        whatsappNumber,
+        event.whatsappMessage ?? `Hola, quiero info sobre: ${event.title}`,
+      )
+    : undefined;
 
   return (
-    <section className="relative h-[360px] w-full overflow-hidden border-b border-border md:h-[390px] lg:h-[420px]">
-      {/* Background image */}
-      {imageUrl && (
-        <img
-          src={imageUrl}
-          alt={event.title}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      )}
-
-      {/* Overlay */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: 'linear-gradient(to bottom, #0A0A0AF0, #0A0A0A66)',
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative flex h-full flex-col justify-end gap-5 px-5 pb-8 md:px-10 lg:justify-start lg:gap-6 lg:px-14 lg:pt-14">
-        {/* Badge */}
-        <span className="inline-flex items-center gap-1.5 self-start rounded-full bg-accent-bright px-3.5 py-1.5 font-body text-[10px] font-bold tracking-[1.5px] text-bg-primary">
-          <span className="h-1.5 w-1.5 rounded-full bg-bg-primary" />
-          PRÓXIMO EVENTO
-        </span>
-
-        {/* Title */}
-        <h2 className="font-display text-3xl font-extrabold leading-[1.05] tracking-[-1px] text-text-primary md:text-4xl md:tracking-[-1.5px] lg:text-5xl lg:tracking-[-2px]">
-          {event.title}
-        </h2>
-
-        {/* Description */}
-        {event.description && (
-          <p className="max-w-[520px] font-body text-sm leading-[1.6] text-text-secondary lg:text-base">
-            {event.description}
-          </p>
+    <>
+      {/* Desktop banner overlay */}
+      <section className="relative hidden w-full overflow-hidden border-b border-border lg:block lg:h-[420px]">
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt={event.title}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         )}
-
-        {/* Meta */}
-        <div className="flex flex-wrap items-center gap-4 lg:gap-6">
-          <span className="flex items-center gap-1.5 font-body text-[13px] text-text-muted lg:text-sm">
-            <Calendar size={16} />
-            {formatDate(event.date)}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(to bottom, #0A0A0AF0, #0A0A0A66)',
+          }}
+        />
+        <div className="relative flex h-full flex-col justify-start gap-6 px-14 pt-14">
+          <span className="inline-flex items-center gap-1.5 self-start rounded-full bg-accent-bright px-3.5 py-1.5 font-body text-[10px] font-bold tracking-[1.5px] text-bg-primary">
+            <span className="h-1.5 w-1.5 rounded-full bg-bg-primary" />
+            PRÓXIMO EVENTO
           </span>
-          {event.location && (
-            <span className="flex items-center gap-1.5 font-body text-[13px] text-text-muted lg:text-sm">
-              <MapPin size={16} />
-              {event.location}
-            </span>
+          <h2 className="font-display text-5xl font-extrabold leading-[1.05] tracking-[-2px] text-text-primary">
+            {event.title}
+          </h2>
+          {event.description && (
+            <p className="max-w-[520px] font-body text-base leading-[1.6] text-text-secondary">
+              {event.description}
+            </p>
           )}
+          <div className="flex items-center gap-6">
+            <span className="flex items-center gap-1.5 font-body text-sm text-text-muted">
+              <Calendar size={16} />
+              {formatDate(event.date)}
+            </span>
+            {event.location && (
+              <span className="flex items-center gap-1.5 font-body text-sm text-text-muted">
+                <MapPin size={16} />
+                {event.location}
+              </span>
+            )}
+          </div>
+          <div className="flex gap-3">
+            {whatsappUrl && (
+              <Button
+                variant="primary"
+                href={whatsappUrl}
+                external
+                icon={MessageCircle}
+              >
+                Inscribirme por WhatsApp
+              </Button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile card layout */}
+      <section className="overflow-hidden border-b border-border lg:hidden">
+        {/* Image with badge */}
+        <div className="relative h-[220px] w-full overflow-hidden">
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt={event.title}
+              className="h-full w-full object-cover"
+            />
+          )}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(to top, #0A0A0ACC, #0A0A0A44)',
+            }}
+          />
+          <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-2xl bg-accent-bright px-3 py-[5px] font-body text-[9px] font-bold tracking-[1.5px] text-bg-primary">
+            <span className="h-[5px] w-[5px] rounded-full bg-bg-primary" />
+            PRÓXIMO EVENTO
+          </span>
         </div>
 
-        {/* CTA */}
-        <div className="flex gap-3">
-          {whatsappNumber && (
-            <Button
-              variant="primary"
-              href={buildWhatsAppUrl(
-                whatsappNumber,
-                event.whatsappMessage ??
-                  `Hola, quiero info sobre: ${event.title}`,
-              )}
-              external
-              icon={MessageCircle}
-            >
-              Inscribirme por WhatsApp
-            </Button>
+        {/* Body */}
+        <div className="flex flex-col gap-3.5 border-b border-border bg-bg-card p-5">
+          <h2 className="font-display text-[22px] font-extrabold tracking-[-0.5px] text-text-primary">
+            {event.title}
+          </h2>
+          {event.description && (
+            <p className="font-body text-[13px] leading-[1.4] text-text-secondary">
+              {event.description}
+            </p>
           )}
+          <div className="flex flex-col gap-1.5">
+            <span className="flex items-center gap-1.5 font-body text-[13px] text-text-muted">
+              <Calendar size={14} />
+              {formatDate(event.date)}
+            </span>
+            {event.location && (
+              <span className="flex items-center gap-1.5 font-body text-[13px] text-text-muted">
+                <MapPin size={14} />
+                {event.location}
+              </span>
+            )}
+          </div>
+          <div className="flex flex-col gap-2.5">
+            {whatsappUrl && (
+              <Button
+                variant="primary"
+                href={whatsappUrl}
+                external
+                icon={MessageCircle}
+                className="w-full justify-center"
+              >
+                Inscribirme por WhatsApp
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

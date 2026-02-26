@@ -15,9 +15,9 @@ export function EventosPage() {
   return (
     <>
       <PageBanner
-        tag="EVENTOS 25+"
+        tag="EVENTOS"
         title="Eventos"
-        subtitle="Conferencias, retiros y encuentros para crecer juntos."
+        subtitle="Conferencias, retiros, talleres y encuentros de comunidad."
       />
 
       {/* Featured event */}
@@ -35,16 +35,16 @@ export function EventosPage() {
         </h3>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {[1, 2, 3].map((n) => (
               <div
                 key={n}
-                className="h-[300px] animate-pulse rounded-[14px] bg-bg-card"
+                className="h-[300px] animate-pulse rounded-2xl bg-bg-card"
               />
             ))}
           </div>
         ) : upcomingEvents.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {upcomingEvents.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}

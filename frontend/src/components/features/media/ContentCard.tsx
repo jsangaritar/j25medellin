@@ -50,7 +50,7 @@ export function ContentCard({ content }: ContentCardProps) {
   return (
     <Link
       to={detailPath}
-      className="group flex flex-col overflow-hidden rounded-[14px] border border-border bg-bg-card transition-colors hover:border-text-dim md:block"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-bg-card transition-colors hover:border-text-dim md:block"
     >
       {/* Desktop: vertical card */}
       <div className="hidden md:block">

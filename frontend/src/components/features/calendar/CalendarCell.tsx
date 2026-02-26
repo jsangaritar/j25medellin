@@ -15,37 +15,27 @@ export function CalendarCell({
 }: CalendarCellProps) {
   if (day === null) {
     return (
-      <div className="flex h-[72px] w-full flex-col items-center gap-1 p-2 md:h-[48px]" />
+      <div className="flex h-[56px] w-full flex-col items-center gap-1 py-2 lg:h-[72px]" />
     );
   }
 
   return (
-    <div className="flex h-[72px] w-full flex-col items-center gap-1 p-2 md:h-[48px]">
+    <div className="flex h-[56px] w-full flex-col items-center gap-1 py-2 lg:h-[72px]">
       {isToday ? (
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-bright font-body text-[13px] font-medium text-bg-primary md:h-6 md:w-6 md:text-xs">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent-bright font-body text-[13px] font-medium text-bg-primary lg:h-7 lg:w-7">
           {day}
         </span>
       ) : (
         <span
-          className={`font-body text-[13px] font-medium md:text-xs ${
+          className={`font-body text-[13px] font-medium ${
             isCurrentMonth ? 'text-text-primary' : 'text-text-dim'
           }`}
         >
           {day}
         </span>
       )}
-      {/* Desktop: event chip */}
       {events.length > 0 && !isToday && (
-        <div className="hidden w-full rounded-lg px-2 py-1 md:block">
-          <div
-            className="h-1.5 w-1.5 rounded-full"
-            style={{ backgroundColor: '#4ADE80' }}
-          />
-        </div>
-      )}
-      {/* Mobile: event dot */}
-      {events.length > 0 && !isToday && (
-        <div className="h-1.5 w-1.5 rounded-full bg-accent-bright md:hidden" />
+        <div className="h-1.5 w-1.5 rounded-full bg-accent-bright" />
       )}
     </div>
   );

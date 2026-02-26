@@ -27,7 +27,7 @@ export function Footer() {
           </a>
         </div>
         <p className="text-center text-[11px] text-text-dim md:text-xs">
-          &copy; {new Date().getFullYear()} J+. Todos los derechos reservados.
+          &copy; {new Date().getFullYear()} 25+. Todos los derechos reservados.
         </p>
       </div>
     </footer>
