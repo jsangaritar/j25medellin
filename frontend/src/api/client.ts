@@ -28,6 +28,21 @@ export async function apiFetch<T>(
   return response.json();
 }
 
+export async function withMockFallback<T>(
+  apiFn: () => Promise<T>,
+  mockFn: () => T,
+): Promise<T> {
+  try {
+    return await apiFn();
+  } catch (err) {
+    if (import.meta.env.DEV) {
+      console.warn('[API] Backend unavailable — using mock data');
+      return mockFn();
+    }
+    throw err;
+  }
+}
+
 export function apiPost<T>(path: string, body: unknown): Promise<T> {
   return apiFetch<T>(path, {
     init: {

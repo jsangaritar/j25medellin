@@ -1,5 +1,6 @@
 import { MessageCircle } from 'lucide-react';
 import type { SiteConfig } from '../../../types';
+import { getStrapiMediaUrl } from '../../../utils/media';
 import { buildWhatsAppUrl } from '../../../utils/whatsapp';
 import { Button } from '../../ui/Button';
 
@@ -7,12 +8,8 @@ interface HeroSectionProps {
   config?: SiteConfig;
 }
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:1337';
-
 export function HeroSection({ config }: HeroSectionProps) {
-  const heroImageUrl = config?.heroImage?.url
-    ? `${API_BASE}${config.heroImage.url}`
-    : undefined;
+  const heroImageUrl = getStrapiMediaUrl(config?.heroImage);
 
   return (
     <section className="relative h-[520px] w-full overflow-hidden md:h-[600px] lg:h-[680px]">

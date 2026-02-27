@@ -1,10 +1,15 @@
+import { mockSiteConfig } from '../mocks/data';
 import type { SiteConfig, StrapiResponse } from '../types';
-import { apiFetch } from './client';
+import { apiFetch, withMockFallback } from './client';
 
 export function getSiteConfig() {
-  return apiFetch<StrapiResponse<SiteConfig>>('/site-config', {
-    query: {
-      populate: ['heroImage'],
-    },
-  });
+  return withMockFallback(
+    () =>
+      apiFetch<StrapiResponse<SiteConfig>>('/site-config', {
+        query: {
+          populate: ['heroImage'],
+        },
+      }),
+    () => mockSiteConfig,
+  );
 }

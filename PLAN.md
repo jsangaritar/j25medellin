@@ -2,10 +2,11 @@
 
 ## Context
 
-Build a web application for "25+" (j25 Medellin), a faith-based young adult community in Medellin, Colombia. The app serves as a central hub for events, discipleship courses, and media content. The design exists as a complete `.pen` file with 17 screens (desktop + mobile) and 21 reusable components. The project directory is empty — everything is greenfield.
+Build a web application for "J+25" (j25 Medellin), a faith-based young adult community in Medellin, Colombia. The app serves as a central hub for events, discipleship courses, and media content. The design exists as a complete `.pen` file with 17 screens (desktop + mobile) and 21 reusable components. The project directory is empty — everything is greenfield.
 
 **Branding:**
-- The group is called **J+25** but all user-facing copy in the app must say **"J+"** (not "25+")
+
+- The group is called **J+25** but all user-facing copy in the app must say **"J+"** (not "J+25")
 - Exception: site meta description can reference "J+25"
 - Logo: `j25-logo.svg` (white SVG, already in project root) — must be used as the app logo in Header, Footer, and favicon
 
@@ -339,6 +340,7 @@ All routes wrapped in `RootLayout` (Header + Footer + ContactCTA).
 ## Workflow
 
 Each implementation step requires **user approval before committing**:
+
 1. Implement the step
 2. Present changes for user review
 3. On approval → commit with descriptive message

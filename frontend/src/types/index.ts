@@ -38,6 +38,21 @@ export interface Course {
   schedule?: string;
   location?: string;
   whatsappMessage?: string;
+  lineNumber?: number;
+  accentColor?: string;
+  capacity?: number;
+  enrolled?: number;
+}
+
+export interface CourseTopic {
+  id: number;
+  documentId: string;
+  title: string;
+  description: string;
+  tag: string;
+  startDate: string;
+  endDate: string;
+  courses: Course[];
 }
 
 export interface MediaContent {

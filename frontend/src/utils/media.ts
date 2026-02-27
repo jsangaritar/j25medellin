@@ -6,5 +6,6 @@ export function getStrapiMediaUrl(
   media: StrapiMedia | undefined,
 ): string | undefined {
   if (!media?.url) return undefined;
+  if (media.url.startsWith('http')) return media.url;
   return `${API_BASE}${media.url}`;
 }

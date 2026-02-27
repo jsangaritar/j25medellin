@@ -1,41 +1,26 @@
 import { UserPlus } from 'lucide-react';
-import type { Course, CourseStatus } from '../../../types';
+import type { Course } from '../../../types';
+import { getStrapiMediaUrl } from '../../../utils/media';
 
 interface CourseCardProps {
   course: Course;
   onRegister?: (course: Course) => void;
 }
 
-const statusConfig: Record<
-  CourseStatus,
-  { label: string; color: string; bgColor: string }
-> = {
-  DRAFT: { label: 'Borrador', color: '#A78BFA', bgColor: '#7C3AED1A' },
-  COMING_SOON: {
-    label: 'Próximamente',
-    color: '#FBBF24',
-    bgColor: '#F59E0B1A',
-  },
-  ACTIVE: { label: 'Activo', color: '#4ADE80', bgColor: '#16A34A1A' },
-  COMPLETED: { label: 'Completado', color: '#A78BFA', bgColor: '#7C3AED1A' },
-  ARCHIVED: { label: 'Archivado', color: '#71717A', bgColor: '#3F3F461A' },
-};
-
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:1337';
-
 export function CourseCard({ course, onRegister }: CourseCardProps) {
-  const imageUrl = course.image?.url
-    ? `${API_BASE}${course.image.url}`
-    : undefined;
-  const config = statusConfig[course.status];
-  const canRegister =
-    (course.status === 'ACTIVE' || course.status === 'COMING_SOON') &&
-    !!onRegister;
+  const imageUrl = getStrapiMediaUrl(course.image);
+  const color = course.accentColor ?? '#4ADE80';
+  const canRegister = course.status === 'ACTIVE' && !!onRegister;
+  const enrolled = course.enrolled ?? 0;
+  const capacity = course.capacity ?? 0;
+  const hasProgress = capacity > 0 && course.enrolled != null;
+  const progressPct =
+    capacity > 0 ? Math.round((enrolled / capacity) * 100) : 0;
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-border bg-bg-card lg:rounded-[14px]">
       {imageUrl && (
-        <div className="h-[120px] w-full overflow-hidden lg:h-[160px]">
+        <div className="h-[140px] w-full overflow-hidden lg:h-[160px]">
           <img
             src={imageUrl}
             alt={course.title}
@@ -43,36 +28,56 @@ export function CourseCard({ course, onRegister }: CourseCardProps) {
           />
         </div>
       )}
-      <div className="flex flex-1 flex-col gap-3 p-4 lg:p-5">
-        {/* Tag */}
-        <span
-          className="inline-flex items-center gap-1.5 self-start rounded-xl px-2.5 py-1 font-body text-[10px] font-semibold"
-          style={{ backgroundColor: config.bgColor, color: config.color }}
-        >
+      <div className="flex flex-1 flex-col gap-2.5 p-4 lg:gap-3 lg:p-5">
+        {/* Line tag */}
+        {course.lineNumber != null && (
           <span
-            className="h-[5px] w-[5px] rounded-full"
-            style={{ backgroundColor: config.color }}
-          />
-          {config.label.toUpperCase()}
-        </span>
+            className="inline-flex items-center gap-1.5 self-start font-body text-[9px] font-bold tracking-wider lg:text-[10px]"
+            style={{ color }}
+          >
+            <span
+              className="h-[5px] w-[5px] rounded-full"
+              style={{ backgroundColor: color }}
+            />
+            {`LÍNEA ${course.lineNumber}`}
+          </span>
+        )}
 
         {/* Title */}
-        <h3 className="font-display text-[17px] font-bold text-text-primary">
+        <h3 className="font-display text-[15px] font-bold text-text-primary lg:text-[17px]">
           {course.title}
         </h3>
 
         {/* Description */}
         {course.description && (
-          <p className="line-clamp-3 font-body text-[13px] leading-[1.5] text-text-secondary">
+          <p className="line-clamp-3 font-body text-[12px] leading-[1.5] text-text-secondary lg:text-[13px]">
             {course.description}
           </p>
         )}
 
-        {/* Schedule */}
+        {/* Schedule & duration */}
         {course.schedule && (
           <p className="font-body text-[11px] text-text-muted">
-            {course.schedule}
+            Duración: 3 meses · {course.schedule}
           </p>
+        )}
+
+        {/* Progress bar */}
+        {hasProgress && (
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between font-body text-[11px] text-text-muted">
+              <span>
+                {course.enrolled}/{course.capacity} inscritos
+              </span>
+              <span>{progressPct}%</span>
+            </div>
+            <div className="h-[3px] w-full overflow-hidden rounded-full bg-border lg:h-1">
+              <div
+                className="h-full rounded-full transition-all"
+                style={{ width: `${progressPct}%`, backgroundColor: color }}
+              />
+            </div>
+          </div>
         )}
 
         {/* Register button */}
@@ -81,7 +86,7 @@ export function CourseCard({ course, onRegister }: CourseCardProps) {
             type="button"
             onClick={() => onRegister(course)}
             className="mt-auto flex w-full items-center justify-center gap-1.5 rounded-[10px] py-2.5 font-body text-xs font-semibold text-bg-primary transition-colors hover:opacity-90"
-            style={{ backgroundColor: config.color }}
+            style={{ backgroundColor: color }}
           >
             <UserPlus size={14} />
             Inscribirse
