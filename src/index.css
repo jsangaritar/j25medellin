@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens from j25medellin.pen
+ * Maps to both shadcn/ui CSS variables and custom properties
+ */
+
+@theme {
+  /* Font families */
+  --font-display: "Montserrat", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* Custom color tokens from .pen file */
+  --color-accent-bright: #4ade80;
+  --color-accent-muted: #22c55e;
+  --color-accent-dim: #16a34a1a;
+  --color-accent-dark: #2d5a27;
+  --color-bg-primary: #0a0a0a;
+  --color-bg-surface: #141414;
+  --color-bg-card: #1a1a1a;
+  --color-bg-elevated: #222222;
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+  --color-text-dim: #3f3f46;
+  --color-border: #27272a;
+  --color-border-light: #1e1e1e;
+}
+
+/*
+ * shadcn/ui CSS variables — dark mode only
+ * Uses OKLCH color space for shadcn/ui v2+ compatibility
+ */
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.175 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.765 0.177 149.39);
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.235 0 0);
+  --secondary-foreground: oklch(0.716 0.016 264.05);
+  --muted: oklch(0.175 0 0);
+  --muted-foreground: oklch(0.516 0.013 264.36);
+  --accent: oklch(0.765 0.177 149.39);
+  --accent-foreground: oklch(0.145 0 0);
+  --destructive: oklch(0.577 0.245 27.33);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.278 0.006 264.53);
+  --input: oklch(0.278 0.006 264.53);
+  --ring: oklch(0.765 0.177 149.39);
+  --chart-1: oklch(0.765 0.177 149.39);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.398 0.07 227.39);
+  --chart-4: oklch(0.828 0.189 84.43);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar-background: oklch(0.175 0 0);
+  --sidebar-foreground: oklch(0.716 0.016 264.05);
+  --sidebar-primary: oklch(0.765 0.177 149.39);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
+  --sidebar-accent: oklch(0.235 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.278 0.006 264.53);
+  --sidebar-ring: oklch(0.765 0.177 149.39);
+}
+
+/* Base styles */
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+}

@@ -19,11 +19,9 @@ build/
 *.swo
 .DS_Store
 
-# Strapi
-backend/.tmp/
-backend/.cache/
-backend/dist/
-backend/exports/
+# Firebase
+.firebase/
+firebase-debug.log
 
 # Logs
 *.log
@@ -35,4 +33,6 @@ coverage/
 
 # Misc
 *.tsbuildinfo
-.pen
+
+# MSW
+public/mockServiceWorker.js
