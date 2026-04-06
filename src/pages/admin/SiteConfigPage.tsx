@@ -20,7 +20,6 @@ export function SiteConfigPage() {
     instagramUrl: '',
     youtubeUrl: '',
     contactEmail: '',
-    googleCalendarUrl: '',
   });
 
   useEffect(() => {
@@ -131,15 +130,6 @@ export function SiteConfigPage() {
                 value={form.youtubeUrl}
                 onChange={(e) =>
                   setForm({ ...form, youtubeUrl: e.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Google Calendar URL (iCal)</Label>
-              <Input
-                value={form.googleCalendarUrl}
-                onChange={(e) =>
-                  setForm({ ...form, googleCalendarUrl: e.target.value })
                 }
               />
             </div>

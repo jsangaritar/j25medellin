@@ -19,7 +19,6 @@ export const mockSiteConfig: SiteConfig = {
   instagramUrl: 'https://instagram.com/j25medellin',
   youtubeUrl: 'https://youtube.com/@j25medellin',
   contactEmail: 'contacto@j25medellin.com',
-  googleCalendarUrl: '',
 };
 
 // ── Events ──

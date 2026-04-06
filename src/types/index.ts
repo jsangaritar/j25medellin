@@ -102,7 +102,6 @@ export interface SiteConfig {
   instagramUrl: string;
   youtubeUrl: string;
   contactEmail: string;
-  googleCalendarUrl: string;
 }
 
 // ── Calendar ──
