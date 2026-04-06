@@ -1,15 +1,47 @@
-import type {
-  CalendarEvent,
-  Course,
-  CourseTopic,
-  Event,
-  MediaContent,
-  SiteConfig,
-} from '@/types';
+/**
+ * Seed Firestore with initial data from mock fixtures.
+ *
+ * Usage: npx tsx scripts/seed.ts
+ *
+ * Requires FIREBASE_SERVICE_ACCOUNT_KEY in .env
+ */
+
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import admin from 'firebase-admin';
+
+// Load .env manually (no dotenv dependency)
+const envPath = resolve(import.meta.dirname, '..', '.env');
+const envFile = readFileSync(envPath, 'utf-8');
+const envVars: Record<string, string> = {};
+for (const line of envFile.split('\n')) {
+  const trimmed = line.trim();
+  if (!trimmed || trimmed.startsWith('#')) continue;
+  const eqIndex = trimmed.indexOf('=');
+  if (eqIndex === -1) continue;
+  const key = trimmed.slice(0, eqIndex);
+  let value = trimmed.slice(eqIndex + 1);
+  if (value.startsWith('"') && value.endsWith('"')) {
+    value = value.slice(1, -1);
+  }
+  envVars[key] = value;
+}
+
+const serviceAccountKey = envVars.FIREBASE_SERVICE_ACCOUNT_KEY;
+if (!serviceAccountKey) {
+  console.error('Missing FIREBASE_SERVICE_ACCOUNT_KEY in .env');
+  process.exit(1);
+}
+
+admin.initializeApp({
+  credential: admin.credential.cert(JSON.parse(serviceAccountKey)),
+});
+
+const db = admin.firestore();
 
 // ── Site Config ──
 
-export const mockSiteConfig: SiteConfig = {
+const siteConfig = {
   heroTitle: 'Tu lugar para\ncrecer, conectar\ny transformarte.',
   heroSubtitle:
     'Discipulados, comunidad y contenido para tu crecimiento espiritual.\nUn ministerio joven donde la fe se vive con propósito.',
@@ -23,9 +55,8 @@ export const mockSiteConfig: SiteConfig = {
 
 // ── Events ──
 
-export const mockEvents: Event[] = [
+const events = [
   {
-    id: 'evt-1',
     title: 'Conferencia J+ 2026',
     slug: 'conferencia-j-2026',
     description:
@@ -41,7 +72,6 @@ export const mockEvents: Event[] = [
     whatsappMessage: 'Hola, quiero información sobre la Conferencia J+ 2026',
   },
   {
-    id: 'evt-2',
     title: 'Noche de Alabanza J+',
     slug: 'noche-alabanza',
     description:
@@ -56,7 +86,6 @@ export const mockEvents: Event[] = [
     whatsappMessage: 'Hola, quiero información sobre la Noche de Alabanza',
   },
   {
-    id: 'evt-3',
     title: 'Retiro de Jóvenes',
     slug: 'retiro-jovenes',
     description:
@@ -72,7 +101,6 @@ export const mockEvents: Event[] = [
     whatsappMessage: 'Hola, quiero inscribirme al Retiro de Jóvenes',
   },
   {
-    id: 'evt-4',
     title: 'Discipulado: Identidad — Sesión 4',
     slug: 'discipulado-identidad-sesion-4',
     description: 'Cuarta sesión del discipulado sobre Identidad en Cristo.',
@@ -86,9 +114,8 @@ export const mockEvents: Event[] = [
 
 // ── Courses ──
 
-export const mockCourses: Course[] = [
+const courses = [
   {
-    id: 'course-1',
     title: 'Conociendo al Padre',
     slug: 'conociendo-al-padre',
     description:
@@ -108,7 +135,6 @@ export const mockCourses: Course[] = [
     whatsappMessage: 'Hola, quiero inscribirme al curso Conociendo al Padre',
   },
   {
-    id: 'course-2',
     title: 'Mayordomía y Propósito',
     slug: 'mayordomia-y-proposito',
     description:
@@ -125,10 +151,10 @@ export const mockCourses: Course[] = [
     accentColor: '#A78BFA',
     capacity: 25,
     enrolled: 12,
-    whatsappMessage: 'Hola, quiero inscribirme al curso Mayordomía y Propósito',
+    whatsappMessage:
+      'Hola, quiero inscribirme al curso Mayordomía y Propósito',
   },
   {
-    id: 'course-3',
     title: 'Relaciones Sanas',
     slug: 'relaciones-sanas',
     description:
@@ -149,23 +175,10 @@ export const mockCourses: Course[] = [
   },
 ];
 
-export const mockCourseTopic: CourseTopic = {
-  id: 'topic-1',
-  title: 'Identidad en Cristo',
-  description:
-    'Descubre quién eres realmente a través de las escrituras. Tres líneas de profundización paralelas, cada una con cupo máximo de 25 personas.',
-  tag: 'TEMA ACTUAL · MAR — MAY 2026',
-  startDate: '2026-03-01T00:00:00.000Z',
-  endDate: '2026-05-31T00:00:00.000Z',
-  courseIds: ['course-1', 'course-2', 'course-3'],
-  courses: mockCourses,
-};
-
 // ── Media ──
 
-export const mockMediaContents: MediaContent[] = [
+const mediaContents = [
   {
-    id: 'media-1',
     title: 'Alabanza J+ — Taller en Vivo',
     slug: 'alabanza-taller-en-vivo',
     description:
@@ -179,7 +192,6 @@ export const mockMediaContents: MediaContent[] = [
     platform: 'YouTube',
   },
   {
-    id: 'media-2',
     title: 'Conferencia J+ 2025 — Sesión de Apertura',
     slug: 'conferencia-2025-apertura',
     description: 'Revive la sesión de apertura de la Conferencia J+ 2025.',
@@ -192,7 +204,6 @@ export const mockMediaContents: MediaContent[] = [
     platform: 'YouTube',
   },
   {
-    id: 'media-3',
     title: 'Podcast: Fe y Propósito — Ep. 12',
     slug: 'fe-y-proposito-ep-12',
     description:
@@ -207,7 +218,6 @@ export const mockMediaContents: MediaContent[] = [
     platform: 'Spotify',
   },
   {
-    id: 'media-4',
     title: 'Podcast: Salud Mental y Fe — Ep. 8',
     slug: 'salud-mental-y-fe-ep-8',
     description:
@@ -222,7 +232,6 @@ export const mockMediaContents: MediaContent[] = [
     platform: 'Spotify',
   },
   {
-    id: 'media-5',
     title: 'Guía de Estudio: Identidad en Cristo',
     slug: 'guia-identidad-en-cristo',
     description:
@@ -235,7 +244,6 @@ export const mockMediaContents: MediaContent[] = [
     featured: false,
   },
   {
-    id: 'media-6',
     title: 'Manual de Liderazgo J+',
     slug: 'manual-liderazgo',
     description: 'Principios y prácticas para líderes de comunidad.',
@@ -248,78 +256,53 @@ export const mockMediaContents: MediaContent[] = [
   },
 ];
 
-// ── Calendar ──
+// ── Seed ──
 
-export const mockCalendarEvents: CalendarEvent[] = [
-  {
-    id: 'cal-1',
-    title: 'Reunión J+',
-    start: '2026-04-04T19:00:00.000Z',
-    end: '2026-04-04T21:00:00.000Z',
-    description: 'Reunión semanal de la comunidad',
-  },
-  {
-    id: 'cal-2',
-    title: 'Reunión J+',
-    start: '2026-04-11T19:00:00.000Z',
-    end: '2026-04-11T21:00:00.000Z',
-    description: 'Reunión semanal de la comunidad',
-  },
-  {
-    id: 'cal-3',
-    title: 'Discipulado: Conociendo al Padre',
-    start: '2026-04-07T19:00:00.000Z',
-    end: '2026-04-07T20:30:00.000Z',
-  },
-  {
-    id: 'cal-4',
-    title: 'Discipulado: Mayordomía y Propósito',
-    start: '2026-04-08T19:00:00.000Z',
-    end: '2026-04-08T20:30:00.000Z',
-  },
-  {
-    id: 'cal-5',
-    title: 'Discipulado: Relaciones Sanas',
-    start: '2026-04-09T19:00:00.000Z',
-    end: '2026-04-09T20:30:00.000Z',
-  },
-  {
-    id: 'cal-6',
-    title: 'Noche de Alabanza J+',
-    start: '2026-04-18T19:00:00.000Z',
-    end: '2026-04-18T21:30:00.000Z',
-    description: 'Noche especial de adoración y alabanza',
-  },
-  {
-    id: 'cal-7',
-    title: 'Reunión J+',
-    start: '2026-04-18T19:00:00.000Z',
-    end: '2026-04-18T21:00:00.000Z',
-  },
-  {
-    id: 'cal-8',
-    title: 'Retiro de Jóvenes',
-    start: '2026-04-25T09:00:00.000Z',
-    end: '2026-04-26T17:00:00.000Z',
-    description: 'Fin de semana de retiro en Finca El Refugio',
-  },
-  {
-    id: 'cal-9',
-    title: 'Reunión J+',
-    start: '2026-04-25T19:00:00.000Z',
-    end: '2026-04-25T21:00:00.000Z',
-  },
-  {
-    id: 'cal-10',
-    title: 'Discipulado: Identidad — Sesión 4',
-    start: '2026-04-16T18:30:00.000Z',
-    end: '2026-04-16T20:00:00.000Z',
-  },
-  {
-    id: 'cal-11',
-    title: 'Conferencia J+ 2026',
-    start: '2026-05-15T18:00:00.000Z',
-    end: '2026-05-17T22:00:00.000Z',
-    description: 'Conferencia anual J+ — 3 días',
-  },
-];
+async function seed() {
+  console.log('Seeding Firestore...\n');
+
+  // Site config
+  console.log('→ settings/config');
+  await db.doc('settings/config').set(siteConfig);
+
+  // Events
+  for (const event of events) {
+    const ref = await db.collection('events').add(event);
+    console.log(`→ events/${ref.id} — ${event.title}`);
+  }
+
+  // Courses (collect IDs for topic)
+  const courseIds: string[] = [];
+  for (const course of courses) {
+    const ref = await db.collection('courses').add(course);
+    courseIds.push(ref.id);
+    console.log(`→ courses/${ref.id} — ${course.title}`);
+  }
+
+  // Course topic
+  const topic = {
+    title: 'Identidad en Cristo',
+    description:
+      'Descubre quién eres realmente a través de las escrituras. Tres líneas de profundización paralelas, cada una con cupo máximo de 25 personas.',
+    tag: 'TEMA ACTUAL · MAR — MAY 2026',
+    startDate: '2026-03-01T00:00:00.000Z',
+    endDate: '2026-05-31T00:00:00.000Z',
+    courseIds,
+  };
+  const topicRef = await db.collection('courseTopics').add(topic);
+  console.log(`→ courseTopics/${topicRef.id} — ${topic.title}`);
+
+  // Media
+  for (const media of mediaContents) {
+    const ref = await db.collection('mediaContents').add(media);
+    console.log(`→ mediaContents/${ref.id} — ${media.title}`);
+  }
+
+  console.log('\n✓ Seed complete!');
+  process.exit(0);
+}
+
+seed().catch((err) => {
+  console.error('Seed failed:', err);
+  process.exit(1);
+});
