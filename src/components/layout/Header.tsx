@@ -76,6 +76,7 @@ export function Header() {
           </SheetTrigger>
           <SheetContent
             side="right"
+            showCloseButton={false}
             className="w-[280px] border-border bg-bg-primary"
           >
             <div className="flex items-center justify-between px-5 pt-4">

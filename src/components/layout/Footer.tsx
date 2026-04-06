@@ -1,6 +1,6 @@
-import { Instagram, Youtube } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useSiteConfig } from "@/hooks/useSiteConfig";
+import { Instagram, Youtube } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
 
 export function Footer() {
   const { data: config } = useSiteConfig();
