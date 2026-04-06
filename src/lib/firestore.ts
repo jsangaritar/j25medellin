@@ -81,24 +81,30 @@ export async function getCourseBySlug(slug: string): Promise<Course | null> {
   return snapshot.empty ? null : queryDocToData<Course>(snapshot.docs[0]);
 }
 
+async function populateTopicCourses(topic: CourseTopic): Promise<CourseTopic> {
+  if (!topic.courseIds?.length) return topic;
+  const courseDocs = await Promise.all(
+    topic.courseIds.map((id) => getDoc(doc(db, 'courses', id))),
+  );
+  topic.courses = courseDocs
+    .map((d) => docSnapshotToData<Course>(d))
+    .filter((c): c is Course & { id: string } => c !== null);
+  return topic;
+}
+
 export async function getCourseTopic(): Promise<CourseTopic | null> {
   const now = new Date().toISOString();
   const q = query(collection(db, 'courseTopics'), where('endDate', '>=', now));
   const snapshot = await getDocs(q);
   if (snapshot.empty) return null;
-  const topic = queryDocToData<CourseTopic>(snapshot.docs[0]);
+  return populateTopicCourses(queryDocToData<CourseTopic>(snapshot.docs[0]));
+}
 
-  // Populate courses
-  if (topic.courseIds?.length) {
-    const courseDocs = await Promise.all(
-      topic.courseIds.map((id) => getDoc(doc(db, 'courses', id))),
-    );
-    topic.courses = courseDocs
-      .map((d) => docSnapshotToData<Course>(d))
-      .filter((c): c is Course & { id: string } => c !== null);
-  }
-
-  return topic;
+export async function getAllCourseTopics(): Promise<CourseTopic[]> {
+  const q = query(collection(db, 'courseTopics'));
+  const snapshot = await getDocs(q);
+  const topics = snapshot.docs.map(queryDocToData<CourseTopic>);
+  return Promise.all(topics.map(populateTopicCourses));
 }
 
 // ── Media ──

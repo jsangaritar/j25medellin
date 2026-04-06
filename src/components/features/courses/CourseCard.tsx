@@ -1,4 +1,4 @@
-import { Clock, MessageCircle, Users } from 'lucide-react';
+import { Clock, MessageCircle, PlayCircle, Users } from 'lucide-react';
 import { Tag } from '@/components/ui/tag';
 import type { Course } from '@/types';
 import { buildWhatsAppUrl } from '@/utils/whatsapp';
@@ -6,18 +6,23 @@ import { buildWhatsAppUrl } from '@/utils/whatsapp';
 interface CourseCardProps {
   course: Course;
   whatsappNumber: string;
+  topicStartDate?: string;
   onRegister?: (course: Course) => void;
 }
 
 export function CourseCard({
   course,
   whatsappNumber,
+  topicStartDate,
   onRegister,
 }: CourseCardProps) {
   const progress =
     course.capacity && course.enrolled
       ? (course.enrolled / course.capacity) * 100
       : 0;
+
+  const startDate = course.startDate ?? topicStartDate;
+  const hasStarted = startDate ? new Date(startDate) <= new Date() : false;
 
   return (
     <div className="flex flex-col rounded-xl border border-border-light bg-bg-card">
@@ -62,7 +67,7 @@ export function CourseCard({
         {course.schedule && (
           <span className="flex items-center gap-1.5 text-xs text-text-muted">
             <Clock className="size-3.5" />
-            Duración: 3 meses · {course.schedule}
+            {course.schedule}
           </span>
         )}
 
@@ -89,7 +94,12 @@ export function CourseCard({
 
         {/* CTA */}
         <div className="mt-auto pt-1">
-          {onRegister ? (
+          {hasStarted ? (
+            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-border bg-bg-elevated px-4 py-3 font-body text-sm font-medium text-text-muted">
+              <PlayCircle className="size-4" />
+              En curso
+            </div>
+          ) : onRegister ? (
             <button
               type="button"
               onClick={() => onRegister(course)}

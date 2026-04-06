@@ -5,17 +5,28 @@ import { QuarterlyBanner } from '@/components/features/courses/QuarterlyBanner';
 import { RegistrationModal } from '@/components/features/registration/RegistrationModal';
 import { PageBanner } from '@/components/layout/PageBanner';
 import { EmptyState } from '@/components/ui/empty-state';
+import { SectionHeader } from '@/components/ui/section-header';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCourseTopic } from '@/hooks/useCourses';
+import { useAllCourseTopics } from '@/hooks/useCourses';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
-import type { Course } from '@/types';
+import type { Course, CourseTopic } from '@/types';
+
+function isCurrentTopic(topic: CourseTopic): boolean {
+  const now = new Date();
+  return new Date(topic.endDate) >= now;
+}
 
 export function DiscipuladosPage() {
-  const { data: topic, isLoading } = useCourseTopic();
+  const { data: allTopics = [], isLoading } = useAllCourseTopics();
   const { data: config } = useSiteConfig();
   const [registerCourse, setRegisterCourse] = useState<Course | null>(null);
 
-  const courses = topic?.courses ?? [];
+  const currentTopics = allTopics.filter(isCurrentTopic);
+  const pastTopics = allTopics
+    .filter((t) => !isCurrentTopic(t))
+    .sort(
+      (a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime(),
+    );
 
   return (
     <>
@@ -31,29 +42,60 @@ export function DiscipuladosPage() {
             <Skeleton className="h-[160px] rounded-2xl" />
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={`skel-${i}`} className="h-[360px] rounded-xl" />
+                <Skeleton key={i} className="h-[360px] rounded-xl" />
               ))}
             </div>
           </div>
-        ) : !topic ? (
+        ) : allTopics.length === 0 ? (
           <EmptyState
             icon={BookOpen}
-            title="Sin discipulados activos"
-            description="No hay líneas de discipulado abiertas por ahora. Vuelve pronto."
+            title="Sin discipulados"
+            description="No hay líneas de discipulado disponibles por ahora. Vuelve pronto."
           />
         ) : (
-          <div className="flex flex-col gap-10">
-            <QuarterlyBanner topic={topic} />
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {courses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  whatsappNumber={config?.whatsappNumber ?? ''}
-                  onRegister={setRegisterCourse}
+          <div className="flex flex-col gap-16">
+            {/* Current topics */}
+            {currentTopics.map((topic) => (
+              <div key={topic.id} className="flex flex-col gap-10">
+                <QuarterlyBanner topic={topic} />
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {(topic.courses ?? []).map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      whatsappNumber={config?.whatsappNumber ?? ''}
+                      topicStartDate={topic.startDate}
+                      onRegister={setRegisterCourse}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* Past topics */}
+            {pastTopics.length > 0 && (
+              <div className="flex flex-col gap-10">
+                <SectionHeader
+                  label="ANTERIORES"
+                  title="Discipulados anteriores"
                 />
-              ))}
-            </div>
+                {pastTopics.map((topic) => (
+                  <div key={topic.id} className="flex flex-col gap-6">
+                    <QuarterlyBanner topic={topic} />
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                      {(topic.courses ?? []).map((course) => (
+                        <CourseCard
+                          key={course.id}
+                          course={course}
+                          whatsappNumber={config?.whatsappNumber ?? ''}
+                          topicStartDate={topic.startDate}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </section>

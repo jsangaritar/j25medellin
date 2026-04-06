@@ -28,7 +28,7 @@ export function Header() {
       {/* Desktop */}
       <div className="mx-auto flex max-w-[1440px] items-center justify-between px-14 py-[18px] max-md:hidden">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src="/j25-logo.svg" alt="J+" className="h-8 w-20" />
+          <img src="/j25-logo.svg" alt="J+" className="h-8 w-20 scale-150" />
         </Link>
 
         <nav className="flex items-center gap-9">
