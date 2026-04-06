@@ -90,9 +90,13 @@ export function MediaPage() {
                   value={activeTab}
                   onValueChange={(v) => setActiveTab(v as MediaType | 'ALL')}
                 >
-                  <TabsList>
+                  <TabsList className="gap-1 rounded-xl bg-bg-elevated p-1">
                     {TABS.map((tab) => (
-                      <TabsTrigger key={tab.value} value={tab.value}>
+                      <TabsTrigger
+                        key={tab.value}
+                        value={tab.value}
+                        className="rounded-lg px-4 py-2 text-xs font-medium text-text-muted transition-colors hover:text-text-primary data-[state=active]:bg-accent-bright data-[state=active]:text-bg-primary data-[state=active]:shadow-none"
+                      >
                         {tab.label}
                       </TabsTrigger>
                     ))}
