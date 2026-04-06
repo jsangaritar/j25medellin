@@ -43,7 +43,6 @@ export interface Course {
   lineNumber?: number;
   accentColor?: string;
   capacity?: number;
-  enrolled?: number;
 }
 
 export interface CourseTopic {

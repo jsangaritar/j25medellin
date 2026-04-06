@@ -55,7 +55,6 @@ const emptyForm: CourseForm = {
   lineNumber: undefined,
   accentColor: '#4ADE80',
   capacity: 25,
-  enrolled: 0,
 };
 
 export function CoursesAdminPage() {
@@ -135,9 +134,7 @@ export function CoursesAdminPage() {
                 <TableCell>{course.lineNumber ?? '—'}</TableCell>
                 <TableCell className="font-medium">{course.title}</TableCell>
                 <TableCell>{course.status}</TableCell>
-                <TableCell>
-                  {course.enrolled ?? 0}/{course.capacity ?? '∞'}
-                </TableCell>
+                <TableCell>{course.capacity ?? '∞'}</TableCell>
                 <TableCell>
                   <div className="flex gap-1">
                     <button
@@ -261,16 +258,6 @@ export function CoursesAdminPage() {
                   value={form.capacity ?? ''}
                   onChange={(e) =>
                     setForm({ ...form, capacity: Number(e.target.value) })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Inscritos</Label>
-                <Input
-                  type="number"
-                  value={form.enrolled ?? 0}
-                  onChange={(e) =>
-                    setForm({ ...form, enrolled: Number(e.target.value) })
                   }
                 />
               </div>

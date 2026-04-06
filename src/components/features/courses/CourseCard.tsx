@@ -5,6 +5,7 @@ import { buildWhatsAppUrl } from '@/utils/whatsapp';
 
 interface CourseCardProps {
   course: Course;
+  enrolled?: number;
   whatsappNumber: string;
   topicStartDate?: string;
   onRegister?: (course: Course) => void;
@@ -12,21 +13,17 @@ interface CourseCardProps {
 
 export function CourseCard({
   course,
+  enrolled = 0,
   whatsappNumber,
   topicStartDate,
   onRegister,
 }: CourseCardProps) {
   const progress =
-    course.capacity && course.enrolled
-      ? (course.enrolled / course.capacity) * 100
-      : 0;
+    course.capacity && enrolled ? (enrolled / course.capacity) * 100 : 0;
 
   const startDate = course.startDate ?? topicStartDate;
   const hasStarted = startDate ? new Date(startDate) <= new Date() : false;
-  const isFull =
-    course.capacity != null &&
-    course.enrolled != null &&
-    course.enrolled >= course.capacity;
+  const isFull = course.capacity != null && enrolled >= course.capacity;
 
   return (
     <div className="flex flex-col rounded-xl border border-border-light bg-bg-card">
@@ -81,7 +78,7 @@ export function CourseCard({
             <div className="mb-1.5 flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-xs text-text-muted">
                 <Users className="size-3.5" />
-                {course.enrolled ?? 0}/{course.capacity} cupos
+                {enrolled}/{course.capacity} cupos
               </span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-full bg-bg-elevated">

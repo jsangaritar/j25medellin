@@ -19,10 +19,8 @@ export function useRegistration() {
   return useMutation({
     mutationFn: submitRegistration,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
-      queryClient.invalidateQueries({ queryKey: ['courseTopic'] });
-      queryClient.invalidateQueries({ queryKey: ['courseTopics'] });
       queryClient.invalidateQueries({ queryKey: ['registrations'] });
+      queryClient.invalidateQueries({ queryKey: ['enrollments'] });
     },
   });
 }

@@ -1,5 +1,5 @@
 import { BookOpen } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { CourseCard } from '@/components/features/courses/CourseCard';
 import { QuarterlyBanner } from '@/components/features/courses/QuarterlyBanner';
 import { RegistrationModal } from '@/components/features/registration/RegistrationModal';
@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAllCourseTopics } from '@/hooks/useCourses';
+import { useEnrollments } from '@/hooks/useEnrollments';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import type { Course, CourseTopic } from '@/types';
 
@@ -20,6 +21,12 @@ export function DiscipuladosPage() {
   const { data: allTopics = [], isLoading } = useAllCourseTopics();
   const { data: config } = useSiteConfig();
   const [registerCourse, setRegisterCourse] = useState<Course | null>(null);
+
+  const allCourseIds = useMemo(
+    () => allTopics.flatMap((t) => (t.courses ?? []).map((c) => c.id)),
+    [allTopics],
+  );
+  const { data: enrollments = new Map() } = useEnrollments(allCourseIds);
 
   const currentTopics = allTopics.filter(isCurrentTopic);
   const pastTopics = allTopics
@@ -63,6 +70,7 @@ export function DiscipuladosPage() {
                     <CourseCard
                       key={course.id}
                       course={course}
+                      enrolled={enrollments.get(course.id) ?? 0}
                       whatsappNumber={config?.whatsappNumber ?? ''}
                       topicStartDate={topic.startDate}
                       onRegister={setRegisterCourse}
@@ -87,6 +95,7 @@ export function DiscipuladosPage() {
                         <CourseCard
                           key={course.id}
                           course={course}
+                          enrolled={enrollments.get(course.id) ?? 0}
                           whatsappNumber={config?.whatsappNumber ?? ''}
                           topicStartDate={topic.startDate}
                         />

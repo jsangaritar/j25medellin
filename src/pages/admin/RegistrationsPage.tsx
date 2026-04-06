@@ -2,13 +2,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   addDoc,
   collection,
-  doc,
   getDocs,
-  increment,
   orderBy,
   query,
   serverTimestamp,
-  updateDoc,
 } from 'firebase/firestore';
 import { Download, Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -100,17 +97,10 @@ export function RegistrationsPage() {
         courseId: courseId || null,
         createdAt: serverTimestamp(),
       });
-      // Increment enrolled on course
-      if (courseId) {
-        await updateDoc(doc(db, 'courses', courseId), {
-          enrolled: increment(1),
-        });
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['registrations'] });
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
-      queryClient.invalidateQueries({ queryKey: ['courseTopics'] });
+      queryClient.invalidateQueries({ queryKey: ['enrollments'] });
       setDialogOpen(false);
       setFullName('');
       setWhatsApp('');
