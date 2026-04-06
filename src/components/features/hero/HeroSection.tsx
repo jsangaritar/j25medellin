@@ -1,0 +1,67 @@
+import { MessageCircle } from 'lucide-react';
+
+interface HeroSectionProps {
+  title: string;
+  subtitle: string;
+  imageUrl?: string;
+  whatsappNumber?: string;
+}
+
+export function HeroSection({
+  title,
+  subtitle,
+  imageUrl,
+  whatsappNumber = '573001234567',
+}: HeroSectionProps) {
+  return (
+    <section className="relative h-[680px] w-full overflow-hidden max-md:h-[520px]">
+      {/* Background image */}
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt=""
+          className="absolute inset-0 size-full object-cover"
+        />
+      )}
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0AF0] via-[#0A0A0ACC] to-[#0A0A0A88]" />
+
+      {/* Content */}
+      <div className="relative mx-auto flex h-full max-w-[1440px] items-start px-14 pt-[120px] max-md:px-5 max-md:pt-16">
+        <div className="flex max-w-[680px] flex-col gap-7 max-md:max-w-full">
+          {/* Tag pill */}
+          <div className="inline-flex w-fit items-center gap-2 rounded-full bg-accent-dim px-3.5 py-1.5">
+            <span className="size-1.5 rounded-full bg-accent-bright" />
+            <span className="font-body text-xs font-semibold text-accent-bright">
+              Comunidad 25+
+            </span>
+          </div>
+
+          {/* Title */}
+          <h1 className="whitespace-pre-line font-display text-[56px] font-extrabold leading-[1.05] tracking-[-2px] text-text-primary max-md:text-[32px] max-md:tracking-[-1px]">
+            {title}
+          </h1>
+
+          {/* Subtitle */}
+          <p className="max-w-[520px] whitespace-pre-line font-body text-[17px] leading-[1.6] text-text-secondary max-md:text-[15px]">
+            {subtitle}
+          </p>
+
+          {/* CTA */}
+          <div className="flex gap-3">
+            <a
+              href={`https://wa.me/${whatsappNumber}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-[10px] bg-accent-bright px-7 py-3.5 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
+            >
+              Contáctanos
+              <MessageCircle className="size-4" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
