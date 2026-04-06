@@ -3,9 +3,14 @@ import { mockCalendarEvents } from '@/mocks/data';
 import type { CalendarEvent } from '@/types';
 
 async function fetchCalendarEvents(): Promise<CalendarEvent[]> {
-  const res = await fetch('/api/calendar');
-  if (!res.ok) throw new Error('Failed to fetch calendar');
-  return res.json();
+  try {
+    const res = await fetch('/api/calendar');
+    if (!res.ok) return mockCalendarEvents;
+    const data = await res.json();
+    return data.length > 0 ? data : mockCalendarEvents;
+  } catch {
+    return mockCalendarEvents;
+  }
 }
 
 export function useCalendar() {
