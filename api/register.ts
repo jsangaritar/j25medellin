@@ -43,6 +43,16 @@ export default async function handler(
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
+    // Increment enrolled count on course
+    if (courseId) {
+      await db
+        .collection('courses')
+        .doc(courseId)
+        .update({
+          enrolled: admin.firestore.FieldValue.increment(1),
+        });
+    }
+
     // Send confirmation email (best-effort)
     const resendKey = process.env.RESEND_API_KEY;
     if (resendKey) {

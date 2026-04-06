@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { RegistrationInput } from '@/types';
 
 async function submitRegistration(
@@ -14,7 +14,15 @@ async function submitRegistration(
 }
 
 export function useRegistration() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: submitRegistration,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['courseTopic'] });
+      queryClient.invalidateQueries({ queryKey: ['courseTopics'] });
+      queryClient.invalidateQueries({ queryKey: ['registrations'] });
+    },
   });
 }
