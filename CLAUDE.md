@@ -6,25 +6,37 @@ Web app for "J+" (J+25 Medellin), a faith-based young adult community in Medelli
 
 ## Tech Stack
 
-- **Frontend**: React 19 + Vite 7 + TypeScript 5.9
-- **Backend/CMS**: Strapi 5 (SQLite local, PostgreSQL production)
-- **Styling**: Tailwind CSS v4 (design tokens in `frontend/src/index.css`)
-- **State**: TanStack Query (server state), React useState (UI state)
-- **Routing**: React Router v7 (library mode, not framework)
+- **Frontend**: React 19 + Vite 7 + TypeScript
+- **Styling**: Tailwind CSS v4 + shadcn/ui (New York style)
+- **State**: TanStack Query v5 (server state), React useState (UI state)
+- **Routing**: React Router v7 (library mode)
+- **Backend**: Firebase (Firestore, Storage, Auth, Cloud Functions)
+- **Email**: Resend (via Cloud Function)
+- **Mocking**: MSW (Mock Service Worker) for dev and tests
 - **Testing**: Vitest + React Testing Library + jsdom
-- **Linting/Formatting**: Biome 2.4 (replaces ESLint + Prettier)
-- **Package Manager**: pnpm (workspace monorepo)
-- **Email**: Resend (transactional emails)
+- **Linting/Formatting**: Biome 2.4
+- **Package Manager**: pnpm (single project, not monorepo)
 
-## Monorepo Structure
+## Project Structure
 
 ```
 j25medellin/
-├── frontend/    # React + Vite app
-├── backend/     # Strapi 5 CMS
-├── biome.json   # Shared linter/formatter config
-├── PLAN.md      # Full implementation plan
-└── CLAUDE.md    # This file
+├── public/             # Static assets (logo, favicon)
+├── src/
+│   ├── app/            # Entry point, providers, router
+│   ├── components/
+│   │   ├── ui/         # shadcn/ui components
+│   │   ├── layout/     # Header, Footer, RootLayout, ContactCTA, PageBanner
+│   │   └── features/   # calendar/, events/, courses/, media/, registration/
+│   ├── pages/          # Route pages + admin/
+│   ├── lib/            # firebase.ts, firestore.ts, storage.ts, auth.ts
+│   ├── hooks/          # useEvents, useCourses, useMedia, useCalendar, etc.
+│   ├── types/          # TypeScript interfaces
+│   ├── utils/          # whatsapp, dates, calendar helpers
+│   └── mocks/          # MSW handlers + mock data
+├── functions/          # Firebase Cloud Functions
+├── docs/               # PRD, Design Doc, Implementation Plan
+└── j25medellin.pen     # Design spec (source of truth for UI)
 ```
 
 ## Branding
@@ -35,27 +47,10 @@ j25medellin/
 - Language: **Spanish only** (no i18n)
 - Theme: **Dark mode only**
 
-## Commands
-
-```bash
-pnpm dev              # Start frontend dev server
-pnpm dev:backend      # Start Strapi dev server
-pnpm dev:all          # Start both in parallel
-pnpm build            # Build frontend for production
-pnpm build:backend    # Build Strapi for production
-pnpm test             # Run frontend tests (Vitest)
-pnpm check            # Run Biome lint + format check
-pnpm check:fix        # Auto-fix Biome issues
-```
-
-## Before Committing
-
-Always run `pnpm check` before committing. If there are fixable issues, run `pnpm check:fix` first. Only the non-null assertion warning in `main.tsx` is expected.
-
 ## Design Tokens (from j25medellin.pen)
 
 ### Colors
-- Accent: `#4ADE80` (bright green), `#22C55E` (muted), `#16A34A1A` (dim/transparent)
+- Accent: `#4ADE80` (bright green), `#22C55E` (muted), `#16A34A1A` (dim/transparent), `#2D5A27` (dark)
 - Backgrounds: `#0A0A0A` (primary), `#141414` (surface), `#1A1A1A` (card), `#222222` (elevated)
 - Text: `#FAFAFA` (primary), `#A1A1AA` (secondary), `#71717A` (muted), `#3F3F46` (dim)
 - Borders: `#27272A` (primary), `#1E1E1E` (light)
@@ -69,32 +64,51 @@ Always run `pnpm check` before committing. If there are fixable issues, run `pnp
 - Tablet: 768px (`md:`)
 - Desktop: 1440px (`lg:`)
 
-## Content Types (Strapi)
+## Commands
 
-- **Event**: title, slug, description, date, location, image, tags, featured, requiresRegistration
-- **Course**: title, slug, description, image, tags, status (DRAFT/COMING_SOON/ACTIVE/COMPLETED/ARCHIVED)
-- **MediaContent**: title, slug, description, type (VIDEO/AUDIO/DOCUMENT), externalUrl, file, featured
-- **Registration**: fullName, whatsApp, email, event (relation), course (relation)
-- **SiteConfig** (single type): heroTitle, heroSubtitle, whatsappNumber, googleCalendarUrl, etc.
+```bash
+pnpm dev              # Start frontend dev server
+pnpm build            # Build frontend for production
+pnpm test             # Run tests (Vitest)
+pnpm check            # Run Biome lint + format check
+pnpm check:fix        # Auto-fix Biome issues
+```
+
+## Before Committing
+
+Always run `pnpm check` before committing. If there are fixable issues, run `pnpm check:fix` first.
 
 ## Key Architecture Decisions
 
-- **Google Calendar** is the source of truth for event dates. A Strapi proxy endpoint (`/api/calendar-proxy`) fetches the public iCal feed server-side to avoid CORS. Cache TTL: 30 min.
-- **No user auth** — admin-only via Strapi admin panel. The public site is fully open.
-- **Registration modal** saves to Strapi + sends confirmation email (Resend) to user + notification to admin.
-- **Media hosting**: YouTube (videos), Spotify (audios), Strapi media library (PDFs with in-app viewer via react-pdf).
+- **Google Calendar** is the source of truth for event dates. A Cloud Function proxy fetches the public iCal feed server-side to avoid CORS. Cache TTL: 30 min.
+- **No user auth** — admin-only via Firebase Auth. The public site is fully open.
+- **Registration modal** saves to Firestore + triggers Cloud Function to send confirmation email (Resend).
+- **Media hosting**: YouTube (videos), Spotify (audios), Firebase Storage (PDFs with react-pdf viewer).
 - **WhatsApp buttons**: Simple `wa.me` links with pre-filled messages. No API integration.
 - **PDF viewer**: Lazy-loaded via `React.lazy()` only on document detail pages (react-pdf is ~2MB).
+- **MSW**: Used for development without Firebase backend and for test suites.
+- **Images**: Stored as plain URL strings (Firebase Storage download URLs).
+- **Empty states**: Every feature has a meaningful empty state when no data exists.
+- **404 handling**: Media detail pages show "not found" when slug doesn't match. Global catch-all 404 page.
 
-## Deployment
+## Content Types (Firestore)
 
-- Frontend: Vercel or Netlify (free tier)
-- Backend: Railway (with UptimeRobot pinging every 5 min to prevent cold starts)
+- **Event**: title, slug, description, date, location, imageUrl, tags, featured, requiresRegistration
+- **Course**: title, slug, description, imageUrl, tags, status (DRAFT/COMING_SOON/ACTIVE/COMPLETED/ARCHIVED), capacity, enrolled
+- **CourseTopic**: title, description, tag, startDate, endDate, courseIds[]
+- **MediaContent**: title, slug, description, type (VIDEO/AUDIO/DOCUMENT), externalUrl, fileUrl, featured
+- **Registration**: fullName, whatsApp, email, eventId?, courseId?
+- **SiteConfig** (single doc at `settings/config`): heroTitle, heroSubtitle, whatsappNumber, googleCalendarUrl, etc.
 
 ## File Conventions
 
 - Components: PascalCase (`Button.tsx`, `EventCard.tsx`)
 - Hooks: camelCase with `use` prefix (`useEvents.ts`)
 - Utils: camelCase (`whatsapp.ts`, `dates.ts`)
-- Types: defined in `frontend/src/types/index.ts`
-- API layer: one file per resource in `frontend/src/api/`
+- Types: defined in `src/types/index.ts`
+- Firebase helpers: in `src/lib/`
+
+## Deployment
+
+- Frontend: Vercel
+- Backend: Firebase (Firestore, Storage, Cloud Functions)
