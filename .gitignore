@@ -22,6 +22,7 @@ build/
 # Firebase
 .firebase/
 firebase-debug.log
+*-firebase-adminsdk-*.json
 
 # Logs
 *.log
