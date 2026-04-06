@@ -85,3 +85,9 @@ h5,
 h6 {
   font-family: var(--font-display);
 }
+
+a[href],
+button:not(:disabled),
+[role="button"]:not(:disabled) {
+  cursor: pointer;
+}
