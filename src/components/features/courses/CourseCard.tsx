@@ -1,4 +1,4 @@
-import { Clock, MessageCircle, PlayCircle, Users } from 'lucide-react';
+import { Clock, MessageCircle, PlayCircle, Users, UserX } from 'lucide-react';
 import { Tag } from '@/components/ui/tag';
 import type { Course } from '@/types';
 import { buildWhatsAppUrl } from '@/utils/whatsapp';
@@ -23,6 +23,10 @@ export function CourseCard({
 
   const startDate = course.startDate ?? topicStartDate;
   const hasStarted = startDate ? new Date(startDate) <= new Date() : false;
+  const isFull =
+    course.capacity != null &&
+    course.enrolled != null &&
+    course.enrolled >= course.capacity;
 
   return (
     <div className="flex flex-col rounded-xl border border-border-light bg-bg-card">
@@ -98,6 +102,11 @@ export function CourseCard({
             <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-border bg-bg-elevated px-4 py-3 font-body text-sm font-medium text-text-muted">
               <PlayCircle className="size-4" />
               En curso
+            </div>
+          ) : isFull ? (
+            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-border bg-bg-elevated px-4 py-3 font-body text-sm font-medium text-text-muted">
+              <UserX className="size-4" />
+              Cupos completos
             </div>
           ) : onRegister ? (
             <button
