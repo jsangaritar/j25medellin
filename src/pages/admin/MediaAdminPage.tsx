@@ -32,9 +32,9 @@ import {
   deleteDocument,
   updateDocument,
 } from '@/lib/firestore';
-import type { MediaContent, MediaType } from '@/types';
+import { MEDIA_TYPE_LABELS, type MediaContent, type MediaType } from '@/types';
 
-const MEDIA_TYPES: MediaType[] = ['VIDEO', 'AUDIO', 'DOCUMENT'];
+const MEDIA_TYPES = Object.keys(MEDIA_TYPE_LABELS) as MediaType[];
 
 type MediaForm = Omit<MediaContent, 'id'>;
 
@@ -126,7 +126,7 @@ export function MediaAdminPage() {
             {media.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.title}</TableCell>
-                <TableCell>{item.type}</TableCell>
+                <TableCell>{MEDIA_TYPE_LABELS[item.type]}</TableCell>
                 <TableCell>{item.platform ?? '—'}</TableCell>
                 <TableCell>{item.featured ? 'Sí' : 'No'}</TableCell>
                 <TableCell>
@@ -200,7 +200,7 @@ export function MediaAdminPage() {
                   <SelectContent>
                     {MEDIA_TYPES.map((t) => (
                       <SelectItem key={t} value={t}>
-                        {t}
+                        {MEDIA_TYPE_LABELS[t]}
                       </SelectItem>
                     ))}
                   </SelectContent>

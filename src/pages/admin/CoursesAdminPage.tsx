@@ -32,15 +32,9 @@ import {
   deleteDocument,
   updateDocument,
 } from '@/lib/firestore';
-import type { Course, CourseStatus } from '@/types';
+import { COURSE_STATUS_LABELS, type Course, type CourseStatus } from '@/types';
 
-const STATUSES: CourseStatus[] = [
-  'DRAFT',
-  'COMING_SOON',
-  'ACTIVE',
-  'COMPLETED',
-  'ARCHIVED',
-];
+const STATUSES = Object.keys(COURSE_STATUS_LABELS) as CourseStatus[];
 
 type CourseForm = Omit<Course, 'id'>;
 
@@ -133,7 +127,7 @@ export function CoursesAdminPage() {
               <TableRow key={course.id}>
                 <TableCell>{course.lineNumber ?? '—'}</TableCell>
                 <TableCell className="font-medium">{course.title}</TableCell>
-                <TableCell>{course.status}</TableCell>
+                <TableCell>{COURSE_STATUS_LABELS[course.status]}</TableCell>
                 <TableCell>{course.capacity ?? '∞'}</TableCell>
                 <TableCell>
                   <div className="flex gap-1">
@@ -206,7 +200,7 @@ export function CoursesAdminPage() {
                   <SelectContent>
                     {STATUSES.map((s) => (
                       <SelectItem key={s} value={s}>
-                        {s}
+                        {COURSE_STATUS_LABELS[s]}
                       </SelectItem>
                     ))}
                   </SelectContent>

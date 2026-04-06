@@ -7,7 +7,21 @@ export type CourseStatus =
   | 'COMPLETED'
   | 'ARCHIVED';
 
+export const COURSE_STATUS_LABELS: Record<CourseStatus, string> = {
+  DRAFT: 'Borrador',
+  COMING_SOON: 'Próximamente',
+  ACTIVE: 'Activo',
+  COMPLETED: 'Completado',
+  ARCHIVED: 'Archivado',
+};
+
 export type MediaType = 'VIDEO' | 'AUDIO' | 'DOCUMENT';
+
+export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
+  VIDEO: 'Video',
+  AUDIO: 'Audio',
+  DOCUMENT: 'Documento',
+};
 
 // ── Content Types ──
 
