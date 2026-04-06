@@ -11,7 +11,7 @@ export function HeroSection({
   title,
   subtitle,
   imageUrl,
-  whatsappNumber = '573001234567',
+  whatsappNumber = '',
 }: HeroSectionProps) {
   return (
     <section className="relative h-[680px] w-full overflow-hidden max-md:h-[520px]">

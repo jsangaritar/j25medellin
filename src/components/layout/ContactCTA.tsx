@@ -1,6 +1,11 @@
 import { Mail, MessageCircle } from 'lucide-react';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { buildWhatsAppUrl } from '@/utils/whatsapp';
 
 export function ContactCTA() {
+  const { data: config } = useSiteConfig();
+  const whatsappUrl = buildWhatsAppUrl(config?.whatsappNumber ?? '');
+
   return (
     <section className="border-y border-border bg-bg-surface px-14 py-14 max-md:px-5 max-md:py-10">
       <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-5">
@@ -19,7 +24,7 @@ export function ContactCTA() {
 
         <div className="flex gap-3">
           <a
-            href="https://wa.me/573001234567"
+            href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 rounded-[10px] bg-accent-bright px-7 py-3.5 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"

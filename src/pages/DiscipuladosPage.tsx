@@ -40,7 +40,7 @@ export function DiscipuladosPage() {
                 <CourseCard
                   key={course.id}
                   course={course}
-                  whatsappNumber={config?.whatsappNumber ?? '573001234567'}
+                  whatsappNumber={config?.whatsappNumber ?? ''}
                   onRegister={setRegisterCourse}
                 />
               ))}

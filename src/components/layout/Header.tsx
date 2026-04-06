@@ -7,6 +7,8 @@ import {
   SheetContent,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { buildWhatsAppUrl } from '@/utils/whatsapp';
 
 const navLinks = [
   { label: 'Inicio', href: '/' },
@@ -18,6 +20,8 @@ const navLinks = [
 export function Header() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { data: config } = useSiteConfig();
+  const whatsappUrl = buildWhatsAppUrl(config?.whatsappNumber ?? '');
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg-primary/95 backdrop-blur-sm">
@@ -44,7 +48,7 @@ export function Header() {
         </nav>
 
         <a
-          href="https://wa.me/573001234567"
+          href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 rounded-lg bg-accent-bright px-3.5 py-2 font-body text-xs font-semibold text-bg-primary transition-opacity hover:opacity-90"
@@ -104,7 +108,7 @@ export function Header() {
             </nav>
             <div className="mt-6 px-3">
               <a
-                href="https://wa.me/573001234567"
+                href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-bright px-4 py-3 font-body text-sm font-semibold text-bg-primary"

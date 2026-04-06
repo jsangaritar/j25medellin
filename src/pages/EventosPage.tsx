@@ -35,7 +35,7 @@ export function EventosPage() {
             {featured && (
               <FeaturedEvent
                 event={featured}
-                whatsappNumber={config?.whatsappNumber ?? '573001234567'}
+                whatsappNumber={config?.whatsappNumber ?? ''}
               />
             )}
 
