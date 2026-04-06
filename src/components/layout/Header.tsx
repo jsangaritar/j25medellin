@@ -1,27 +1,27 @@
-import { Menu, MessageCircle, X } from 'lucide-react';
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Menu, MessageCircle, X } from "lucide-react";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Sheet,
   SheetClose,
   SheetContent,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { useSiteConfig } from '@/hooks/useSiteConfig';
-import { buildWhatsAppUrl } from '@/utils/whatsapp';
+} from "@/components/ui/sheet";
+import { useSiteConfig } from "@/hooks/useSiteConfig";
+import { buildWhatsAppUrl } from "@/utils/whatsapp";
 
 const navLinks = [
-  { label: 'Inicio', href: '/' },
-  { label: 'Discipulados', href: '/discipulados' },
-  { label: 'Media', href: '/media' },
-  { label: 'Eventos', href: '/eventos' },
+  { label: "Inicio", href: "/" },
+  { label: "Discipulados", href: "/discipulados" },
+  { label: "Media", href: "/media" },
+  { label: "Eventos", href: "/eventos" },
 ];
 
 export function Header() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const { data: config } = useSiteConfig();
-  const whatsappUrl = buildWhatsAppUrl(config?.whatsappNumber ?? '');
+  const whatsappUrl = buildWhatsAppUrl(config?.whatsappNumber ?? "");
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg-primary/95 backdrop-blur-sm">
@@ -38,8 +38,8 @@ export function Header() {
               to={link.href}
               className={`font-body text-[13px] transition-colors hover:text-text-primary ${
                 location.pathname === link.href
-                  ? 'font-semibold text-text-primary'
-                  : 'font-medium text-text-muted'
+                  ? "font-semibold text-text-primary"
+                  : "font-medium text-text-muted"
               }`}
             >
               {link.label}
@@ -61,7 +61,11 @@ export function Header() {
       {/* Mobile */}
       <div className="flex items-center justify-between px-5 py-3.5 md:hidden">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/j25-logo.svg" alt="J+" className="h-7 w-[68px]" />
+          <img
+            src="/j25-logo.svg"
+            alt="J+"
+            className="h-7 w-[68px] scale-150"
+          />
         </Link>
 
         <Sheet open={open} onOpenChange={setOpen}>
@@ -79,8 +83,7 @@ export function Header() {
             showCloseButton={false}
             className="w-[280px] border-border bg-bg-primary"
           >
-            <div className="flex items-center justify-between px-5 pt-4">
-              <img src="/j25-logo.svg" alt="J+" className="h-7 w-[68px]" />
+            <div className="flex items-center justify-end px-5 pt-4">
               <SheetClose asChild>
                 <button
                   type="button"
@@ -91,7 +94,7 @@ export function Header() {
                 </button>
               </SheetClose>
             </div>
-            <nav className="mt-8 flex flex-col gap-1 px-3">
+            <nav className="flex flex-col gap-1 px-3">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -99,8 +102,8 @@ export function Header() {
                   onClick={() => setOpen(false)}
                   className={`rounded-lg px-3 py-2.5 font-body text-sm transition-colors ${
                     location.pathname === link.href
-                      ? 'bg-bg-elevated font-semibold text-text-primary'
-                      : 'font-medium text-text-muted hover:bg-bg-surface hover:text-text-primary'
+                      ? "bg-bg-elevated font-semibold text-text-primary"
+                      : "font-medium text-text-muted hover:bg-bg-surface hover:text-text-primary"
                   }`}
                 >
                   {link.label}
