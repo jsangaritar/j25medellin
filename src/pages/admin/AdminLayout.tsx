@@ -1,50 +1,86 @@
-import { Outlet } from 'react-router-dom';
+import {
+  BookOpen,
+  Calendar,
+  Film,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Users,
+} from 'lucide-react';
+import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { signOut } from '@/lib/auth';
+import { cn } from '@/lib/utils';
+
+const navItems = [
+  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { label: 'Eventos', href: '/admin/events', icon: Calendar },
+  { label: 'Cursos', href: '/admin/courses', icon: BookOpen },
+  { label: 'Media', href: '/admin/media', icon: Film },
+  { label: 'Inscripciones', href: '/admin/registrations', icon: Users },
+  { label: 'Configuración', href: '/admin/settings', icon: Settings },
+];
 
 export function AdminLayout() {
-  // TODO: Auth guard — redirect to /admin/login if not authenticated
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg-primary">
+        <p className="text-text-muted">Cargando...</p>
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/admin/login" replace />;
+
   return (
     <div className="flex min-h-screen bg-bg-primary">
-      <aside className="w-56 border-r border-border bg-bg-surface p-4">
-        <p className="mb-4 font-display text-sm font-bold text-text-primary">
-          Admin J+
-        </p>
-        <nav className="flex flex-col gap-1 text-sm text-text-muted">
-          <a href="/admin" className="rounded px-3 py-2 hover:bg-bg-elevated">
-            Dashboard
-          </a>
-          <a
-            href="/admin/events"
-            className="rounded px-3 py-2 hover:bg-bg-elevated"
-          >
-            Eventos
-          </a>
-          <a
-            href="/admin/courses"
-            className="rounded px-3 py-2 hover:bg-bg-elevated"
-          >
-            Cursos
-          </a>
-          <a
-            href="/admin/media"
-            className="rounded px-3 py-2 hover:bg-bg-elevated"
-          >
-            Media
-          </a>
-          <a
-            href="/admin/registrations"
-            className="rounded px-3 py-2 hover:bg-bg-elevated"
-          >
-            Inscripciones
-          </a>
-          <a
-            href="/admin/settings"
-            className="rounded px-3 py-2 hover:bg-bg-elevated"
-          >
-            Configuración
-          </a>
+      <aside className="flex w-56 flex-col border-r border-border bg-bg-surface">
+        <div className="p-4">
+          <Link to="/admin">
+            <img src="/j25-logo.svg" alt="J+" className="h-7 w-[68px]" />
+          </Link>
+        </div>
+
+        <nav className="flex flex-1 flex-col gap-0.5 px-2">
+          {navItems.map((item) => {
+            const isActive =
+              item.href === '/admin'
+                ? location.pathname === '/admin'
+                : location.pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={cn(
+                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+                  isActive
+                    ? 'bg-bg-elevated font-semibold text-text-primary'
+                    : 'text-text-muted hover:bg-bg-elevated hover:text-text-primary',
+                )}
+              >
+                <item.icon className="size-4" />
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
+
+        <div className="border-t border-border p-2">
+          <button
+            type="button"
+            onClick={() => signOut()}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-text-muted transition-colors hover:bg-bg-elevated hover:text-text-primary"
+          >
+            <LogOut className="size-4" />
+            Cerrar sesión
+          </button>
+        </div>
       </aside>
-      <div className="flex-1 p-8">
+
+      <div className="flex-1 overflow-auto p-8 max-md:p-4">
         <Outlet />
       </div>
     </div>

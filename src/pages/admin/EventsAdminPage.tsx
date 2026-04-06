@@ -1,3 +1,261 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+import { useEvents } from '@/hooks/useEvents';
+import {
+  createDocument,
+  deleteDocument,
+  updateDocument,
+} from '@/lib/firestore';
+import type { Event } from '@/types';
+
+type EventForm = Omit<Event, 'id'>;
+
+const emptyForm: EventForm = {
+  title: '',
+  slug: '',
+  description: '',
+  date: '',
+  location: '',
+  imageUrl: '',
+  tags: [],
+  featured: false,
+  requiresRegistration: false,
+};
+
 export function EventsAdminPage() {
-  return <p className="text-text-muted">Events Admin — Próximamente</p>;
+  const { data: events = [] } = useEvents();
+  const queryClient = useQueryClient();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<Event | null>(null);
+  const [form, setForm] = useState<EventForm>(emptyForm);
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const data = {
+        ...form,
+        slug: form.slug || form.title.toLowerCase().replace(/\s+/g, '-'),
+        tags:
+          typeof form.tags === 'string'
+            ? (form.tags as string).split(',').map((t: string) => t.trim())
+            : form.tags,
+      };
+      if (editing) {
+        await updateDocument('events', editing.id, data);
+      } else {
+        await createDocument('events', data);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      setDialogOpen(false);
+      setEditing(null);
+      setForm(emptyForm);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteDocument('events', id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['events'] }),
+  });
+
+  function openCreate() {
+    setEditing(null);
+    setForm(emptyForm);
+    setDialogOpen(true);
+  }
+
+  function openEdit(event: Event) {
+    setEditing(event);
+    setForm({ ...event });
+    setDialogOpen(true);
+  }
+
+  return (
+    <div>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="font-display text-2xl font-bold text-text-primary">
+          Eventos
+        </h1>
+        <Button onClick={openCreate}>
+          <Plus className="mr-2 size-4" />
+          Crear evento
+        </Button>
+      </div>
+
+      <div className="rounded-lg border border-border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Título</TableHead>
+              <TableHead>Fecha</TableHead>
+              <TableHead>Lugar</TableHead>
+              <TableHead>Destacado</TableHead>
+              <TableHead className="w-24" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {events.map((event) => (
+              <TableRow key={event.id}>
+                <TableCell className="font-medium">{event.title}</TableCell>
+                <TableCell>
+                  {new Date(event.date).toLocaleDateString('es-CO')}
+                </TableCell>
+                <TableCell>{event.location}</TableCell>
+                <TableCell>{event.featured ? 'Sí' : 'No'}</TableCell>
+                <TableCell>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => openEdit(event)}
+                      className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
+                    >
+                      <Pencil className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteMutation.mutate(event.id)}
+                      className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-bg-card sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-text-primary">
+              {editing ? 'Editar evento' : 'Crear evento'}
+            </DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              saveMutation.mutate();
+            }}
+            className="flex flex-col gap-4"
+          >
+            <div className="space-y-2">
+              <Label>Título</Label>
+              <Input
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Descripción</Label>
+              <Textarea
+                value={form.description}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Fecha</Label>
+                <Input
+                  type="datetime-local"
+                  value={form.date ? form.date.slice(0, 16) : ''}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      date: new Date(e.target.value).toISOString(),
+                    })
+                  }
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Lugar</Label>
+                <Input
+                  value={form.location}
+                  onChange={(e) =>
+                    setForm({ ...form, location: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>URL de imagen</Label>
+              <Input
+                value={form.imageUrl ?? ''}
+                onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Tags (separados por coma)</Label>
+              <Input
+                value={
+                  Array.isArray(form.tags) ? form.tags.join(', ') : form.tags
+                }
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    tags: e.target.value as unknown as string[],
+                  })
+                }
+              />
+            </div>
+            <div className="flex gap-6">
+              <label className="flex items-center gap-2 text-sm text-text-secondary">
+                <input
+                  type="checkbox"
+                  checked={form.featured}
+                  onChange={(e) =>
+                    setForm({ ...form, featured: e.target.checked })
+                  }
+                  className="rounded"
+                />
+                Destacado
+              </label>
+              <label className="flex items-center gap-2 text-sm text-text-secondary">
+                <input
+                  type="checkbox"
+                  checked={form.requiresRegistration}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      requiresRegistration: e.target.checked,
+                    })
+                  }
+                  className="rounded"
+                />
+                Requiere inscripción
+              </label>
+            </div>
+            <Button type="submit" disabled={saveMutation.isPending}>
+              {saveMutation.isPending ? 'Guardando...' : 'Guardar'}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }
