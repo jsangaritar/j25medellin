@@ -10,8 +10,9 @@ Web app for "J+" (J+25 Medellin), a faith-based young adult community in Medelli
 - **Styling**: Tailwind CSS v4 + shadcn/ui (New York style)
 - **State**: TanStack Query v5 (server state), React useState (UI state)
 - **Routing**: React Router v7 (library mode)
-- **Backend**: Firebase (Firestore, Storage, Auth, Cloud Functions)
-- **Email**: Resend (via Cloud Function)
+- **Backend**: Firebase (Firestore, Storage, Auth) — Spark (free) plan only
+- **Serverless**: Vercel Serverless Functions (calendar proxy, registration + email)
+- **Email**: Resend (via Vercel Serverless Function)
 - **Mocking**: MSW (Mock Service Worker) for dev and tests
 - **Testing**: Vitest + React Testing Library + jsdom
 - **Linting/Formatting**: Biome 2.4
@@ -34,7 +35,7 @@ j25medellin/
 │   ├── types/          # TypeScript interfaces
 │   ├── utils/          # whatsapp, dates, calendar helpers
 │   └── mocks/          # MSW handlers + mock data
-├── functions/          # Firebase Cloud Functions
+├── api/                # Vercel Serverless Functions (calendar, register)
 ├── docs/               # PRD, Design Doc, Implementation Plan
 └── j25medellin.pen     # Design spec (source of truth for UI)
 ```
@@ -80,9 +81,10 @@ Always run `pnpm check` before committing. If there are fixable issues, run `pnp
 
 ## Key Architecture Decisions
 
-- **Google Calendar** is the source of truth for event dates. A Cloud Function proxy fetches the public iCal feed server-side to avoid CORS. Cache TTL: 30 min.
+- **Firebase Spark (free) plan only** — no Cloud Functions. Vercel Serverless Functions used instead.
+- **Google Calendar** is the source of truth for event dates. A Vercel serverless function (`/api/calendar`) fetches the public iCal feed server-side to avoid CORS. Cache TTL: 30 min.
 - **No user auth** — admin-only via Firebase Auth. The public site is fully open.
-- **Registration modal** saves to Firestore + triggers Cloud Function to send confirmation email (Resend).
+- **Registration** POST goes to `/api/register` (Vercel serverless), which writes to Firestore via firebase-admin and sends confirmation email (Resend).
 - **Media hosting**: YouTube (videos), Spotify (audios), Firebase Storage (PDFs with react-pdf viewer).
 - **WhatsApp buttons**: Simple `wa.me` links with pre-filled messages. No API integration.
 - **PDF viewer**: Lazy-loaded via `React.lazy()` only on document detail pages (react-pdf is ~2MB).

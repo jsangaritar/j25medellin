@@ -11,8 +11,8 @@
 | Database | Firestore |
 | Storage | Firebase Storage |
 | Auth | Firebase Auth (admin only) |
-| Functions | Firebase Cloud Functions (calendar proxy, email) |
-| Email | Resend (via Cloud Function) |
+| Functions | Vercel Serverless Functions (calendar proxy, email) |
+| Email | Resend (via Vercel Serverless Function) |
 | Icons | lucide-react |
 | Dates | date-fns |
 | PDF | react-pdf (lazy-loaded) |
@@ -70,13 +70,9 @@ j25medellin/
 │       ├── browser.ts          # MSW browser worker setup
 │       ├── data.ts             # Mock data fixtures
 │       └── server.ts           # MSW server for tests
-├── functions/                  # Firebase Cloud Functions
-│   ├── src/
-│   │   ├── index.ts
-│   │   ├── calendar-proxy.ts
-│   │   └── send-email.ts
-│   ├── package.json
-│   └── tsconfig.json
+├── api/                        # Vercel Serverless Functions
+│   ├── calendar.ts             # Google Calendar iCal proxy
+│   └── register.ts             # Registration + email via Resend
 ├── index.html
 ├── src/index.css               # Tailwind v4 + design tokens + shadcn CSS vars
 ├── vite.config.ts
@@ -184,16 +180,18 @@ service cloud.firestore {
 }
 ```
 
-## 7. Cloud Functions
+## 7. Serverless Functions (Vercel)
 
-1. **calendar-proxy** (HTTP): Fetches Google Calendar iCal URL → parses with `node-ical` → returns JSON. Caches in Firestore with 30-min TTL.
-2. **send-email** (Firestore onCreate trigger on `registrations`): Sends confirmation to user + notification to admin via Resend SDK.
+> Firebase Spark (free) plan does not support Cloud Functions. Vercel Serverless Functions are used instead — included free with Vercel hosting.
+
+1. **`api/calendar.ts`** (GET): Fetches Google Calendar iCal URL → parses with `node-ical` → returns JSON. In-memory cache with 30-min TTL via `Cache-Control` headers.
+2. **`api/register.ts`** (POST): Receives registration data, writes to Firestore via `firebase-admin` SDK (service account), sends confirmation email via Resend SDK.
 
 ## 8. Key Architecture Decisions
 
-- **Google Calendar** is the source of truth for event dates. A Cloud Function proxy fetches the public iCal feed server-side to avoid CORS. Cache TTL: 30 min.
+- **Google Calendar** is the source of truth for event dates. A Vercel serverless function (`/api/calendar`) fetches the public iCal feed server-side to avoid CORS. Cache TTL: 30 min via `Cache-Control: s-maxage=1800`.
 - **No user auth** — admin-only via Firebase Auth. The public site is fully open.
-- **Registration modal** saves to Firestore + triggers Cloud Function to send confirmation email (Resend) to user + notification to admin.
+- **Registration** saves to Firestore via `/api/register` serverless function, which also sends confirmation email (Resend) to user + notification to admin.
 - **Media hosting**: YouTube (videos), Spotify (audios), Firebase Storage (PDFs with in-app viewer via react-pdf).
 - **WhatsApp buttons**: Simple `wa.me` links with pre-filled messages. No API integration.
 - **PDF viewer**: Lazy-loaded via `React.lazy()` only on document detail pages (react-pdf is ~2MB).

@@ -161,19 +161,23 @@ Each phase is independently committable and reviewable.
 
 ---
 
-## Phase 9: Firebase Cloud Functions
+## Phase 9: Vercel Serverless Functions (replaces Firebase Cloud Functions)
 
-**Goal**: Server-side calendar proxy and email notifications.
+**Goal**: Server-side calendar proxy and email notifications using Vercel Serverless Functions (free tier).
 
-1. Set up `functions/` directory with TypeScript + Firebase Functions SDK
-2. Implement `calendar-proxy` — HTTP function that fetches iCal URL, parses with `node-ical`, caches in Firestore (30-min TTL)
-3. Implement `send-email` — Firestore `onCreate` trigger on `registrations`, sends confirmation via Resend to user + notification to admin
-4. Update `useCalendar` hook to call the Cloud Function endpoint
-5. Deploy functions
+> **Why not Firebase Cloud Functions?** The Spark (free) plan does not support Cloud Functions deployment. Since the frontend deploys to Vercel, we use Vercel's built-in serverless functions at zero cost.
 
-**Dependencies**: `firebase-functions`, `firebase-admin`, `node-ical`, `resend`
+1. Create `api/` directory at project root for Vercel serverless functions
+2. Implement `api/calendar.ts` — fetches Google Calendar iCal URL, parses with `node-ical`, returns JSON. Uses in-memory cache with 30-min TTL.
+3. Implement `api/register.ts` — receives registration data, writes to Firestore via Firebase Admin SDK, sends confirmation email via Resend
+4. Configure `firebase-admin` with service account env var for server-side Firestore access
+5. Update `useCalendar` hook to call `/api/calendar`
+6. Update `useRegistration` hook to POST to `/api/register` instead of direct Firestore write
+7. Add `vercel.json` with rewrites for SPA + API routes
 
-**Key files**: `functions/src/calendar-proxy.ts`, `functions/src/send-email.ts`
+**Dependencies** (devDependencies for API routes): `node-ical`, `resend`, `firebase-admin`
+
+**Key files**: `api/calendar.ts`, `api/register.ts`, `vercel.json`
 
 ---
 
