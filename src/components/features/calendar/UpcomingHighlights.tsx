@@ -1,14 +1,19 @@
 import { CalendarDays, Clock, MapPin } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { CalendarEvent } from '@/types';
 import { isUpcoming } from '@/utils/dates';
 
 interface UpcomingHighlightsProps {
   events: CalendarEvent[];
+  isLoading?: boolean;
 }
 
-export function UpcomingHighlights({ events }: UpcomingHighlightsProps) {
+export function UpcomingHighlights({
+  events,
+  isLoading = false,
+}: UpcomingHighlightsProps) {
   const upcoming = events
     .filter((e) => isUpcoming(e.start))
     .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
@@ -22,7 +27,13 @@ export function UpcomingHighlights({ events }: UpcomingHighlightsProps) {
         className="mb-6"
       />
 
-      {upcoming.length === 0 ? (
+      {isLoading ? (
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={`skel-${i}`} className="h-[76px] rounded-xl" />
+          ))}
+        </div>
+      ) : upcoming.length === 0 ? (
         <EmptyState
           icon={CalendarDays}
           title="Sin eventos próximos"

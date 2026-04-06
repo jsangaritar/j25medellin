@@ -2,6 +2,7 @@ import { isSameDay } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { SectionHeader } from '@/components/ui/section-header';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { CalendarEvent } from '@/types';
 import {
   buildCalendarGrid,
@@ -15,9 +16,13 @@ const DAY_LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
 interface MonthlyCalendarProps {
   events: CalendarEvent[];
+  isLoading?: boolean;
 }
 
-export function MonthlyCalendar({ events }: MonthlyCalendarProps) {
+export function MonthlyCalendar({
+  events,
+  isLoading = false,
+}: MonthlyCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const today = new Date();
   const grid = buildCalendarGrid(currentMonth, events);
@@ -63,15 +68,23 @@ export function MonthlyCalendar({ events }: MonthlyCalendarProps) {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-7 gap-1">
-        {grid.map((day) => (
-          <CalendarCell
-            key={day.date.toISOString()}
-            day={day}
-            isToday={isSameDay(day.date, today)}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: 35 }).map((_, i) => (
+            <Skeleton key={`skel-${i}`} className="h-12 max-md:h-10" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-7 gap-1">
+          {grid.map((day) => (
+            <CalendarCell
+              key={day.date.toISOString()}
+              day={day}
+              isToday={isSameDay(day.date, today)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

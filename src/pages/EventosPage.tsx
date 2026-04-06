@@ -4,11 +4,12 @@ import { FeaturedEvent } from '@/components/features/events/FeaturedEvent';
 import { PageBanner } from '@/components/layout/PageBanner';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useEvents } from '@/hooks/useEvents';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 
 export function EventosPage() {
-  const { data: events = [] } = useEvents();
+  const { data: events = [], isLoading } = useEvents();
   const { data: config } = useSiteConfig();
 
   const featured = events.find((e) => e.featured);
@@ -23,7 +24,16 @@ export function EventosPage() {
       />
 
       <section className="mx-auto max-w-[1440px] px-14 py-16 max-md:px-5 max-md:py-10">
-        {events.length === 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col gap-12">
+            <Skeleton className="h-[300px] rounded-2xl" />
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={`skel-${i}`} className="h-[340px] rounded-xl" />
+              ))}
+            </div>
+          </div>
+        ) : events.length === 0 ? (
           <EmptyState
             icon={CalendarDays}
             title="Sin eventos"
@@ -31,15 +41,12 @@ export function EventosPage() {
           />
         ) : (
           <div className="flex flex-col gap-12">
-            {/* Featured event */}
             {featured && (
               <FeaturedEvent
                 event={featured}
                 whatsappNumber={config?.whatsappNumber ?? ''}
               />
             )}
-
-            {/* Upcoming events grid */}
             {upcoming.length > 0 && (
               <div>
                 <SectionHeader

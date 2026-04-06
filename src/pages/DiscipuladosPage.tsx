@@ -5,12 +5,13 @@ import { QuarterlyBanner } from '@/components/features/courses/QuarterlyBanner';
 import { RegistrationModal } from '@/components/features/registration/RegistrationModal';
 import { PageBanner } from '@/components/layout/PageBanner';
 import { EmptyState } from '@/components/ui/empty-state';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useCourseTopic } from '@/hooks/useCourses';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import type { Course } from '@/types';
 
 export function DiscipuladosPage() {
-  const { data: topic } = useCourseTopic();
+  const { data: topic, isLoading } = useCourseTopic();
   const { data: config } = useSiteConfig();
   const [registerCourse, setRegisterCourse] = useState<Course | null>(null);
 
@@ -25,7 +26,16 @@ export function DiscipuladosPage() {
       />
 
       <section className="mx-auto max-w-[1440px] px-14 py-16 max-md:px-5 max-md:py-10">
-        {!topic ? (
+        {isLoading ? (
+          <div className="flex flex-col gap-10">
+            <Skeleton className="h-[160px] rounded-2xl" />
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={`skel-${i}`} className="h-[360px] rounded-xl" />
+              ))}
+            </div>
+          </div>
+        ) : !topic ? (
           <EmptyState
             icon={BookOpen}
             title="Sin discipulados activos"
@@ -34,7 +44,6 @@ export function DiscipuladosPage() {
         ) : (
           <div className="flex flex-col gap-10">
             <QuarterlyBanner topic={topic} />
-
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {courses.map((course) => (
                 <CourseCard

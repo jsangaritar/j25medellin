@@ -1,10 +1,12 @@
 import { MessageCircle } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface HeroSectionProps {
-  title: string;
-  subtitle: string;
+  title?: string;
+  subtitle?: string;
   imageUrl?: string;
   whatsappNumber?: string;
+  isLoading?: boolean;
 }
 
 export function HeroSection({
@@ -12,16 +14,19 @@ export function HeroSection({
   subtitle,
   imageUrl,
   whatsappNumber = '',
+  isLoading = false,
 }: HeroSectionProps) {
   return (
     <section className="relative h-[680px] w-full overflow-hidden max-md:h-[520px]">
-      {/* Background image */}
-      {imageUrl && (
+      {/* Background — image or default gradient */}
+      {imageUrl ? (
         <img
           src={imageUrl}
           alt=""
           className="absolute inset-0 size-full object-cover"
         />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-accent-dark via-bg-primary to-bg-surface" />
       )}
 
       {/* Gradient overlay */}
@@ -38,28 +43,40 @@ export function HeroSection({
             </span>
           </div>
 
-          {/* Title */}
-          <h1 className="whitespace-pre-line font-display text-[56px] font-extrabold leading-[1.05] tracking-[-2px] text-text-primary max-md:text-[32px] max-md:tracking-[-1px]">
-            {title}
-          </h1>
+          {isLoading ? (
+            <>
+              <Skeleton className="h-[180px] w-[580px] max-md:h-[100px] max-md:w-full" />
+              <Skeleton className="h-[54px] w-[420px] max-md:w-full" />
+              <Skeleton className="h-[50px] w-[160px]" />
+            </>
+          ) : (
+            <>
+              {/* Title */}
+              <h1 className="whitespace-pre-line font-display text-[56px] font-extrabold leading-[1.05] tracking-[-2px] text-text-primary max-md:text-[32px] max-md:tracking-[-1px]">
+                {title}
+              </h1>
 
-          {/* Subtitle */}
-          <p className="max-w-[520px] whitespace-pre-line font-body text-[17px] leading-[1.6] text-text-secondary max-md:text-[15px]">
-            {subtitle}
-          </p>
+              {/* Subtitle */}
+              <p className="max-w-[520px] whitespace-pre-line font-body text-[17px] leading-[1.6] text-text-secondary max-md:text-[15px]">
+                {subtitle}
+              </p>
 
-          {/* CTA */}
-          <div className="flex gap-3">
-            <a
-              href={`https://wa.me/${whatsappNumber}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-[10px] bg-accent-bright px-7 py-3.5 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
-            >
-              Contáctanos
-              <MessageCircle className="size-4" />
-            </a>
-          </div>
+              {/* CTA */}
+              {whatsappNumber && (
+                <div className="flex gap-3">
+                  <a
+                    href={`https://wa.me/${whatsappNumber}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-[10px] bg-accent-bright px-7 py-3.5 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
+                  >
+                    Contáctanos
+                    <MessageCircle className="size-4" />
+                  </a>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </section>
