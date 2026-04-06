@@ -24,7 +24,10 @@ export function LoginPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-bg-primary">
-        <p className="text-text-muted">Cargando...</p>
+        <div className="w-full max-w-sm space-y-6">
+          <div className="mx-auto h-10 w-24 animate-pulse rounded bg-bg-elevated" />
+          <div className="h-[280px] animate-pulse rounded-xl bg-bg-card" />
+        </div>
       </div>
     );
   }

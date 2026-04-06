@@ -76,8 +76,16 @@ const SiteConfigPage = lazy(() =>
 
 function Loading() {
   return (
-    <div className="flex items-center justify-center py-32">
-      <p className="text-text-muted">Cargando...</p>
+    <div className="mx-auto max-w-[1440px] px-14 py-16 max-md:px-5 max-md:py-10">
+      <div className="flex flex-col gap-6">
+        <div className="h-8 w-48 animate-pulse rounded-md bg-bg-elevated" />
+        <div className="h-5 w-96 animate-pulse rounded-md bg-bg-elevated max-md:w-full" />
+        <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="h-[300px] animate-pulse rounded-xl bg-bg-elevated" />
+          <div className="h-[300px] animate-pulse rounded-xl bg-bg-elevated" />
+          <div className="h-[300px] animate-pulse rounded-xl bg-bg-elevated" />
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { ArrowLeft } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { ContentCard } from '@/components/features/media/ContentCard';
+import { MediaDetailSkeleton } from '@/components/features/media/MediaDetailSkeleton';
 import { MediaNotFound } from '@/components/features/media/MediaNotFound';
 import { Tag } from '@/components/ui/tag';
 import { useMedia, useMediaBySlug } from '@/hooks/useMedia';
@@ -10,13 +11,7 @@ export function VideoDetailPage() {
   const { data: item, isLoading } = useMediaBySlug(slug);
   const { data: allMedia = [] } = useMedia({ type: 'VIDEO' });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-32">
-        <p className="text-text-muted">Cargando...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <MediaDetailSkeleton />;
 
   if (!item) return <MediaNotFound />;
 

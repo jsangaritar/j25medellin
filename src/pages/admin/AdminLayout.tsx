@@ -27,8 +27,21 @@ export function AdminLayout() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-bg-primary">
-        <p className="text-text-muted">Cargando...</p>
+      <div className="flex min-h-screen bg-bg-primary">
+        <div className="w-56 border-r border-border bg-bg-surface p-4">
+          <div className="mb-6 h-7 w-[68px] animate-pulse rounded bg-bg-elevated" />
+          <div className="flex flex-col gap-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-9 animate-pulse rounded-lg bg-bg-elevated"
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex-1 p-8">
+          <div className="h-8 w-40 animate-pulse rounded-md bg-bg-elevated" />
+        </div>
       </div>
     );
   }
