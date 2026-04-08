@@ -3,6 +3,7 @@ import {
   getAllCourseTopics,
   getCourses,
   getCourseTopic,
+  getTopics,
 } from '@/lib/firestore';
 
 export function useCourses(filters?: { status?: string[] }) {
@@ -23,5 +24,12 @@ export function useAllCourseTopics() {
   return useQuery({
     queryKey: ['courseTopics', 'all'],
     queryFn: getAllCourseTopics,
+  });
+}
+
+export function useTopics() {
+  return useQuery({
+    queryKey: ['topics'],
+    queryFn: getTopics,
   });
 }

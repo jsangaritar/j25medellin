@@ -26,7 +26,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-import { useCourses } from '@/hooks/useCourses';
+import { useCourses, useTopics } from '@/hooks/useCourses';
 import {
   createDocument,
   deleteDocument,
@@ -49,10 +49,12 @@ const emptyForm: CourseForm = {
   lineNumber: undefined,
   accentColor: '#4ADE80',
   capacity: 25,
+  topicId: '',
 };
 
 export function CoursesAdminPage() {
   const { data: courses = [] } = useCourses();
+  const { data: topics = [] } = useTopics();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Course | null>(null);
@@ -68,14 +70,36 @@ export function CoursesAdminPage() {
             ? (form.tags as string).split(',').map((t: string) => t.trim())
             : form.tags,
       };
+      let courseId: string;
       if (editing) {
-        await updateDocument('courses', editing.id, data);
+        courseId = editing.id;
+        await updateDocument('courses', courseId, data);
+        // Remove from old topic if topic changed
+        if (editing.topicId && editing.topicId !== form.topicId) {
+          const oldTopic = topics.find((t) => t.id === editing.topicId);
+          if (oldTopic) {
+            await updateDocument('courseTopics', oldTopic.id, {
+              courseIds: oldTopic.courseIds.filter((id) => id !== courseId),
+            });
+          }
+        }
       } else {
-        await createDocument('courses', data);
+        courseId = await createDocument('courses', data);
+      }
+      // Add to new topic's courseIds
+      if (form.topicId) {
+        const topic = topics.find((t) => t.id === form.topicId);
+        if (topic && !topic.courseIds.includes(courseId)) {
+          await updateDocument('courseTopics', topic.id, {
+            courseIds: [...topic.courseIds, courseId],
+          });
+        }
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['topics'] });
+      queryClient.invalidateQueries({ queryKey: ['courseTopics'] });
       setDialogOpen(false);
       setEditing(null);
       setForm(emptyForm);
@@ -117,6 +141,7 @@ export function CoursesAdminPage() {
             <TableRow>
               <TableHead>Línea</TableHead>
               <TableHead>Título</TableHead>
+              <TableHead>Tema</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead>Cupos</TableHead>
               <TableHead className="w-24" />
@@ -127,6 +152,9 @@ export function CoursesAdminPage() {
               <TableRow key={course.id}>
                 <TableCell>{course.lineNumber ?? '—'}</TableCell>
                 <TableCell className="font-medium">{course.title}</TableCell>
+                <TableCell>
+                  {topics.find((t) => t.id === course.topicId)?.title ?? '—'}
+                </TableCell>
                 <TableCell>{COURSE_STATUS_LABELS[course.status]}</TableCell>
                 <TableCell>{course.capacity ?? '∞'}</TableCell>
                 <TableCell>
@@ -184,6 +212,25 @@ export function CoursesAdminPage() {
                 }
                 rows={3}
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Tema</Label>
+              <Select
+                value={form.topicId}
+                onValueChange={(v) => setForm({ ...form, topicId: v })}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar tema" />
+                </SelectTrigger>
+                <SelectContent>
+                  {topics.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

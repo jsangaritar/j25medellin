@@ -17,12 +17,12 @@ import {
 import type {
   CalendarEvent,
   Course,
-  CourseTopic,
   Event,
   MediaContent,
   MediaType,
   RegistrationInput,
   SiteConfig,
+  Topic,
 } from '@/types';
 import { db } from './firebase';
 
@@ -81,7 +81,7 @@ export async function getCourseBySlug(slug: string): Promise<Course | null> {
   return snapshot.empty ? null : queryDocToData<Course>(snapshot.docs[0]);
 }
 
-async function populateTopicCourses(topic: CourseTopic): Promise<CourseTopic> {
+async function populateTopicCourses(topic: Topic): Promise<Topic> {
   if (!topic.courseIds?.length) return topic;
   const courseDocs = await Promise.all(
     topic.courseIds.map((id) => getDoc(doc(db, 'courses', id))),
@@ -92,19 +92,25 @@ async function populateTopicCourses(topic: CourseTopic): Promise<CourseTopic> {
   return topic;
 }
 
-export async function getCourseTopic(): Promise<CourseTopic | null> {
+export async function getCourseTopic(): Promise<Topic | null> {
   const now = new Date().toISOString();
   const q = query(collection(db, 'courseTopics'), where('endDate', '>=', now));
   const snapshot = await getDocs(q);
   if (snapshot.empty) return null;
-  return populateTopicCourses(queryDocToData<CourseTopic>(snapshot.docs[0]));
+  return populateTopicCourses(queryDocToData<Topic>(snapshot.docs[0]));
 }
 
-export async function getAllCourseTopics(): Promise<CourseTopic[]> {
+export async function getAllCourseTopics(): Promise<Topic[]> {
   const q = query(collection(db, 'courseTopics'));
   const snapshot = await getDocs(q);
-  const topics = snapshot.docs.map(queryDocToData<CourseTopic>);
+  const topics = snapshot.docs.map(queryDocToData<Topic>);
   return Promise.all(topics.map(populateTopicCourses));
+}
+
+export async function getTopics(): Promise<Topic[]> {
+  const q = query(collection(db, 'courseTopics'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(queryDocToData<Topic>);
 }
 
 // ── Media ──

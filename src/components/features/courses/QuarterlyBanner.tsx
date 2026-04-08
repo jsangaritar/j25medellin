@@ -1,7 +1,7 @@
-import type { CourseTopic } from '@/types';
+import type { Topic } from '@/types';
 
 interface QuarterlyBannerProps {
-  topic: CourseTopic;
+  topic: Topic;
 }
 
 export function QuarterlyBanner({ topic }: QuarterlyBannerProps) {

@@ -10,9 +10,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAllCourseTopics } from '@/hooks/useCourses';
 import { useEnrollments } from '@/hooks/useEnrollments';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
-import type { Course, CourseTopic } from '@/types';
+import type { Course, Topic } from '@/types';
 
-function isCurrentTopic(topic: CourseTopic): boolean {
+function isCurrentTopic(topic: Topic): boolean {
   const now = new Date();
   return new Date(topic.endDate) >= now;
 }

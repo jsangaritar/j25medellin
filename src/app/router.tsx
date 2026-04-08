@@ -53,6 +53,11 @@ const EventsAdminPage = lazy(() =>
     default: m.EventsAdminPage,
   })),
 );
+const TopicsAdminPage = lazy(() =>
+  import('@/pages/admin/TopicsAdminPage').then((m) => ({
+    default: m.TopicsAdminPage,
+  })),
+);
 const CoursesAdminPage = lazy(() =>
   import('@/pages/admin/CoursesAdminPage').then((m) => ({
     default: m.CoursesAdminPage,
@@ -169,6 +174,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'events', element: <EventsAdminPage /> },
+      { path: 'topics', element: <TopicsAdminPage /> },
       { path: 'courses', element: <CoursesAdminPage /> },
       { path: 'media', element: <MediaAdminPage /> },
       { path: 'registrations', element: <RegistrationsPage /> },

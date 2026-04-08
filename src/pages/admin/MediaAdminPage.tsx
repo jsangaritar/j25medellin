@@ -26,6 +26,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
+import { useCourses, useTopics } from '@/hooks/useCourses';
 import { useMedia } from '@/hooks/useMedia';
 import {
   createDocument,
@@ -53,6 +54,8 @@ const emptyForm: MediaForm = {
 
 export function MediaAdminPage() {
   const { data: media = [] } = useMedia();
+  const { data: topics = [] } = useTopics();
+  const { data: courses = [] } = useCourses();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<MediaContent | null>(null);
@@ -249,6 +252,53 @@ export function MediaAdminPage() {
                   })
                 }
               />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Tema</Label>
+                <Select
+                  value={form.topicId ?? '_none'}
+                  onValueChange={(v) =>
+                    setForm({ ...form, topicId: v === '_none' ? undefined : v })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sin tema" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_none">Sin tema</SelectItem>
+                    {topics.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Curso</Label>
+                <Select
+                  value={form.courseId ?? '_none'}
+                  onValueChange={(v) =>
+                    setForm({
+                      ...form,
+                      courseId: v === '_none' ? undefined : v,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sin curso" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_none">Sin curso</SelectItem>
+                    {courses.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <label className="flex items-center gap-2 text-sm text-text-secondary">
               <input

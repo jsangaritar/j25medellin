@@ -57,9 +57,10 @@ export interface Course {
   lineNumber?: number;
   accentColor?: string;
   capacity?: number;
+  topicId: string;
 }
 
-export interface CourseTopic {
+export interface Topic {
   id: string;
   title: string;
   description: string;
@@ -69,6 +70,9 @@ export interface CourseTopic {
   courseIds: string[];
   courses?: Course[]; // populated client-side
 }
+
+/** @deprecated Use Topic instead */
+export type CourseTopic = Topic;
 
 export interface MediaContent {
   id: string;
@@ -83,6 +87,8 @@ export interface MediaContent {
   featured: boolean;
   episodeCount?: number;
   platform?: string;
+  topicId?: string;
+  courseId?: string;
 }
 
 // ── Registration ──

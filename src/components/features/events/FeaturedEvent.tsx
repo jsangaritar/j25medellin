@@ -47,10 +47,22 @@ export function FeaturedEvent({ event, whatsappNumber }: FeaturedEventProps) {
               <Calendar className="size-4" />
               {formatEventDate(event.date)}
             </span>
-            <span className="flex items-center gap-2">
-              <MapPin className="size-4" />
-              {event.location}
-            </span>
+            {event.location === 'Casa Sobre la Roca' ? (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Casa Sobre la Roca Medellín')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 transition-colors hover:text-accent-bright"
+              >
+                <MapPin className="size-4" />
+                {event.location}
+              </a>
+            ) : (
+              <span className="flex items-center gap-2">
+                <MapPin className="size-4" />
+                {event.location}
+              </span>
+            )}
           </div>
 
           {event.requiresRegistration && (

@@ -2,6 +2,7 @@ import {
   BookOpen,
   Calendar,
   Film,
+  FolderOpen,
   LayoutDashboard,
   LogOut,
   Settings,
@@ -15,6 +16,7 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { label: 'Eventos', href: '/admin/events', icon: Calendar },
+  { label: 'Temas', href: '/admin/topics', icon: FolderOpen },
   { label: 'Cursos', href: '/admin/courses', icon: BookOpen },
   { label: 'Media', href: '/admin/media', icon: Film },
   { label: 'Inscripciones', href: '/admin/registrations', icon: Users },
