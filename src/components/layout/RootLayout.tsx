@@ -20,7 +20,7 @@ function ScrollToTop() {
 
 export function RootLayout() {
   return (
-    <div className="flex min-h-screen flex-col bg-bg-primary">
+    <div className="flex min-h-dvh flex-col bg-bg-primary">
       <ScrollToTop />
       <Header />
       <main className="flex-1">
