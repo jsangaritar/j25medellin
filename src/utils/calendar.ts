@@ -9,18 +9,15 @@ import {
   startOfWeek,
   subMonths,
 } from 'date-fns';
-import type { CalendarEvent } from '@/types';
+import type { Event } from '@/types';
 
 export interface CalendarDay {
   date: Date;
   isCurrentMonth: boolean;
-  events: CalendarEvent[];
+  events: Event[];
 }
 
-export function buildCalendarGrid(
-  month: Date,
-  events: CalendarEvent[],
-): CalendarDay[] {
+export function buildCalendarGrid(month: Date, events: Event[]): CalendarDay[] {
   const monthStart = startOfMonth(month);
   const monthEnd = endOfMonth(month);
   const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 }); // Monday
@@ -32,8 +29,8 @@ export function buildCalendarGrid(
     date,
     isCurrentMonth: isSameMonth(date, month),
     events: events.filter((event) => {
-      const eventStart = new Date(event.start);
-      return isSameDay(date, eventStart);
+      const eventDate = new Date(event.date);
+      return isSameDay(date, eventDate);
     }),
   }));
 }

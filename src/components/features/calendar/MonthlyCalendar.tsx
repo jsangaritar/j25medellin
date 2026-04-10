@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { CalendarEvent } from '@/types';
+import type { Event } from '@/types';
 import {
   buildCalendarGrid,
   getNextMonth,
@@ -15,7 +15,7 @@ import { CalendarCell } from './CalendarCell';
 const DAY_LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
 interface MonthlyCalendarProps {
-  events: CalendarEvent[];
+  events: Event[];
   isLoading?: boolean;
 }
 

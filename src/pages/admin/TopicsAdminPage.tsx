@@ -147,7 +147,7 @@ export function TopicsAdminPage() {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-bg-card sm:max-w-lg">
+        <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-bg-elevated shadow-[0_8px_30px_rgba(0,0,0,0.5)] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-text-primary">
               {editing ? 'Editar tema' : 'Crear tema'}
@@ -161,7 +161,9 @@ export function TopicsAdminPage() {
             className="flex flex-col gap-4"
           >
             <div className="space-y-2">
-              <Label>Título</Label>
+              <Label>
+                Título<span className="text-destructive">*</span>
+              </Label>
               <Input
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
@@ -179,7 +181,9 @@ export function TopicsAdminPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Etiqueta</Label>
+              <Label>
+                Etiqueta<span className="text-destructive">*</span>
+              </Label>
               <Input
                 value={form.tag}
                 onChange={(e) => setForm({ ...form, tag: e.target.value })}
@@ -189,7 +193,9 @@ export function TopicsAdminPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Fecha inicio</Label>
+                <Label>
+                  Fecha inicio<span className="text-destructive">*</span>
+                </Label>
                 <Input
                   type="date"
                   value={form.startDate ? form.startDate.slice(0, 10) : ''}
@@ -205,7 +211,9 @@ export function TopicsAdminPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Fecha fin</Label>
+                <Label>
+                  Fecha fin<span className="text-destructive">*</span>
+                </Label>
                 <Input
                   type="date"
                   value={form.endDate ? form.endDate.slice(0, 10) : ''}

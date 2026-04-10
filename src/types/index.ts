@@ -15,6 +15,13 @@ export const COURSE_STATUS_LABELS: Record<CourseStatus, string> = {
   ARCHIVED: 'Archivado',
 };
 
+export type EventType = 'j+' | 'church';
+
+export const EVENT_TYPE_LABELS: Record<EventType, string> = {
+  'j+': 'J+',
+  church: 'Iglesia',
+};
+
 export type MediaType = 'VIDEO' | 'AUDIO' | 'DOCUMENT';
 
 export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
@@ -39,6 +46,7 @@ export interface Event {
   requiresRegistration: boolean;
   whatsappMessage?: string;
   googleCalendarEventId?: string;
+  eventType: EventType;
 }
 
 export interface Course {
@@ -121,14 +129,4 @@ export interface SiteConfig {
   instagramUrl: string;
   youtubeUrl: string;
   contactEmail: string;
-}
-
-// ── Calendar ──
-
-export interface CalendarEvent {
-  id: string;
-  title: string;
-  start: string; // ISO string
-  end: string;
-  description?: string;
 }

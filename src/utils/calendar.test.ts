@@ -1,5 +1,22 @@
 import { describe, expect, it } from 'vitest';
+import type { Event } from '@/types';
 import { buildCalendarGrid, getNextMonth, getPreviousMonth } from './calendar';
+
+function makeEvent(overrides: Partial<Event> & { date: string }): Event {
+  return {
+    id: '1',
+    title: 'Test',
+    slug: 'test',
+    description: '',
+    location: '',
+    imageUrl: '',
+    tags: [],
+    featured: false,
+    requiresRegistration: false,
+    eventType: 'j+',
+    ...overrides,
+  };
+}
 
 describe('buildCalendarGrid', () => {
   it('returns 35 or 42 days covering full weeks', () => {
@@ -16,12 +33,10 @@ describe('buildCalendarGrid', () => {
 
   it('attaches events to matching days', () => {
     const events = [
-      {
-        id: '1',
-        title: 'Test',
-        start: '2026-04-15T19:00:00.000Z',
-        end: '2026-04-15T21:00:00.000Z',
-      },
+      makeEvent({
+        date: '2026-04-15T19:00:00.000Z',
+        endDate: '2026-04-15T21:00:00.000Z',
+      }),
     ];
     const grid = buildCalendarGrid(new Date(2026, 3, 1), events);
     const dayWithEvent = grid.find(

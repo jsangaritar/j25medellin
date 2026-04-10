@@ -47,9 +47,9 @@ export function FeaturedEvent({ event, whatsappNumber }: FeaturedEventProps) {
               <Calendar className="size-4" />
               {formatEventDate(event.date)}
             </span>
-            {event.location === 'Casa Sobre la Roca' ? (
+            {event.location === 'Casa Sobre la Roca - Medellín' ? (
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Casa Sobre la Roca Medellín')}`}
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Casa Sobre la Roca - Medellín')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 transition-colors hover:text-accent-bright"

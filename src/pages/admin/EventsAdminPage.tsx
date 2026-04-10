@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Calendar, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +10,13 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -25,7 +32,8 @@ import {
   deleteDocument,
   updateDocument,
 } from '@/lib/firestore';
-import type { Event } from '@/types';
+import { syncCalendarEvents } from '@/lib/sync-calendar';
+import type { Event, EventType } from '@/types';
 
 type EventForm = Omit<Event, 'id'>;
 
@@ -34,11 +42,13 @@ const emptyForm: EventForm = {
   slug: '',
   description: '',
   date: '',
-  location: 'Casa Sobre la Roca',
+  endDate: '',
+  location: 'Casa Sobre la Roca - Medellín',
   imageUrl: '',
   tags: [],
   featured: false,
   requiresRegistration: false,
+  eventType: 'church',
 };
 
 export function EventsAdminPage() {
@@ -47,6 +57,7 @@ export function EventsAdminPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
   const [form, setForm] = useState<EventForm>(emptyForm);
+  const [syncResult, setSyncResult] = useState<string | null>(null);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -77,6 +88,21 @@ export function EventsAdminPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['events'] }),
   });
 
+  const syncMutation = useMutation({
+    mutationFn: syncCalendarEvents,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      setSyncResult(
+        `Sincronizado: ${data.created} creados, ${data.updated} actualizados de ${data.total} eventos`,
+      );
+      setTimeout(() => setSyncResult(null), 5000);
+    },
+    onError: (error) => {
+      setSyncResult(`Error: ${error.message}`);
+      setTimeout(() => setSyncResult(null), 5000);
+    },
+  });
+
   function openCreate() {
     setEditing(null);
     setForm(emptyForm);
@@ -95,17 +121,42 @@ export function EventsAdminPage() {
         <h1 className="font-display text-2xl font-bold text-text-primary">
           Eventos
         </h1>
-        <Button onClick={openCreate}>
-          <Plus className="mr-2 size-4" />
-          Crear evento
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => syncMutation.mutate()}
+            disabled={syncMutation.isPending}
+          >
+            <RefreshCw
+              className={`mr-2 size-4 ${syncMutation.isPending ? 'animate-spin' : ''}`}
+            />
+            {syncMutation.isPending ? 'Sincronizando...' : 'Sincronizar'}
+          </Button>
+          <Button onClick={openCreate}>
+            <Plus className="mr-2 size-4" />
+            Crear evento
+          </Button>
+        </div>
       </div>
+
+      {syncResult && (
+        <div
+          className={`mb-4 rounded-lg border px-4 py-3 text-sm ${
+            syncResult.startsWith('Error')
+              ? 'border-destructive/50 bg-destructive/10 text-destructive'
+              : 'border-accent-bright/50 bg-accent-dim text-accent-bright'
+          }`}
+        >
+          {syncResult}
+        </div>
+      )}
 
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Título</TableHead>
+              <TableHead>Tipo</TableHead>
               <TableHead>Fecha</TableHead>
               <TableHead>Lugar</TableHead>
               <TableHead>Destacado</TableHead>
@@ -113,40 +164,61 @@ export function EventsAdminPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {events.map((event) => (
-              <TableRow key={event.id}>
-                <TableCell className="font-medium">{event.title}</TableCell>
-                <TableCell>
-                  {new Date(event.date).toLocaleDateString('es-CO')}
-                </TableCell>
-                <TableCell>{event.location}</TableCell>
-                <TableCell>{event.featured ? 'Sí' : 'No'}</TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => openEdit(event)}
-                      className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
+            {events.map((event) => {
+              const type = event.eventType ?? 'j+';
+              return (
+                <TableRow key={event.id}>
+                  <TableCell className="font-medium">
+                    <span className="flex items-center gap-2">
+                      {event.title}
+                      {event.googleCalendarEventId && (
+                        <Calendar className="size-3.5 text-accent-muted" />
+                      )}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                        type === 'j+'
+                          ? 'bg-accent-dim text-accent-bright'
+                          : 'bg-bg-elevated text-text-muted'
+                      }`}
                     >
-                      <Pencil className="size-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => deleteMutation.mutate(event.id)}
-                      className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                      {type === 'j+' ? 'J+' : 'Iglesia'}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(event.date).toLocaleDateString('es-CO')}
+                  </TableCell>
+                  <TableCell>{event.location}</TableCell>
+                  <TableCell>{event.featured ? 'Sí' : 'No'}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => openEdit(event)}
+                        className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
+                      >
+                        <Pencil className="size-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteMutation.mutate(event.id)}
+                        className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-bg-card sm:max-w-lg">
+        <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-bg-elevated shadow-[0_8px_30px_rgba(0,0,0,0.5)] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-text-primary">
               {editing ? 'Editar evento' : 'Crear evento'}
@@ -160,7 +232,9 @@ export function EventsAdminPage() {
             className="flex flex-col gap-4"
           >
             <div className="space-y-2">
-              <Label>Título</Label>
+              <Label>
+                Título<span className="text-destructive">*</span>
+              </Label>
               <Input
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
@@ -179,7 +253,9 @@ export function EventsAdminPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Fecha</Label>
+                <Label>
+                  Fecha inicio<span className="text-destructive">*</span>
+                </Label>
                 <Input
                   type="datetime-local"
                   value={form.date ? form.date.slice(0, 16) : ''}
@@ -193,6 +269,23 @@ export function EventsAdminPage() {
                 />
               </div>
               <div className="space-y-2">
+                <Label>Fecha fin</Label>
+                <Input
+                  type="datetime-local"
+                  value={form.endDate ? form.endDate.slice(0, 16) : ''}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      endDate: e.target.value
+                        ? new Date(e.target.value).toISOString()
+                        : '',
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
                 <Label>Lugar</Label>
                 <Input
                   value={form.location}
@@ -200,6 +293,23 @@ export function EventsAdminPage() {
                     setForm({ ...form, location: e.target.value })
                   }
                 />
+              </div>
+              <div className="space-y-2">
+                <Label>Tipo de evento</Label>
+                <Select
+                  value={form.eventType}
+                  onValueChange={(v) =>
+                    setForm({ ...form, eventType: v as EventType })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="j+">J+</SelectItem>
+                    <SelectItem value="church">Iglesia</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="space-y-2">

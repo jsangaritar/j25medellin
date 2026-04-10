@@ -178,7 +178,7 @@ export function RegistrationsPage() {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="border-border bg-bg-card sm:max-w-md">
+        <DialogContent className="border-border bg-bg-elevated shadow-[0_8px_30px_rgba(0,0,0,0.5)] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-text-primary">
               Crear inscripción
@@ -192,7 +192,9 @@ export function RegistrationsPage() {
             className="flex flex-col gap-4"
           >
             <div className="space-y-2">
-              <Label>Nombre completo</Label>
+              <Label>
+                Nombre completo<span className="text-destructive">*</span>
+              </Label>
               <Input
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -200,7 +202,9 @@ export function RegistrationsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>WhatsApp</Label>
+              <Label>
+                WhatsApp<span className="text-destructive">*</span>
+              </Label>
               <Input
                 value={whatsApp}
                 onChange={(e) => setWhatsApp(e.target.value)}
@@ -208,7 +212,9 @@ export function RegistrationsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Correo electrónico</Label>
+              <Label>
+                Correo electrónico<span className="text-destructive">*</span>
+              </Label>
               <Input
                 type="email"
                 value={email}
@@ -217,7 +223,7 @@ export function RegistrationsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Curso (opcional)</Label>
+              <Label>Curso</Label>
               <Select value={courseId} onValueChange={setCourseId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar curso" />
@@ -232,7 +238,7 @@ export function RegistrationsPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Evento (opcional)</Label>
+              <Label>Evento</Label>
               <Select value={eventId} onValueChange={setEventId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar evento" />

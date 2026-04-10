@@ -53,13 +53,15 @@ export function SiteConfigPage() {
       </div>
 
       <div className="max-w-2xl space-y-6">
-        <div className="rounded-lg border border-border bg-bg-card p-6">
+        <div className="rounded-lg border border-border bg-bg-elevated p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
           <h2 className="mb-4 font-body text-lg font-semibold text-text-primary">
             Hero
           </h2>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Título</Label>
+              <Label>
+                Título<span className="text-destructive">*</span>
+              </Label>
               <Textarea
                 value={form.heroTitle}
                 onChange={(e) =>
@@ -69,7 +71,9 @@ export function SiteConfigPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Subtítulo</Label>
+              <Label>
+                Subtítulo<span className="text-destructive">*</span>
+              </Label>
               <Textarea
                 value={form.heroSubtitle}
                 onChange={(e) =>
@@ -90,13 +94,15 @@ export function SiteConfigPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-bg-card p-6">
+        <div className="rounded-lg border border-border bg-bg-elevated p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
           <h2 className="mb-4 font-body text-lg font-semibold text-text-primary">
             Contacto y redes
           </h2>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Número de WhatsApp</Label>
+              <Label>
+                Número de WhatsApp<span className="text-destructive">*</span>
+              </Label>
               <Input
                 value={form.whatsappNumber}
                 onChange={(e) =>
@@ -106,7 +112,9 @@ export function SiteConfigPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Email de contacto</Label>
+              <Label>
+                Email de contacto<span className="text-destructive">*</span>
+              </Label>
               <Input
                 type="email"
                 value={form.contactEmail}

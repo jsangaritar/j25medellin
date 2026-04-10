@@ -1,12 +1,13 @@
-import { CalendarDays, Clock, MapPin } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { CalendarEvent } from '@/types';
+import { cn } from '@/lib/utils';
+import type { Event } from '@/types';
 import { isUpcoming } from '@/utils/dates';
 
 interface UpcomingHighlightsProps {
-  events: CalendarEvent[];
+  events: Event[];
   isLoading?: boolean;
 }
 
@@ -15,8 +16,8 @@ export function UpcomingHighlights({
   isLoading = false,
 }: UpcomingHighlightsProps) {
   const upcoming = events
-    .filter((e) => isUpcoming(e.start))
-    .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
+    .filter((e) => isUpcoming(e.date))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 4);
 
   return (
@@ -42,7 +43,9 @@ export function UpcomingHighlights({
       ) : (
         <div className="flex flex-col gap-3">
           {upcoming.map((event) => {
-            const date = new Date(event.start);
+            const date = new Date(event.date);
+            const type = event.eventType ?? 'j+';
+            const isJPlus = type === 'j+';
             const dayName = date.toLocaleDateString('es-CO', {
               weekday: 'long',
             });
@@ -55,7 +58,12 @@ export function UpcomingHighlights({
             return (
               <div
                 key={event.id}
-                className="flex gap-4 rounded-xl border border-border-light bg-bg-card p-4"
+                className={cn(
+                  'flex gap-4 rounded-xl border border-border-light bg-bg-card p-4',
+                  isJPlus
+                    ? 'border-l-2 border-l-accent-bright'
+                    : 'border-l-2 border-l-text-muted',
+                )}
               >
                 <div className="flex size-12 shrink-0 flex-col items-center justify-center rounded-lg bg-bg-elevated">
                   <span className="font-display text-lg font-bold leading-none text-text-primary">
@@ -69,18 +77,10 @@ export function UpcomingHighlights({
                   <h4 className="truncate font-body text-sm font-semibold text-text-primary">
                     {event.title}
                   </h4>
-                  <div className="mt-1 flex items-center gap-3 text-xs text-text-muted">
-                    <span className="flex items-center gap-1">
-                      <Clock className="size-3" />
-                      {capitalizeFirst(dayName)} · {time}
-                    </span>
-                    {event.description && (
-                      <span className="flex items-center gap-1">
-                        <MapPin className="size-3" />
-                        {event.description}
-                      </span>
-                    )}
-                  </div>
+                  <p className="mt-1 text-xs text-text-muted">
+                    {capitalizeFirst(dayName)} · {time}
+                    {event.location && ` · ${event.location}`}
+                  </p>
                 </div>
               </div>
             );

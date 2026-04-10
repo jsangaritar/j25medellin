@@ -15,7 +15,6 @@ import {
   where,
 } from 'firebase/firestore';
 import type {
-  CalendarEvent,
   Course,
   Event,
   MediaContent,
@@ -159,15 +158,6 @@ export async function createRegistration(
     createdAt: serverTimestamp(),
   });
   return docRef.id;
-}
-
-// ── Calendar Cache ──
-
-export async function getCachedCalendarEvents(): Promise<CalendarEvent[]> {
-  const cacheDoc = await getDoc(doc(db, 'cache', 'calendar'));
-  if (!cacheDoc.exists()) return [];
-  const data = cacheDoc.data();
-  return (data.events ?? []) as CalendarEvent[];
 }
 
 // ── Admin CRUD ──
