@@ -53,7 +53,10 @@ const emptyForm: EventForm = {
 };
 
 export function EventsAdminPage() {
-  const { data: events = [] } = useEvents();
+  const { data: rawEvents = [] } = useEvents();
+  const events = [...rawEvents].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  );
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
