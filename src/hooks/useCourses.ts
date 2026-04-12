@@ -6,10 +6,10 @@ import {
   getTopics,
 } from '@/lib/firestore';
 
-export function useCourses(filters?: { status?: string[] }) {
+export function useCourses() {
   return useQuery({
-    queryKey: ['courses', filters],
-    queryFn: () => getCourses(filters),
+    queryKey: ['courses'],
+    queryFn: getCourses,
   });
 }
 

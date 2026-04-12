@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Calendar, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { ConfirmDelete } from '@/components/ui/confirm-delete';
 import {
   Dialog,
   DialogContent,
@@ -58,6 +59,10 @@ export function EventsAdminPage() {
   const [editing, setEditing] = useState<Event | null>(null);
   const [form, setForm] = useState<EventForm>(emptyForm);
   const [syncResult, setSyncResult] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -203,7 +208,9 @@ export function EventsAdminPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => deleteMutation.mutate(event.id)}
+                        onClick={() =>
+                          setDeleteTarget({ id: event.id, name: event.title })
+                        }
                         className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
                       >
                         <Trash2 className="size-3.5" />
@@ -366,6 +373,16 @@ export function EventsAdminPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDelete
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        itemName={deleteTarget?.name}
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget.id);
+          setDeleteTarget(null);
+        }}
+      />
     </div>
   );
 }

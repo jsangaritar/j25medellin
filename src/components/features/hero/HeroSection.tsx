@@ -24,6 +24,7 @@ export function HeroSection({
           src={imageUrl}
           alt=""
           className="absolute inset-0 size-full object-cover"
+          referrerPolicy="no-referrer"
         />
       ) : (
         <div className="absolute inset-0 bg-gradient-to-br from-accent-dark via-bg-primary to-bg-surface" />
@@ -35,14 +36,6 @@ export function HeroSection({
       {/* Content */}
       <div className="relative mx-auto flex h-full max-w-[1440px] items-start px-14 pt-[120px] max-md:px-5 max-md:pt-16">
         <div className="flex max-w-[680px] flex-col gap-7 max-md:max-w-full">
-          {/* Tag pill */}
-          <div className="inline-flex w-fit items-center gap-2 rounded-full bg-accent-dim px-3.5 py-1.5">
-            <span className="size-1.5 rounded-full bg-accent-bright" />
-            <span className="font-body text-xs font-semibold text-accent-bright">
-              Comunidad 25+
-            </span>
-          </div>
-
           {isLoading ? (
             <>
               <Skeleton className="h-[180px] w-[580px] max-md:h-[100px] max-md:w-full" />

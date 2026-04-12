@@ -1,65 +1,55 @@
-import { Clock, MessageCircle, PlayCircle, Users, UserX } from 'lucide-react';
+import { CheckCircle, Clock, Users, UserX } from 'lucide-react';
 import { Tag } from '@/components/ui/tag';
-import type { Course } from '@/types';
-import { buildWhatsAppUrl } from '@/utils/whatsapp';
+import type { Course, CourseStatus } from '@/types';
 
 interface CourseCardProps {
   course: Course;
   enrolled?: number;
-  whatsappNumber: string;
-  topicStartDate?: string;
+  topicStatus?: CourseStatus;
   onRegister?: (course: Course) => void;
 }
 
 export function CourseCard({
   course,
   enrolled = 0,
-  whatsappNumber,
-  topicStartDate,
+  topicStatus,
   onRegister,
 }: CourseCardProps) {
   const progress =
     course.capacity && enrolled ? (enrolled / course.capacity) * 100 : 0;
 
-  const startDate = course.startDate ?? topicStartDate;
-  const hasStarted = startDate ? new Date(startDate) <= new Date() : false;
+  const isActive = topicStatus === 'ACTIVE';
+  const isComingSoon = topicStatus === 'COMING_SOON';
+  const isCompleted = topicStatus === 'COMPLETED';
   const isFull = course.capacity != null && enrolled >= course.capacity;
 
   return (
     <div className="flex flex-col rounded-xl border border-border-light bg-bg-card">
-      {/* Line accent bar */}
+      {/* Accent bar */}
       <div
         className="h-1 rounded-t-xl"
         style={{ backgroundColor: course.accentColor ?? '#4ADE80' }}
       />
 
       <div className="flex flex-1 flex-col gap-4 p-5">
-        {/* Line number + tags */}
-        <div className="flex items-center justify-between">
-          {course.lineNumber && (
-            <span
-              className="flex size-8 items-center justify-center rounded-lg font-display text-sm font-bold"
-              style={{
-                backgroundColor: `${course.accentColor ?? '#4ADE80'}1A`,
-                color: course.accentColor ?? '#4ADE80',
-              }}
-            >
-              {course.lineNumber}
-            </span>
-          )}
+        {/* Tags */}
+        {course.tags.length > 0 && (
           <div className="flex gap-1.5">
             {course.tags.map((tag) => (
               <Tag key={tag}>{tag}</Tag>
             ))}
           </div>
-        </div>
+        )}
 
         {/* Title + description */}
         <div>
-          <h3 className="mb-1.5 font-body text-base font-semibold text-text-primary">
+          <h3
+            className="mb-1.5 font-display text-base font-bold"
+            style={{ color: course.accentColor ?? '#4ADE80' }}
+          >
             {course.title}
           </h3>
-          <p className="line-clamp-2 text-sm text-text-secondary">
+          <p className="whitespace-pre-line text-sm text-text-secondary">
             {course.description}
           </p>
         </div>
@@ -73,7 +63,7 @@ export function CourseCard({
         )}
 
         {/* Capacity bar */}
-        {course.capacity && (
+        {isActive && course.capacity && (
           <div>
             <div className="mb-1.5 flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-xs text-text-muted">
@@ -95,34 +85,29 @@ export function CourseCard({
 
         {/* CTA */}
         <div className="mt-auto pt-1">
-          {hasStarted ? (
+          {isCompleted ? (
             <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-border bg-bg-elevated px-4 py-3 font-body text-sm font-medium text-text-muted">
-              <PlayCircle className="size-4" />
-              En curso
+              <CheckCircle className="size-4" />
+              Completado
+            </div>
+          ) : isComingSoon ? (
+            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-border bg-bg-elevated px-4 py-3 font-body text-sm font-medium text-text-muted">
+              <Clock className="size-4" />
+              Próximamente
             </div>
           ) : isFull ? (
             <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-border bg-bg-elevated px-4 py-3 font-body text-sm font-medium text-text-muted">
               <UserX className="size-4" />
               Cupos completos
             </div>
-          ) : onRegister ? (
+          ) : (
             <button
               type="button"
-              onClick={() => onRegister(course)}
+              onClick={() => onRegister?.(course)}
               className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-accent-bright px-4 py-3 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
             >
               Inscribirse
             </button>
-          ) : (
-            <a
-              href={buildWhatsAppUrl(whatsappNumber, course.whatsappMessage)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-accent-bright px-4 py-3 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
-            >
-              <MessageCircle className="size-4" />
-              Inscribirse
-            </a>
           )}
         </div>
       </div>

@@ -62,14 +62,8 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
 
 // ── Courses ──
 
-export async function getCourses(filters?: {
-  status?: string[];
-}): Promise<Course[]> {
-  const constraints = [];
-  if (filters?.status?.length) {
-    constraints.push(where('status', 'in', filters.status));
-  }
-  const q = query(collection(db, 'courses'), ...constraints);
+export async function getCourses(): Promise<Course[]> {
+  const q = query(collection(db, 'courses'));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(queryDocToData<Course>);
 }
@@ -92,8 +86,10 @@ async function populateTopicCourses(topic: Topic): Promise<Topic> {
 }
 
 export async function getCourseTopic(): Promise<Topic | null> {
-  const now = new Date().toISOString();
-  const q = query(collection(db, 'courseTopics'), where('endDate', '>=', now));
+  const q = query(
+    collection(db, 'courseTopics'),
+    where('status', '==', 'ACTIVE'),
+  );
   const snapshot = await getDocs(q);
   if (snapshot.empty) return null;
   return populateTopicCourses(queryDocToData<Topic>(snapshot.docs[0]));

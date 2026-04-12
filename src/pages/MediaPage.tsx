@@ -29,7 +29,6 @@ export function MediaPage() {
   return (
     <>
       <PageBanner
-        tag="CONTENIDO"
         title="Media"
         subtitle="Videos, podcasts y recursos para tu crecimiento espiritual."
       />

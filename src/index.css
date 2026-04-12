@@ -68,6 +68,10 @@
 }
 
 /* Base styles */
+:root {
+  color-scheme: dark;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);

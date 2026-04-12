@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { ConfirmDelete } from '@/components/ui/confirm-delete';
 import {
   Dialog,
   DialogContent,
@@ -10,6 +11,13 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -25,7 +33,9 @@ import {
   deleteDocument,
   updateDocument,
 } from '@/lib/firestore';
-import type { Topic } from '@/types';
+import { COURSE_STATUS_LABELS, type CourseStatus, type Topic } from '@/types';
+
+const STATUSES = Object.keys(COURSE_STATUS_LABELS) as CourseStatus[];
 
 type TopicForm = Omit<Topic, 'id' | 'courses'>;
 
@@ -35,6 +45,7 @@ const emptyForm: TopicForm = {
   tag: '',
   startDate: '',
   endDate: '',
+  status: 'DRAFT',
   courseIds: [],
 };
 
@@ -44,6 +55,10 @@ export function TopicsAdminPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Topic | null>(null);
   const [form, setForm] = useState<TopicForm>(emptyForm);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -102,6 +117,7 @@ export function TopicsAdminPage() {
             <TableRow>
               <TableHead>Título</TableHead>
               <TableHead>Etiqueta</TableHead>
+              <TableHead>Estado</TableHead>
               <TableHead>Inicio</TableHead>
               <TableHead>Fin</TableHead>
               <TableHead className="w-24" />
@@ -112,6 +128,9 @@ export function TopicsAdminPage() {
               <TableRow key={topic.id}>
                 <TableCell className="font-medium">{topic.title}</TableCell>
                 <TableCell>{topic.tag}</TableCell>
+                <TableCell>
+                  {COURSE_STATUS_LABELS[topic.status] ?? '—'}
+                </TableCell>
                 <TableCell>
                   {topic.startDate
                     ? new Date(topic.startDate).toLocaleDateString('es-CO')
@@ -133,7 +152,9 @@ export function TopicsAdminPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => deleteMutation.mutate(topic.id)}
+                      onClick={() =>
+                        setDeleteTarget({ id: topic.id, name: topic.title })
+                      }
                       className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
                     >
                       <Trash2 className="size-3.5" />
@@ -191,6 +212,28 @@ export function TopicsAdminPage() {
                 required
               />
             </div>
+            <div className="space-y-2">
+              <Label>
+                Estado<span className="text-destructive">*</span>
+              </Label>
+              <Select
+                value={form.status}
+                onValueChange={(v) =>
+                  setForm({ ...form, status: v as CourseStatus })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUSES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {COURSE_STATUS_LABELS[s]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>
@@ -235,6 +278,16 @@ export function TopicsAdminPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDelete
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        itemName={deleteTarget?.name}
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget.id);
+          setDeleteTarget(null);
+        }}
+      />
     </div>
   );
 }

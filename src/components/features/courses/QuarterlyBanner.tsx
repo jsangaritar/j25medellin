@@ -16,7 +16,7 @@ export function QuarterlyBanner({ topic }: QuarterlyBannerProps) {
       <h2 className="mb-3 font-display text-2xl font-bold text-text-primary lg:text-3xl">
         {topic.title}
       </h2>
-      <p className="max-w-2xl font-body text-sm leading-relaxed text-text-secondary">
+      <p className="whitespace-pre-line font-body text-sm leading-relaxed text-text-secondary">
         {topic.description}
       </p>
     </div>

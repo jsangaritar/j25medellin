@@ -12,13 +12,18 @@ export function EventosPage() {
   const { data: events = [], isLoading } = useEvents();
   const { data: config } = useSiteConfig();
 
-  const featured = events.find((e) => e.featured);
-  const upcoming = events.filter((e) => !e.featured);
+  const explicitFeatured = events.find((e) => e.featured);
+  const featured =
+    explicitFeatured ??
+    events
+      .filter((e) => new Date(e.date) >= new Date())
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .at(0);
+  const upcoming = events.filter((e) => e.id !== featured?.id);
 
   return (
     <>
       <PageBanner
-        tag="EVENTOS"
         title="Eventos"
         subtitle="Próximos eventos y encuentros de la comunidad J+."
       />

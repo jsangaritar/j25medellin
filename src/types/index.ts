@@ -56,13 +56,11 @@ export interface Course {
   description: string;
   imageUrl?: string;
   tags: string[];
-  status: CourseStatus;
   startDate?: string;
   endDate?: string;
   schedule?: string;
   location?: string;
   whatsappMessage?: string;
-  lineNumber?: number;
   accentColor?: string;
   capacity?: number;
   topicId: string;
@@ -75,6 +73,7 @@ export interface Topic {
   tag: string;
   startDate: string;
   endDate: string;
+  status: CourseStatus;
   courseIds: string[];
   courses?: Course[]; // populated client-side
 }
@@ -117,6 +116,24 @@ export interface RegistrationInput {
   email: string;
   eventId?: string;
   courseId?: string;
+}
+
+// ── Contact ──
+
+export interface ContactMessage {
+  id: string;
+  fullName: string;
+  whatsApp: string;
+  email: string;
+  message: string;
+  createdAt: string;
+}
+
+export interface ContactMessageInput {
+  fullName: string;
+  whatsApp: string;
+  email: string;
+  message: string;
 }
 
 // ── Site Config ──

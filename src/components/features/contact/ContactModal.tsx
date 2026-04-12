@@ -1,4 +1,4 @@
-import { CheckCircle, Mail, Phone, User } from 'lucide-react';
+import { CheckCircle, Mail, MessageSquare, Phone, User } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,29 +10,24 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useRegistration } from '@/hooks/useRegistration';
+import { Textarea } from '@/components/ui/textarea';
+import { useContact } from '@/hooks/useContact';
 
-interface RegistrationModalProps {
+interface ContactModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  eventId?: string;
-  courseId?: string;
 }
 
-export function RegistrationModal({
-  open,
-  onOpenChange,
-  eventId,
-  courseId,
-}: RegistrationModalProps) {
+export function ContactModal({ open, onOpenChange }: ContactModalProps) {
   const [fullName, setFullName] = useState('');
   const [whatsApp, setWhatsApp] = useState('');
   const [email, setEmail] = useState('');
-  const { mutate, isPending, isSuccess, reset } = useRegistration();
+  const [message, setMessage] = useState('');
+  const { mutate, isPending, isSuccess, reset } = useContact();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    mutate({ fullName, whatsApp, email, eventId, courseId });
+    mutate({ fullName, whatsApp, email, message });
   }
 
   function handleClose(value: boolean) {
@@ -40,6 +35,7 @@ export function RegistrationModal({
       setFullName('');
       setWhatsApp('');
       setEmail('');
+      setMessage('');
       reset();
     }
     onOpenChange(value);
@@ -54,10 +50,10 @@ export function RegistrationModal({
               <CheckCircle className="size-8 text-accent-bright" />
             </div>
             <DialogTitle className="font-display text-xl font-bold text-text-primary">
-              ¡Inscripción exitosa!
+              ¡Mensaje enviado!
             </DialogTitle>
             <DialogDescription className="text-sm text-text-secondary">
-              Te hemos enviado un mensaje de confirmación. Nos vemos pronto.
+              Hemos recibido tu mensaje. Te responderemos lo antes posible.
             </DialogDescription>
             <Button onClick={() => handleClose(false)}>Cerrar</Button>
           </div>
@@ -67,26 +63,26 @@ export function RegistrationModal({
               <div className="mb-2 flex items-center gap-2">
                 <span className="size-1.5 rounded-full bg-accent-bright" />
                 <span className="font-body text-xs font-semibold uppercase tracking-wider text-accent-bright">
-                  INSCRIPCIÓN
+                  CONTACTO
                 </span>
               </div>
               <DialogTitle className="font-display text-xl font-bold text-text-primary">
-                Únete a J+
+                Escríbenos
               </DialogTitle>
               <DialogDescription className="text-sm text-text-secondary">
-                {courseId
-                  ? 'Completa el formulario para inscribirte al curso.'
-                  : 'Completa el formulario para inscribirte al evento.'}
+                Déjanos tu mensaje y te responderemos pronto.
               </DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Nombre completo</Label>
+                <Label htmlFor="contactName">
+                  Nombre completo<span className="text-destructive">*</span>
+                </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
                   <Input
-                    id="fullName"
+                    id="contactName"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Tu nombre"
@@ -97,11 +93,13 @@ export function RegistrationModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="whatsApp">WhatsApp</Label>
+                <Label htmlFor="contactWhatsApp">
+                  WhatsApp<span className="text-destructive">*</span>
+                </Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
                   <Input
-                    id="whatsApp"
+                    id="contactWhatsApp"
                     value={whatsApp}
                     onChange={(e) => setWhatsApp(e.target.value)}
                     placeholder="+57 300 000-0000"
@@ -112,11 +110,13 @@ export function RegistrationModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Correo electrónico</Label>
+                <Label htmlFor="contactEmail">
+                  Correo electrónico<span className="text-destructive">*</span>
+                </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
                   <Input
-                    id="email"
+                    id="contactEmail"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -127,14 +127,27 @@ export function RegistrationModal({
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? 'Enviando...' : 'Inscribirme'}
-              </Button>
+              <div className="space-y-2">
+                <Label htmlFor="contactMessage">
+                  Mensaje<span className="text-destructive">*</span>
+                </Label>
+                <div className="relative">
+                  <MessageSquare className="absolute left-3 top-3 size-4 text-text-muted" />
+                  <Textarea
+                    id="contactMessage"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="¿En qué podemos ayudarte?"
+                    className="min-h-24 pl-10"
+                    rows={4}
+                    required
+                  />
+                </div>
+              </div>
 
-              <p className="text-center text-xs text-text-dim">
-                Al inscribirte, aceptas recibir notificaciones por WhatsApp
-                sobre eventos y cursos de J+.
-              </p>
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? 'Enviando...' : 'Enviar mensaje'}
+              </Button>
             </form>
           </>
         )}

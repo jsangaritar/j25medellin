@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { ConfirmDelete } from '@/components/ui/confirm-delete';
 import {
   Dialog,
   DialogContent,
@@ -32,9 +33,7 @@ import {
   deleteDocument,
   updateDocument,
 } from '@/lib/firestore';
-import { COURSE_STATUS_LABELS, type Course, type CourseStatus } from '@/types';
-
-const STATUSES = Object.keys(COURSE_STATUS_LABELS) as CourseStatus[];
+import type { Course } from '@/types';
 
 type CourseForm = Omit<Course, 'id'>;
 
@@ -43,10 +42,8 @@ const emptyForm: CourseForm = {
   slug: '',
   description: '',
   tags: [],
-  status: 'DRAFT',
   schedule: '',
   location: '',
-  lineNumber: undefined,
   accentColor: '#4ADE80',
   capacity: 25,
   topicId: '',
@@ -59,6 +56,10 @@ export function CoursesAdminPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Course | null>(null);
   const [form, setForm] = useState<CourseForm>(emptyForm);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -139,10 +140,8 @@ export function CoursesAdminPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Línea</TableHead>
               <TableHead>Título</TableHead>
               <TableHead>Tema</TableHead>
-              <TableHead>Estado</TableHead>
               <TableHead>Cupos</TableHead>
               <TableHead className="w-24" />
             </TableRow>
@@ -150,12 +149,10 @@ export function CoursesAdminPage() {
           <TableBody>
             {courses.map((course) => (
               <TableRow key={course.id}>
-                <TableCell>{course.lineNumber ?? '—'}</TableCell>
                 <TableCell className="font-medium">{course.title}</TableCell>
                 <TableCell>
                   {topics.find((t) => t.id === course.topicId)?.title ?? '—'}
                 </TableCell>
-                <TableCell>{COURSE_STATUS_LABELS[course.status]}</TableCell>
                 <TableCell>{course.capacity ?? '∞'}</TableCell>
                 <TableCell>
                   <div className="flex gap-1">
@@ -168,7 +165,9 @@ export function CoursesAdminPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => deleteMutation.mutate(course.id)}
+                      onClick={() =>
+                        setDeleteTarget({ id: course.id, name: course.title })
+                      }
                       className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
                     >
                       <Trash2 className="size-3.5" />
@@ -216,6 +215,21 @@ export function CoursesAdminPage() {
               />
             </div>
             <div className="space-y-2">
+              <Label>Etiquetas</Label>
+              <Input
+                value={
+                  Array.isArray(form.tags) ? form.tags.join(', ') : form.tags
+                }
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    tags: e.target.value as unknown as string[],
+                  })
+                }
+                placeholder="Separadas por coma: Biblia, Nuevo"
+              />
+            </div>
+            <div className="space-y-2">
               <Label>
                 Tema<span className="text-destructive">*</span>
               </Label>
@@ -235,43 +249,6 @@ export function CoursesAdminPage() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Estado</Label>
-                <Select
-                  value={form.status}
-                  onValueChange={(v) =>
-                    setForm({ ...form, status: v as CourseStatus })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATUSES.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {COURSE_STATUS_LABELS[s]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Línea</Label>
-                <Input
-                  type="number"
-                  value={form.lineNumber ?? ''}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      lineNumber: e.target.value
-                        ? Number(e.target.value)
-                        : undefined,
-                    })
-                  }
-                />
-              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -313,6 +290,16 @@ export function CoursesAdminPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDelete
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        itemName={deleteTarget?.name}
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget.id);
+          setDeleteTarget(null);
+        }}
+      />
     </div>
   );
 }
