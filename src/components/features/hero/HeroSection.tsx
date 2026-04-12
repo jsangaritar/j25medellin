@@ -18,17 +18,15 @@ export function HeroSection({
 }: HeroSectionProps) {
   return (
     <section className="relative h-[680px] w-full overflow-hidden max-md:h-[520px]">
-      {/* Background — image or default gradient */}
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt=""
-          className="absolute inset-0 size-full object-cover"
-          referrerPolicy="no-referrer"
-        />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-accent-dark via-bg-primary to-bg-surface" />
-      )}
+      {/* Background image */}
+      <img
+        src={imageUrl || '/images/church.png'}
+        alt=""
+        className="absolute inset-0 size-full object-cover"
+        loading="eager"
+        fetchPriority="high"
+        referrerPolicy="no-referrer"
+      />
 
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0AF0] via-[#0A0A0ACC] to-[#0A0A0A88]" />

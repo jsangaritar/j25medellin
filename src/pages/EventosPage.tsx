@@ -9,8 +9,14 @@ import { useEvents } from '@/hooks/useEvents';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 
 export function EventosPage() {
-  const { data: events = [], isLoading } = useEvents();
+  const { data: allEvents = [], isLoading } = useEvents();
   const { data: config } = useSiteConfig();
+
+  // Only show current/future events that have images on the public page
+  const now = new Date();
+  const events = allEvents.filter(
+    (e) => e.imageUrl && new Date(e.endDate ?? e.date) >= now,
+  );
 
   const explicitFeatured = events.find((e) => e.featured);
   const featured =
@@ -19,7 +25,9 @@ export function EventosPage() {
       .filter((e) => new Date(e.date) >= new Date())
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .at(0);
-  const upcoming = events.filter((e) => e.id !== featured?.id);
+  const upcoming = events
+    .filter((e) => e.id !== featured?.id)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
     <>

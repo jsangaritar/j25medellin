@@ -7,6 +7,7 @@ interface CalendarEventRaw {
   end: string;
   description?: string;
   location?: string;
+  source?: string;
 }
 
 function generateSlug(title: string, uid: string): string {
@@ -25,19 +26,24 @@ function generateSlug(title: string, uid: string): string {
   return `${base}-${suffix}`;
 }
 
+function getImageForTitle(title: string): string {
+  const lower = title.toLowerCase();
+  if (lower.includes('la mesa')) return '/images/la-mesa.png';
+  if (lower.includes('la sala')) return '/images/la-sala.png';
+  return '';
+}
+
 export async function syncCalendarEvents(): Promise<{
   created: number;
   updated: number;
   total: number;
 }> {
-  // 1. Fetch parsed calendar events from the API proxy
   const res = await fetch('/api/calendar');
   if (!res.ok) {
     throw new Error('No se pudo obtener el calendario de Google');
   }
   const calendarEvents: CalendarEventRaw[] = await res.json();
 
-  // 2. Get existing events with googleCalendarEventId from Firestore
   const existingEvents = await getEvents();
   const existingByCalId = new Map(
     existingEvents
@@ -45,7 +51,6 @@ export async function syncCalendarEvents(): Promise<{
       .map((e) => [e.googleCalendarEventId, e]),
   );
 
-  // 3. Sync each calendar event
   let created = 0;
   let updated = 0;
 
@@ -53,7 +58,6 @@ export async function syncCalendarEvents(): Promise<{
     const existing = existingByCalId.get(calEvent.id);
 
     if (existing) {
-      // Update only date and endDate — nothing else
       const updates: Record<string, string> = {};
       if (existing.date !== calEvent.start) {
         updates.date = calEvent.start;
@@ -66,7 +70,6 @@ export async function syncCalendarEvents(): Promise<{
         updated++;
       }
     } else {
-      // Create new event
       await createDocument('events', {
         title: calEvent.title,
         slug: generateSlug(calEvent.title, calEvent.id),
@@ -74,11 +77,11 @@ export async function syncCalendarEvents(): Promise<{
         date: calEvent.start,
         endDate: calEvent.end,
         location: calEvent.location || 'Casa Sobre la Roca - Medellín',
-        imageUrl: '',
+        imageUrl: getImageForTitle(calEvent.title),
         tags: [],
         featured: false,
         requiresRegistration: false,
-        eventType: 'j+',
+        eventType: calEvent.source === 'church' ? 'church' : 'j+',
         googleCalendarEventId: calEvent.id,
       });
       created++;

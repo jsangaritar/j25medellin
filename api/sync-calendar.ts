@@ -1,8 +1,7 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import admin from "firebase-admin";
-import ical from "node-ical";
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import admin from 'firebase-admin';
+import ical from 'node-ical';
 
-// Initialize Firebase Admin (once per cold start)
 if (!admin.apps.length) {
   const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   if (serviceAccount) {
@@ -19,73 +18,115 @@ const db = admin.firestore();
 function generateSlug(title: string, uid: string): string {
   const base = title
     .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
     .slice(0, 60);
   const suffix = uid
     .slice(0, 8)
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
+    .replace(/[^a-z0-9]/g, '');
   return `${base}-${suffix}`;
 }
 
-async function authenticate(
-  req: VercelRequest,
-): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
-  const authHeader = req.headers.authorization;
-
-  if (req.method === "GET") {
-    const cronSecret = process.env.CRON_SECRET;
-    if (!cronSecret) {
-      return { ok: false, status: 500, error: "CRON_SECRET not configured" };
-    }
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      return { ok: false, status: 401, error: "Invalid cron secret" };
-    }
-    return { ok: true };
-  }
-
-  if (req.method === "POST") {
-    if (!authHeader?.startsWith("Bearer ")) {
-      return { ok: false, status: 401, error: "Missing authorization token" };
-    }
-    const token = authHeader.slice(7);
-    try {
-      await admin.auth().verifyIdToken(token);
-      return { ok: true };
-    } catch {
-      return { ok: false, status: 401, error: "Invalid Firebase token" };
-    }
-  }
-
-  return { ok: false, status: 405, error: "Method not allowed" };
+function getImageForTitle(title: string): string {
+  const lower = title.toLowerCase();
+  if (lower.includes('la mesa')) return '/images/la-mesa.png';
+  if (lower.includes('la sala')) return '/images/la-sala.png';
+  return '';
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const auth = await authenticate(req);
-  if (!auth.ok) {
-    return res.status(auth.status).json({ error: auth.error });
+async function fetchCalendarEvents(
+  url: string,
+  eventType: 'j+' | 'church',
+): Promise<
+  {
+    uid: string;
+    title: string;
+    start: string;
+    end: string;
+    location: string;
+    description: string;
+    eventType: 'j+' | 'church';
+  }[]
+> {
+  const data = await ical.async.fromURL(url);
+  return Object.values(data)
+    .filter(
+      (item): item is ical.VEvent =>
+        item != null && item.type === 'VEVENT',
+    )
+    .map((event) => ({
+      uid: event.uid ?? String(event.start),
+      title: String(event.summary ?? 'Sin título'),
+      start:
+        event.start instanceof Date
+          ? event.start.toISOString()
+          : String(event.start),
+      end:
+        event.end instanceof Date
+          ? event.end.toISOString()
+          : String(event.end),
+      location: String(event.location ?? ''),
+      description: String(event.description ?? ''),
+      eventType,
+    }));
+}
+
+export default async function handler(
+  req: VercelRequest,
+  res: VercelResponse,
+) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const calendarUrl = process.env.GOOGLE_CALENDAR_URL;
-  if (!calendarUrl) {
-    return res.status(500).json({ error: "Calendar URL not configured" });
+  // Authenticate via Firebase ID token
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Missing authorization token' });
+  }
+  try {
+    await admin.auth().verifyIdToken(authHeader.slice(7));
+  } catch {
+    return res.status(401).json({ error: 'Invalid Firebase token' });
+  }
+
+  const jUrl = process.env.GOOGLE_CALENDAR_J_URL;
+  const generalUrl = process.env.GOOGLE_CALENDAR_GENERAL_URL;
+
+  if (!jUrl && !generalUrl) {
+    return res
+      .status(500)
+      .json({ error: 'No calendar URLs configured' });
   }
 
   try {
-    // 1. Fetch iCal events from Google Calendar
-    const data = await ical.async.fromURL(calendarUrl);
-    const icalEvents = Object.values(data).filter(
-      (item): item is ical.VEvent => item.type === "VEVENT",
-    );
+    // Fetch both calendars in parallel (graceful per-feed failure)
+    async function safeFetch(
+      url: string,
+      eventType: 'j+' | 'church',
+    ) {
+      try {
+        return await fetchCalendarEvents(url, eventType);
+      } catch (err) {
+        console.warn(`Failed to fetch ${eventType} calendar:`, err);
+        return [];
+      }
+    }
 
-    // 2. Get existing synced events from Firestore
+    const feeds = await Promise.all([
+      jUrl ? safeFetch(jUrl, 'j+') : [],
+      generalUrl ? safeFetch(generalUrl, 'church') : [],
+    ]);
+    const allEvents = feeds.flat();
+
+    // Get existing synced events from Firestore
     const existingSnapshot = await db
-      .collection("events")
-      .where("googleCalendarEventId", "!=", null)
+      .collection('events')
+      .where('googleCalendarEventId', '!=', null)
       .get();
 
     const existingByCalId = new Map<
@@ -102,52 +143,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    // 3. Sync each iCal event
     let created = 0;
     let updated = 0;
 
-    for (const event of icalEvents) {
-      const uid = event.uid ?? String(event.start);
-      const title = event.summary ?? "Sin título";
-      const start =
-        event.start instanceof Date
-          ? event.start.toISOString()
-          : String(event.start);
-      const end =
-        event.end instanceof Date ? event.end.toISOString() : String(event.end);
-      const location = event.location ?? "";
-      const description = event.description ?? "";
-
-      const existing = existingByCalId.get(uid);
+    for (const event of allEvents) {
+      const existing = existingByCalId.get(event.uid);
 
       if (existing) {
-        // Update only date and endDate
         const updates: Record<string, string> = {};
-        if (existing.data.date !== start) {
-          updates.date = start;
-        }
-        if (existing.data.endDate !== end) {
-          updates.endDate = end;
-        }
+        if (existing.data.date !== event.start) updates.date = event.start;
+        if (existing.data.endDate !== event.end) updates.endDate = event.end;
         if (Object.keys(updates).length > 0) {
-          await db.collection("events").doc(existing.docId).update(updates);
+          await db
+            .collection('events')
+            .doc(existing.docId)
+            .update(updates);
           updated++;
         }
       } else {
-        // Create new event
-        await db.collection("events").add({
-          title,
-          slug: generateSlug(title, uid),
-          description,
-          date: start,
-          endDate: end,
-          location: location || "Casa Sobre la Roca - Medellín",
-          imageUrl: "",
+        await db.collection('events').add({
+          title: event.title,
+          slug: generateSlug(event.title, event.uid),
+          description: event.description,
+          date: event.start,
+          endDate: event.end,
+          location: event.location || 'Casa Sobre la Roca - Medellín',
+          imageUrl: getImageForTitle(event.title),
           tags: [],
           featured: false,
           requiresRegistration: false,
-          eventType: "j+",
-          googleCalendarEventId: uid,
+          eventType: event.eventType,
+          googleCalendarEventId: event.uid,
         });
         created++;
       }
@@ -156,10 +182,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({
       created,
       updated,
-      total: icalEvents.length,
+      total: allEvents.length,
     });
   } catch (error) {
-    console.error("Calendar sync error:", error);
-    return res.status(500).json({ error: "Failed to sync calendar" });
+    console.error('Calendar sync error:', error);
+    return res.status(500).json({ error: 'Failed to sync calendar' });
   }
 }
