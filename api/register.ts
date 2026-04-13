@@ -2,7 +2,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import admin from 'firebase-admin';
 import { Resend } from 'resend';
 
-// Initialize Firebase Admin (once per cold start)
 if (!admin.apps.length) {
   const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   if (serviceAccount) {
@@ -33,15 +32,83 @@ export default async function handler(
   }
 
   try {
-    // Write to Firestore
-    const docRef = await db.collection('registrations').add({
-      fullName,
-      whatsApp,
-      email,
-      eventId: eventId ?? null,
-      courseId: courseId ?? null,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    let registrationId: string;
+
+    if (courseId) {
+      // ── Course registration: atomic transaction with capacity check ──
+      const courseRef = db.collection('courses').doc(courseId);
+      const normalizedEmail = email.toLowerCase().trim();
+      const regDocId = `${courseId}_${normalizedEmail}`;
+      const regRef = db.collection('registrations').doc(regDocId);
+
+      try {
+        await db.runTransaction(async (transaction) => {
+          const courseSnap = await transaction.get(courseRef);
+          if (!courseSnap.exists) {
+            throw new Error('COURSE_NOT_FOUND');
+          }
+
+          const courseData = courseSnap.data()!;
+          const capacity = courseData.capacity as number | undefined;
+          const enrolled = (courseData.enrolled as number) ?? 0;
+
+          if (capacity != null && enrolled >= capacity) {
+            throw new Error('COURSE_FULL');
+          }
+
+          // Atomic: increment counter + create registration
+          transaction.update(courseRef, {
+            enrolled: admin.firestore.FieldValue.increment(1),
+          });
+          transaction.create(regRef, {
+            fullName,
+            whatsApp,
+            email: normalizedEmail,
+            eventId: eventId ?? null,
+            courseId,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+        });
+      } catch (txError: unknown) {
+        const message =
+          txError instanceof Error ? txError.message : String(txError);
+
+        if (message === 'COURSE_NOT_FOUND') {
+          return res
+            .status(404)
+            .json({ error: 'COURSE_NOT_FOUND' });
+        }
+        if (message === 'COURSE_FULL') {
+          return res.status(409).json({ error: 'COURSE_FULL' });
+        }
+        // Firestore throws code 6 (ALREADY_EXISTS) when transaction.create
+        // targets an existing doc — this means duplicate registration
+        if (
+          typeof txError === 'object' &&
+          txError !== null &&
+          'code' in txError &&
+          (txError as { code: number }).code === 6
+        ) {
+          return res
+            .status(409)
+            .json({ error: 'DUPLICATE_REGISTRATION' });
+        }
+        throw txError;
+      }
+
+      registrationId = `${courseId}_${email.toLowerCase().trim()}`;
+    } else {
+      // ── Event-only registration: simple write ──
+      const docRef = await db.collection('registrations').add({
+        fullName,
+        whatsApp,
+        email,
+        eventId: eventId ?? null,
+        courseId: null,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      registrationId = docRef.id;
+    }
 
     // Send confirmation email (best-effort)
     const resendKey = process.env.RESEND_API_KEY;
@@ -61,11 +128,10 @@ export default async function handler(
         });
       } catch (emailError) {
         console.error('Email send error:', emailError);
-        // Don't fail the registration if email fails
       }
     }
 
-    return res.status(201).json({ id: docRef.id });
+    return res.status(201).json({ id: registrationId });
   } catch (error) {
     console.error('Registration error:', error);
     return res.status(500).json({ error: 'Failed to create registration' });

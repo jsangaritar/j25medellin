@@ -63,6 +63,7 @@ export interface Course {
   whatsappMessage?: string;
   accentColor?: string;
   capacity?: number;
+  enrolled?: number;
   topicId: string;
 }
 

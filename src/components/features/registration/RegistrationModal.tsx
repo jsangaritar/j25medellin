@@ -1,4 +1,11 @@
-import { CheckCircle, Mail, Phone, User } from 'lucide-react';
+import {
+  AlertCircle,
+  CheckCircle,
+  Mail,
+  Phone,
+  User,
+  UserX,
+} from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,7 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useRegistration } from '@/hooks/useRegistration';
+import { RegistrationError, useRegistration } from '@/hooks/useRegistration';
 
 interface RegistrationModalProps {
   open: boolean;
@@ -18,6 +25,18 @@ interface RegistrationModalProps {
   eventId?: string;
   courseId?: string;
 }
+
+const ERROR_MESSAGES: Record<string, { icon: typeof UserX; message: string }> =
+  {
+    COURSE_FULL: {
+      icon: UserX,
+      message: 'Lo sentimos, los cupos para este curso se han agotado.',
+    },
+    DUPLICATE_REGISTRATION: {
+      icon: AlertCircle,
+      message: 'Ya te encuentras inscrito/a en este curso.',
+    },
+  };
 
 export function RegistrationModal({
   open,
@@ -28,7 +47,8 @@ export function RegistrationModal({
   const [fullName, setFullName] = useState('');
   const [whatsApp, setWhatsApp] = useState('');
   const [email, setEmail] = useState('');
-  const { mutate, isPending, isSuccess, reset } = useRegistration();
+  const { mutate, isPending, isSuccess, isError, error, reset } =
+    useRegistration();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,6 +65,11 @@ export function RegistrationModal({
     onOpenChange(value);
   }
 
+  const errorInfo =
+    isError && error instanceof RegistrationError
+      ? ERROR_MESSAGES[error.code]
+      : null;
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="border-border bg-bg-card sm:max-w-md">
@@ -58,6 +83,24 @@ export function RegistrationModal({
             </DialogTitle>
             <DialogDescription className="text-sm text-text-secondary">
               Te hemos enviado un mensaje de confirmación. Nos vemos pronto.
+            </DialogDescription>
+            <Button onClick={() => handleClose(false)}>Cerrar</Button>
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center gap-4 py-8 text-center">
+            <div className="flex size-16 items-center justify-center rounded-full bg-destructive/10">
+              {errorInfo ? (
+                <errorInfo.icon className="size-8 text-destructive" />
+              ) : (
+                <AlertCircle className="size-8 text-destructive" />
+              )}
+            </div>
+            <DialogTitle className="font-display text-xl font-bold text-text-primary">
+              No se pudo completar
+            </DialogTitle>
+            <DialogDescription className="text-sm text-text-secondary">
+              {errorInfo?.message ??
+                'Ocurrió un error. Por favor intenta de nuevo.'}
             </DialogDescription>
             <Button onClick={() => handleClose(false)}>Cerrar</Button>
           </div>

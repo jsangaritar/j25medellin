@@ -1,12 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  addDoc,
-  collection,
-  getDocs,
-  orderBy,
-  query,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { Download, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -35,7 +28,7 @@ import {
 } from '@/components/ui/table';
 import { useCourses } from '@/hooks/useCourses';
 import { useEvents } from '@/hooks/useEvents';
-import { db } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import type { Registration } from '@/types';
 
 function useRegistrations() {
@@ -89,18 +82,29 @@ export function RegistrationsPage() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      await addDoc(collection(db, 'registrations'), {
-        fullName,
-        whatsApp,
-        email,
-        eventId: eventId || null,
-        courseId: courseId || null,
-        createdAt: serverTimestamp(),
+      const token = await auth.currentUser?.getIdToken();
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          fullName,
+          whatsApp,
+          email,
+          eventId: eventId || undefined,
+          courseId: courseId || undefined,
+        }),
       });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? 'Registration failed');
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['registrations'] });
-      queryClient.invalidateQueries({ queryKey: ['enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['courseTopics'] });
       setDialogOpen(false);
       setFullName('');
       setWhatsApp('');

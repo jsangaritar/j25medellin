@@ -1,6 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { RegistrationInput } from '@/types';
 
+export class RegistrationError extends Error {
+  code: string;
+  constructor(message: string, code: string) {
+    super(message);
+    this.code = code;
+  }
+}
+
 async function submitRegistration(
   data: RegistrationInput,
 ): Promise<{ id: string }> {
@@ -9,7 +17,13 @@ async function submitRegistration(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error('Registration failed');
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: 'UNKNOWN' }));
+    throw new RegistrationError(
+      body.error ?? 'Registration failed',
+      body.error ?? 'UNKNOWN',
+    );
+  }
   return res.json();
 }
 
@@ -20,7 +34,7 @@ export function useRegistration() {
     mutationFn: submitRegistration,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['registrations'] });
-      queryClient.invalidateQueries({ queryKey: ['enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['courseTopics'] });
     },
   });
 }
