@@ -41,14 +41,52 @@ export default async function handler(
       const regDocId = `${courseId}_${normalizedEmail}`;
       const regRef = db.collection('registrations').doc(regDocId);
 
+      // Pre-transaction: check if user is already registered for another
+      // course in the same topic (Firestore transactions don't support queries)
+      const courseSnap = await courseRef.get();
+      if (!courseSnap.exists) {
+        return res.status(404).json({ error: 'COURSE_NOT_FOUND' });
+      }
+      const topicId = courseSnap.data()?.topicId as string | undefined;
+
+      if (topicId) {
+        const topicSnap = await db
+          .collection('courseTopics')
+          .doc(topicId)
+          .get();
+        const topicCourseIds =
+          (topicSnap.data()?.courseIds as string[] | undefined) ?? [];
+
+        if (topicCourseIds.length > 0) {
+          // Firestore 'in' supports up to 30 values
+          const existingRegs = await db
+            .collection('registrations')
+            .where('email', '==', normalizedEmail)
+            .where('courseId', 'in', topicCourseIds)
+            .get();
+
+          if (!existingRegs.empty) {
+            // Distinguish same-course vs different-course-same-topic
+            const alreadyInSameCourse = existingRegs.docs.some(
+              (d) => d.data().courseId === courseId,
+            );
+            return res.status(409).json({
+              error: alreadyInSameCourse
+                ? 'DUPLICATE_REGISTRATION'
+                : 'TOPIC_DUPLICATE_REGISTRATION',
+            });
+          }
+        }
+      }
+
       try {
         await db.runTransaction(async (transaction) => {
-          const courseSnap = await transaction.get(courseRef);
-          if (!courseSnap.exists) {
+          const freshCourseSnap = await transaction.get(courseRef);
+          if (!freshCourseSnap.exists) {
             throw new Error('COURSE_NOT_FOUND');
           }
 
-          const courseData = courseSnap.data()!;
+          const courseData = freshCourseSnap.data()!;
           const capacity = courseData.capacity as number | undefined;
           const enrolled = (courseData.enrolled as number) ?? 0;
 
@@ -74,9 +112,7 @@ export default async function handler(
           txError instanceof Error ? txError.message : String(txError);
 
         if (message === 'COURSE_NOT_FOUND') {
-          return res
-            .status(404)
-            .json({ error: 'COURSE_NOT_FOUND' });
+          return res.status(404).json({ error: 'COURSE_NOT_FOUND' });
         }
         if (message === 'COURSE_FULL') {
           return res.status(409).json({ error: 'COURSE_FULL' });
@@ -96,7 +132,7 @@ export default async function handler(
         throw txError;
       }
 
-      registrationId = `${courseId}_${email.toLowerCase().trim()}`;
+      registrationId = regDocId;
     } else {
       // ── Event-only registration: simple write ──
       const docRef = await db.collection('registrations').add({

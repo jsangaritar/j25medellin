@@ -22,7 +22,7 @@ export function HeroSection({
       <img
         src={imageUrl || '/images/church.png'}
         alt=""
-        className="absolute inset-0 size-full object-cover"
+        className="absolute inset-0 size-full object-cover object-top"
         loading="eager"
         fetchPriority="high"
         referrerPolicy="no-referrer"

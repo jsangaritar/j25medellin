@@ -36,6 +36,11 @@ const ERROR_MESSAGES: Record<string, { icon: typeof UserX; message: string }> =
       icon: AlertCircle,
       message: 'Ya te encuentras inscrito/a en este curso.',
     },
+    TOPIC_DUPLICATE_REGISTRATION: {
+      icon: AlertCircle,
+      message:
+        'Ya te encuentras inscrito/a en otro curso de este tema. Solo puedes inscribirte en un curso por tema.',
+    },
   };
 
 export function RegistrationModal({
