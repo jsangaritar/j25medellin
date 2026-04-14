@@ -48,14 +48,18 @@ function useRegistrations() {
   });
 }
 
-function exportCsv(registrations: Registration[]) {
+function exportCsv(
+  registrations: Registration[],
+  courseMap: Map<string, string>,
+  eventMap: Map<string, string>,
+) {
   const headers = ['Nombre', 'WhatsApp', 'Email', 'Evento', 'Curso', 'Fecha'];
   const rows = registrations.map((r) => [
     r.fullName,
     r.whatsApp,
     r.email,
-    r.eventId ?? '',
-    r.courseId ?? '',
+    r.eventId ? (eventMap.get(r.eventId) ?? r.eventId) : '',
+    r.courseId ? (courseMap.get(r.courseId) ?? r.courseId) : '',
     r.createdAt ?? '',
   ]);
   const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
@@ -127,7 +131,7 @@ export function RegistrationsPage() {
         <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={() => exportCsv(registrations)}
+            onClick={() => exportCsv(registrations, courseMap, eventMap)}
             disabled={registrations.length === 0}
           >
             <Download className="mr-2 size-4" />

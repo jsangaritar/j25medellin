@@ -1,9 +1,12 @@
+import { useQuery } from '@tanstack/react-query';
+import { collection, getCountFromServer } from 'firebase/firestore';
 import { BookOpen, Calendar, Film, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCourses } from '@/hooks/useCourses';
 import { useEvents } from '@/hooks/useEvents';
 import { useMedia } from '@/hooks/useMedia';
+import { db } from '@/lib/firebase';
 
 function StatCard({
   icon: Icon,
@@ -39,6 +42,15 @@ export function DashboardPage() {
   const { data: events = [] } = useEvents();
   const { data: courses = [] } = useCourses();
   const { data: media = [] } = useMedia();
+  const { data: registrationCount = 0 } = useQuery({
+    queryKey: ['registrations', 'count'],
+    queryFn: async () => {
+      const snapshot = await getCountFromServer(
+        collection(db, 'registrations'),
+      );
+      return snapshot.data().count;
+    },
+  });
 
   return (
     <div>
@@ -67,7 +79,7 @@ export function DashboardPage() {
         <StatCard
           icon={Users}
           label="Inscripciones"
-          count={0}
+          count={registrationCount}
           href="/admin/registrations"
         />
       </div>
