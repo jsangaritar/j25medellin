@@ -1,8 +1,8 @@
-import { Instagram, Mail, Youtube } from 'lucide-react';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ContactModal } from '@/components/features/contact/ContactModal';
-import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { Instagram, Mail, Youtube } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ContactModal } from "@/components/features/contact/ContactModal";
+import { useSiteConfig } from "@/hooks/useSiteConfig";
 
 export function Footer() {
   const { data: config } = useSiteConfig();
@@ -17,7 +17,7 @@ export function Footer() {
               <img
                 src="/j25-logo.svg"
                 alt="J+"
-                className="h-6 w-[60px] scale-150"
+                className="h-6 w-[60px] scale-80"
               />
             </Link>
             {config?.instagramUrl && (
