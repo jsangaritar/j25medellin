@@ -37,7 +37,7 @@ export function FeaturedEvent({ event, whatsappNumber }: FeaturedEventProps) {
             {event.title}
           </h2>
 
-          <p className="font-body text-sm leading-relaxed text-text-secondary">
+          <p className="whitespace-pre-line font-body text-sm leading-relaxed text-text-secondary">
             {event.description}
           </p>
 

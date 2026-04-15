@@ -201,7 +201,10 @@ export function apiDevPlugin(): Plugin {
                   const freshSnap = await transaction.get(courseRef);
                   if (!freshSnap.exists) throw new Error('COURSE_NOT_FOUND');
 
-                  const courseData = freshSnap.data()!;
+                  const courseData = freshSnap.data() as Record<
+                    string,
+                    unknown
+                  >;
                   const capacity = courseData.capacity as number | undefined;
                   const enrolled = (courseData.enrolled as number) ?? 0;
 

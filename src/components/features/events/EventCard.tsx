@@ -44,7 +44,7 @@ export function EventCard({ event }: EventCardProps) {
           {event.title}
         </h3>
 
-        <p className="line-clamp-2 text-sm text-text-secondary">
+        <p className="line-clamp-2 whitespace-pre-line text-sm text-text-secondary">
           {event.description}
         </p>
 

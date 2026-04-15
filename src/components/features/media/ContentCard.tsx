@@ -66,12 +66,12 @@ export function ContentCard({ item }: ContentCardProps) {
         <h3 className="font-body text-sm font-semibold text-text-primary group-hover:text-accent-bright">
           {item.title}
         </h3>
-        <p className="line-clamp-2 text-xs text-text-secondary">
+        <p className="line-clamp-2 whitespace-pre-line text-xs text-text-secondary">
           {item.description}
         </p>
         {item.episodeCount && (
           <span className="text-xs text-text-muted">
-            {item.episodeCount} episodios
+            {item.episodeCount} {item.episodeCount === 1 ? 'pista' : 'pistas'}
           </span>
         )}
       </div>

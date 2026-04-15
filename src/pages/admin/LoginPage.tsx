@@ -1,24 +1,24 @@
-import { LogIn } from "lucide-react";
-import { useState } from "react";
-import { Navigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { LogIn } from 'lucide-react';
+import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/useAuth";
-import { signIn } from "@/lib/auth";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAuth } from '@/hooks/useAuth';
+import { signIn } from '@/lib/auth';
 
 export function LoginPage() {
   const { user, loading } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   if (loading) {
@@ -36,12 +36,12 @@ export function LoginPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setError('');
     setSubmitting(true);
     try {
       await signIn(email, password);
     } catch {
-      setError("Credenciales incorrectas");
+      setError('Credenciales incorrectas');
     } finally {
       setSubmitting(false);
     }
@@ -94,7 +94,7 @@ export function LoginPage() {
 
             <Button type="submit" className="w-full" disabled={submitting}>
               <LogIn className="mr-2 size-4" />
-              {submitting ? "Ingresando..." : "Iniciar sesión"}
+              {submitting ? 'Ingresando...' : 'Iniciar sesión'}
             </Button>
           </form>
         </CardContent>

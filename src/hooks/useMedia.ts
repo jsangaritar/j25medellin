@@ -12,7 +12,7 @@ export function useMedia(filters?: { type?: MediaType; featured?: boolean }) {
 export function useMediaBySlug(slug: string | undefined) {
   return useQuery({
     queryKey: ['media', slug],
-    queryFn: () => getMediaBySlug(slug!),
+    queryFn: () => getMediaBySlug(slug as string),
     enabled: !!slug,
   });
 }

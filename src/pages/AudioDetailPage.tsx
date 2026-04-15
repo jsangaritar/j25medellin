@@ -6,17 +6,18 @@ import { MediaNotFound } from '@/components/features/media/MediaNotFound';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Tag } from '@/components/ui/tag';
 import { useMedia, useMediaBySlug } from '@/hooks/useMedia';
+import { getRelatedMedia, getRelatedMediaLabel } from '@/utils/media';
 
 export function AudioDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: item, isLoading } = useMediaBySlug(slug);
-  const { data: allMedia = [] } = useMedia({ type: 'AUDIO' });
+  const { data: allMedia = [] } = useMedia();
 
   if (isLoading) return <MediaDetailSkeleton />;
 
   if (!item) return <MediaNotFound />;
 
-  const related = allMedia.filter((m) => m.id !== item.id).slice(0, 4);
+  const related = getRelatedMedia(item, allMedia, 4);
 
   return (
     <section className="mx-auto max-w-[1440px] px-14 py-10 max-md:px-5">
@@ -42,15 +43,10 @@ export function AudioDetailPage() {
             {item.externalUrl && (
               <div className="p-4">
                 <iframe
-                  src={item.externalUrl
-                    .replace(
-                      'open.spotify.com/episode/',
-                      'open.spotify.com/embed/episode/',
-                    )
-                    .replace(
-                      'open.spotify.com/show/',
-                      'open.spotify.com/embed/show/',
-                    )}
+                  src={item.externalUrl.replace(
+                    'open.spotify.com/',
+                    'open.spotify.com/embed/',
+                  )}
                   title={item.title}
                   className="h-[152px] w-full rounded-xl"
                   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -70,12 +66,12 @@ export function AudioDetailPage() {
           <h1 className="mb-3 font-display text-2xl font-bold text-text-primary">
             {item.title}
           </h1>
-          <p className="text-sm leading-relaxed text-text-secondary">
+          <p className="whitespace-pre-line text-sm leading-relaxed text-text-secondary">
             {item.description}
           </p>
           {item.episodeCount && (
             <p className="mt-2 text-xs text-text-muted">
-              {item.episodeCount} episodios
+              {item.episodeCount} {item.episodeCount === 1 ? 'pista' : 'pistas'}
             </p>
           )}
         </div>
@@ -84,7 +80,7 @@ export function AudioDetailPage() {
         {related.length > 0 && (
           <aside>
             <h3 className="mb-4 font-body text-sm font-semibold text-text-muted">
-              Más episodios
+              {getRelatedMediaLabel(item.type)}
             </h3>
             <div className="flex flex-col gap-4">
               {related.map((r) => (
