@@ -36,6 +36,7 @@ export function DocumentDetailPage() {
                 src={item.thumbnailUrl}
                 alt={item.title}
                 className="aspect-[4/3] w-full object-cover"
+                referrerPolicy="no-referrer"
               />
             )}
             <div className="flex items-center justify-center gap-3 border-t border-border-light p-4">

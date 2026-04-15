@@ -36,6 +36,7 @@ export function AudioDetailPage() {
                 src={item.thumbnailUrl}
                 alt={item.title}
                 className="aspect-video w-full object-cover"
+                referrerPolicy="no-referrer"
               />
             )}
             {item.externalUrl && (

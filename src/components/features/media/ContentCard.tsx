@@ -45,6 +45,7 @@ export function ContentCard({ item }: ContentCardProps) {
             src={item.thumbnailUrl}
             alt={item.title}
             className="size-full object-cover"
+            referrerPolicy="no-referrer"
           />
         ) : (
           <div className="flex size-full items-center justify-center bg-bg-elevated">

@@ -3,6 +3,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDelete } from '@/components/ui/confirm-delete';
+import { type Column, DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
   DialogContent,
@@ -18,14 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { useCourses, useTopics } from '@/hooks/useCourses';
 import { useMedia } from '@/hooks/useMedia';
@@ -95,6 +88,59 @@ export function MediaAdminPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['media'] }),
   });
 
+  const mediaColumns: Column<MediaContent>[] = [
+    {
+      key: 'title',
+      label: 'Título',
+      sortValue: (m) => m.title.toLowerCase(),
+      filterValue: (m) => m.title,
+      render: (m) => <span className="font-medium">{m.title}</span>,
+    },
+    {
+      key: 'type',
+      label: 'Tipo',
+      sortValue: (m) => m.type,
+      filterValue: (m) => MEDIA_TYPE_LABELS[m.type],
+      render: (m) => MEDIA_TYPE_LABELS[m.type],
+    },
+    {
+      key: 'platform',
+      label: 'Plataforma',
+      sortValue: (m) => (m.platform ?? '').toLowerCase(),
+      filterValue: (m) => m.platform ?? '',
+      render: (m) => m.platform ?? '—',
+    },
+    {
+      key: 'featured',
+      label: 'Destacado',
+      sortValue: (m) => (m.featured ? 1 : 0),
+      render: (m) => (m.featured ? 'Sí' : 'No'),
+    },
+    {
+      key: 'actions',
+      label: '',
+      className: 'w-24',
+      render: (m) => (
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => openEdit(m)}
+            className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
+          >
+            <Pencil className="size-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setDeleteTarget({ id: m.id, name: m.title })}
+            className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
+          >
+            <Trash2 className="size-3.5" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   function openCreate() {
     setEditing(null);
     setForm(emptyForm);
@@ -119,49 +165,13 @@ export function MediaAdminPage() {
         </Button>
       </div>
 
-      <div className="rounded-lg border border-border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Título</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Plataforma</TableHead>
-              <TableHead>Destacado</TableHead>
-              <TableHead className="w-24" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {media.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-medium">{item.title}</TableCell>
-                <TableCell>{MEDIA_TYPE_LABELS[item.type]}</TableCell>
-                <TableCell>{item.platform ?? '—'}</TableCell>
-                <TableCell>{item.featured ? 'Sí' : 'No'}</TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => openEdit(item)}
-                      className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
-                    >
-                      <Pencil className="size-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setDeleteTarget({ id: item.id, name: item.title })
-                      }
-                      className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        columns={mediaColumns}
+        data={media}
+        keyFn={(m) => m.id}
+        searchable
+        searchPlaceholder="Buscar contenido..."
+      />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-bg-elevated shadow-[0_8px_30px_rgba(0,0,0,0.5)] sm:max-w-lg">

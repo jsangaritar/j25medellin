@@ -3,6 +3,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDelete } from '@/components/ui/confirm-delete';
+import { type Column, DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
   DialogContent,
@@ -18,14 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { useTopics } from '@/hooks/useCourses';
 import {
@@ -86,6 +79,67 @@ export function TopicsAdminPage() {
     },
   });
 
+  const topicColumns: Column<Topic>[] = [
+    {
+      key: 'title',
+      label: 'Título',
+      sortValue: (t) => t.title.toLowerCase(),
+      filterValue: (t) => t.title,
+      render: (t) => <span className="font-medium">{t.title}</span>,
+    },
+    {
+      key: 'tag',
+      label: 'Etiqueta',
+      sortValue: (t) => t.tag.toLowerCase(),
+      filterValue: (t) => t.tag,
+      render: (t) => t.tag,
+    },
+    {
+      key: 'status',
+      label: 'Estado',
+      sortValue: (t) => t.status,
+      filterValue: (t) => COURSE_STATUS_LABELS[t.status] ?? '',
+      render: (t) => COURSE_STATUS_LABELS[t.status] ?? '—',
+    },
+    {
+      key: 'startDate',
+      label: 'Inicio',
+      sortValue: (t) => (t.startDate ? new Date(t.startDate).getTime() : 0),
+      render: (t) =>
+        t.startDate ? new Date(t.startDate).toLocaleDateString('es-CO') : '—',
+    },
+    {
+      key: 'endDate',
+      label: 'Fin',
+      sortValue: (t) => (t.endDate ? new Date(t.endDate).getTime() : 0),
+      render: (t) =>
+        t.endDate ? new Date(t.endDate).toLocaleDateString('es-CO') : '—',
+    },
+    {
+      key: 'actions',
+      label: '',
+      className: 'w-24',
+      render: (t) => (
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => openEdit(t)}
+            className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
+          >
+            <Pencil className="size-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setDeleteTarget({ id: t.id, name: t.title })}
+            className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
+          >
+            <Trash2 className="size-3.5" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   function openCreate() {
     setEditing(null);
     setForm(emptyForm);
@@ -111,61 +165,13 @@ export function TopicsAdminPage() {
         </Button>
       </div>
 
-      <div className="rounded-lg border border-border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Título</TableHead>
-              <TableHead>Etiqueta</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead>Inicio</TableHead>
-              <TableHead>Fin</TableHead>
-              <TableHead className="w-24" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {topics.map((topic) => (
-              <TableRow key={topic.id}>
-                <TableCell className="font-medium">{topic.title}</TableCell>
-                <TableCell>{topic.tag}</TableCell>
-                <TableCell>
-                  {COURSE_STATUS_LABELS[topic.status] ?? '—'}
-                </TableCell>
-                <TableCell>
-                  {topic.startDate
-                    ? new Date(topic.startDate).toLocaleDateString('es-CO')
-                    : '—'}
-                </TableCell>
-                <TableCell>
-                  {topic.endDate
-                    ? new Date(topic.endDate).toLocaleDateString('es-CO')
-                    : '—'}
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => openEdit(topic)}
-                      className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
-                    >
-                      <Pencil className="size-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setDeleteTarget({ id: topic.id, name: topic.title })
-                      }
-                      className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        columns={topicColumns}
+        data={topics}
+        keyFn={(t) => t.id}
+        searchable
+        searchPlaceholder="Buscar temas..."
+      />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-bg-elevated shadow-[0_8px_30px_rgba(0,0,0,0.5)] sm:max-w-lg">

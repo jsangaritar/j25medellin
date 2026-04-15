@@ -46,6 +46,7 @@ export function VideoDetailPage() {
                 src={item.thumbnailUrl}
                 alt={item.title}
                 className="size-full object-cover"
+                referrerPolicy="no-referrer"
               />
             ) : null}
           </div>

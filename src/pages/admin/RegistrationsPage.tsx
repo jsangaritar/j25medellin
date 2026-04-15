@@ -3,6 +3,7 @@ import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { Download, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { type Column, DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
   DialogContent,
@@ -18,14 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { useCourses } from '@/hooks/useCourses';
 import { useEvents } from '@/hooks/useEvents';
 import { auth, db } from '@/lib/firebase';
@@ -122,6 +115,42 @@ export function RegistrationsPage() {
   const courseMap = new Map(courses.map((c) => [c.id, c.title]));
   const eventMap = new Map(events.map((e) => [e.id, e.title]));
 
+  const regColumns: Column<Registration>[] = [
+    {
+      key: 'fullName',
+      label: 'Nombre',
+      sortValue: (r) => r.fullName.toLowerCase(),
+      filterValue: (r) => r.fullName,
+      render: (r) => <span className="font-medium">{r.fullName}</span>,
+    },
+    {
+      key: 'whatsApp',
+      label: 'WhatsApp',
+      filterValue: (r) => r.whatsApp,
+      render: (r) => r.whatsApp,
+    },
+    {
+      key: 'email',
+      label: 'Email',
+      sortValue: (r) => r.email.toLowerCase(),
+      filterValue: (r) => r.email,
+      render: (r) => r.email,
+    },
+    {
+      key: 'event',
+      label: 'Evento',
+      filterValue: (r) => (r.eventId ? (eventMap.get(r.eventId) ?? '') : ''),
+      render: (r) => (r.eventId ? (eventMap.get(r.eventId) ?? r.eventId) : '—'),
+    },
+    {
+      key: 'course',
+      label: 'Curso',
+      filterValue: (r) => (r.courseId ? (courseMap.get(r.courseId) ?? '') : ''),
+      render: (r) =>
+        r.courseId ? (courseMap.get(r.courseId) ?? r.courseId) : '—',
+    },
+  ];
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -144,46 +173,13 @@ export function RegistrationsPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>WhatsApp</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Evento</TableHead>
-              <TableHead>Curso</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {registrations.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center text-text-muted">
-                  No hay inscripciones
-                </TableCell>
-              </TableRow>
-            ) : (
-              registrations.map((reg) => (
-                <TableRow key={reg.id}>
-                  <TableCell className="font-medium">{reg.fullName}</TableCell>
-                  <TableCell>{reg.whatsApp}</TableCell>
-                  <TableCell>{reg.email}</TableCell>
-                  <TableCell>
-                    {reg.eventId
-                      ? (eventMap.get(reg.eventId) ?? reg.eventId)
-                      : '—'}
-                  </TableCell>
-                  <TableCell>
-                    {reg.courseId
-                      ? (courseMap.get(reg.courseId) ?? reg.courseId)
-                      : '—'}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        columns={regColumns}
+        data={registrations}
+        keyFn={(r) => r.id}
+        searchable
+        searchPlaceholder="Buscar inscripciones..."
+      />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="border-border bg-bg-elevated shadow-[0_8px_30px_rgba(0,0,0,0.5)] sm:max-w-md">

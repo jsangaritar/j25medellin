@@ -3,6 +3,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDelete } from '@/components/ui/confirm-delete';
+import { type Column, DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
   DialogContent,
@@ -18,14 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { useCourses, useTopics } from '@/hooks/useCourses';
 import {
@@ -112,6 +105,53 @@ export function CoursesAdminPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['courses'] }),
   });
 
+  const courseColumns: Column<Course>[] = [
+    {
+      key: 'title',
+      label: 'Título',
+      sortValue: (c) => c.title.toLowerCase(),
+      filterValue: (c) => c.title,
+      render: (c) => <span className="font-medium">{c.title}</span>,
+    },
+    {
+      key: 'topic',
+      label: 'Tema',
+      sortValue: (c) =>
+        (topics.find((t) => t.id === c.topicId)?.title ?? '').toLowerCase(),
+      filterValue: (c) => topics.find((t) => t.id === c.topicId)?.title ?? '',
+      render: (c) => topics.find((t) => t.id === c.topicId)?.title ?? '—',
+    },
+    {
+      key: 'capacity',
+      label: 'Cupos',
+      sortValue: (c) => c.capacity ?? 0,
+      render: (c) => String(c.capacity ?? '∞'),
+    },
+    {
+      key: 'actions',
+      label: '',
+      className: 'w-24',
+      render: (c) => (
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => openEdit(c)}
+            className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
+          >
+            <Pencil className="size-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setDeleteTarget({ id: c.id, name: c.title })}
+            className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
+          >
+            <Trash2 className="size-3.5" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   function openCreate() {
     setEditing(null);
     setForm(emptyForm);
@@ -136,49 +176,13 @@ export function CoursesAdminPage() {
         </Button>
       </div>
 
-      <div className="rounded-lg border border-border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Título</TableHead>
-              <TableHead>Tema</TableHead>
-              <TableHead>Cupos</TableHead>
-              <TableHead className="w-24" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {courses.map((course) => (
-              <TableRow key={course.id}>
-                <TableCell className="font-medium">{course.title}</TableCell>
-                <TableCell>
-                  {topics.find((t) => t.id === course.topicId)?.title ?? '—'}
-                </TableCell>
-                <TableCell>{course.capacity ?? '∞'}</TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => openEdit(course)}
-                      className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
-                    >
-                      <Pencil className="size-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setDeleteTarget({ id: course.id, name: course.title })
-                      }
-                      className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        columns={courseColumns}
+        data={courses}
+        keyFn={(c) => c.id}
+        searchable
+        searchPlaceholder="Buscar cursos..."
+      />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-bg-elevated shadow-[0_8px_30px_rgba(0,0,0,0.5)] sm:max-w-lg">

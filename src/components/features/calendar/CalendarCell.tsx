@@ -1,26 +1,26 @@
-import { Clock, MapPin } from "lucide-react";
-import type React from "react";
-import { forwardRef, useState } from "react";
+import { Clock, MapPin } from 'lucide-react';
+import type React from 'react';
+import { forwardRef, useState } from 'react';
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card";
+} from '@/components/ui/hover-card';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
-import { useIsMobile } from "@/hooks/useIsMobile";
-import { cn } from "@/lib/utils";
-import type { Event } from "@/types";
-import type { CalendarDay } from "@/utils/calendar";
+} from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/useIsMobile';
+import { cn } from '@/lib/utils';
+import type { Event } from '@/types';
+import type { CalendarDay } from '@/utils/calendar';
 import {
   capitalizeFirst,
   formatDayNumber,
   formatEventTime,
-} from "@/utils/dates";
+} from '@/utils/dates';
 
 interface CalendarCellProps {
   day: CalendarDay;
@@ -32,10 +32,10 @@ function EventDetailsContent({ day }: { day: CalendarDay }) {
     <div className="flex flex-col gap-3">
       <p className="font-body text-xs font-medium uppercase tracking-wider text-text-muted">
         {capitalizeFirst(
-          day.date.toLocaleDateString("es-CO", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
+          day.date.toLocaleDateString('es-CO', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
           }),
         )}
       </p>
@@ -49,15 +49,15 @@ function EventDetailsContent({ day }: { day: CalendarDay }) {
 }
 
 function EventCard({ event }: { event: Event }) {
-  const type = event.eventType ?? "j+";
-  const isJPlus = type === "j+";
+  const type = event.eventType ?? 'j+';
+  const isJPlus = type === 'j+';
 
   return (
     <div className="flex gap-3 rounded-lg border border-border bg-[#2a2a2a] p-3">
       <div
         className={cn(
-          "mt-0.5 w-0.5 shrink-0 self-stretch rounded-full",
-          isJPlus ? "bg-accent-bright" : "bg-text-muted",
+          'mt-0.5 w-0.5 shrink-0 self-stretch rounded-full',
+          isJPlus ? 'bg-accent-bright' : 'bg-text-muted',
         )}
       />
       <div className="min-w-0 flex-1">
@@ -67,6 +67,7 @@ function EventCard({ event }: { event: Event }) {
               src={event.imageUrl}
               alt={event.title}
               className="h-full w-full rounded object-cover"
+              referrerPolicy="no-referrer"
             />
           </div>
         )}
@@ -77,8 +78,8 @@ function EventCard({ event }: { event: Event }) {
           <span className="flex items-center gap-1.5 text-xs text-text-muted">
             <Clock
               className={cn(
-                "size-3 shrink-0",
-                isJPlus ? "text-accent-muted" : "text-text-dim",
+                'size-3 shrink-0',
+                isJPlus ? 'text-accent-muted' : 'text-text-dim',
               )}
             />
             {formatEventTime(event.date)}
@@ -88,8 +89,8 @@ function EventCard({ event }: { event: Event }) {
             <span className="flex items-center gap-1.5 text-xs text-text-muted">
               <MapPin
                 className={cn(
-                  "size-3 shrink-0",
-                  isJPlus ? "text-accent-muted" : "text-text-dim",
+                  'size-3 shrink-0',
+                  isJPlus ? 'text-accent-muted' : 'text-text-dim',
                 )}
               />
               <span className="truncate">{event.location}</span>
@@ -108,18 +109,18 @@ const CellContent = forwardRef<
     isToday: boolean;
     hasEvents: boolean;
     onClick?: () => void;
-  } & React.ComponentPropsWithoutRef<"div">
+  } & React.ComponentPropsWithoutRef<'div'>
 >(function CellContent({ day, isToday, hasEvents, onClick, ...rest }, ref) {
   const classes = cn(
-    "group flex h-12 flex-col items-center justify-center rounded-lg text-sm transition-all duration-200 max-md:h-10 max-md:text-xs",
-    !day.isCurrentMonth && "text-text-dim",
-    day.isCurrentMonth && !hasEvents && "text-text-muted",
+    'group flex h-12 flex-col items-center justify-center rounded-lg text-sm transition-all duration-200 max-md:h-10 max-md:text-xs',
+    !day.isCurrentMonth && 'text-text-dim',
+    day.isCurrentMonth && !hasEvents && 'text-text-muted',
     day.isCurrentMonth &&
       hasEvents &&
-      "cursor-pointer border border-transparent text-text-primary hover:border-border hover:bg-bg-elevated",
-    isToday && "bg-bg-elevated font-semibold",
-    isToday && hasEvents && "hover:ring-1 hover:ring-accent-bright/30",
-    hasEvents && "active:scale-95 active:bg-bg-elevated",
+      'cursor-pointer border border-transparent text-text-primary hover:border-border hover:bg-bg-elevated',
+    isToday && 'bg-bg-elevated font-semibold',
+    isToday && hasEvents && 'hover:ring-1 hover:ring-accent-bright/30',
+    hasEvents && 'active:scale-95 active:bg-bg-elevated',
   );
 
   const inner = (
@@ -127,7 +128,7 @@ const CellContent = forwardRef<
       <span
         className={cn(
           hasEvents &&
-            "transition-colors duration-200 group-hover:text-accent-bright",
+            'transition-colors duration-200 group-hover:text-accent-bright',
         )}
       >
         {formatDayNumber(day.date)}
@@ -138,10 +139,10 @@ const CellContent = forwardRef<
             <span
               key={event.id}
               className={cn(
-                "size-1 rounded-full transition-colors duration-200",
-                (event.eventType ?? "j+") === "j+"
-                  ? "bg-accent-bright"
-                  : "bg-text-muted",
+                'size-1 rounded-full transition-colors duration-200',
+                (event.eventType ?? 'j+') === 'j+'
+                  ? 'bg-accent-bright'
+                  : 'bg-text-muted',
               )}
             />
           ))}
@@ -157,7 +158,7 @@ const CellContent = forwardRef<
         ref={ref as React.Ref<HTMLButtonElement>}
         className={classes}
         onClick={onClick}
-        {...(rest as React.ComponentPropsWithoutRef<"button">)}
+        {...(rest as React.ComponentPropsWithoutRef<'button'>)}
       >
         {inner}
       </button>
@@ -197,10 +198,10 @@ export function CalendarCell({ day, isToday }: CalendarCellProps) {
             <SheetHeader>
               <SheetTitle className="text-text-primary">
                 {capitalizeFirst(
-                  day.date.toLocaleDateString("es-CO", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
+                  day.date.toLocaleDateString('es-CO', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
                   }),
                 )}
               </SheetTitle>

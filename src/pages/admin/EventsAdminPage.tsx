@@ -3,6 +3,7 @@ import { Calendar, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDelete } from '@/components/ui/confirm-delete';
+import { type Column, DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
   DialogContent,
@@ -18,14 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { useEvents } from '@/hooks/useEvents';
 import {
@@ -34,6 +27,7 @@ import {
   updateDocument,
 } from '@/lib/firestore';
 import { syncCalendarEvents } from '@/lib/sync-calendar';
+import { formatDriveIdToFetchableImage } from '@/lib/utils';
 import type { Event, EventType } from '@/types';
 
 type EventForm = Omit<Event, 'id'>;
@@ -53,10 +47,7 @@ const emptyForm: EventForm = {
 };
 
 export function EventsAdminPage() {
-  const { data: rawEvents = [] } = useEvents();
-  const events = [...rawEvents].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-  );
+  const { data: events = [] } = useEvents();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
@@ -76,6 +67,11 @@ export function EventsAdminPage() {
           typeof form.tags === 'string'
             ? (form.tags as string).split(',').map((t: string) => t.trim())
             : form.tags,
+        imageUrl: form.imageUrl
+          ? form.imageUrl.includes('drive.google.com')
+            ? formatDriveIdToFetchableImage(form.imageUrl)
+            : form.imageUrl
+          : undefined,
       };
       if (editing) {
         await updateDocument('events', editing.id, data);
@@ -110,6 +106,85 @@ export function EventsAdminPage() {
       setTimeout(() => setSyncResult(null), 5000);
     },
   });
+
+  const eventColumns: Column<Event>[] = [
+    {
+      key: 'title',
+      label: 'Título',
+      sortValue: (e) => e.title.toLowerCase(),
+      filterValue: (e) => e.title,
+      render: (e) => (
+        <span className="flex items-center gap-2 font-medium">
+          {e.title}
+          {e.googleCalendarEventId && (
+            <Calendar className="size-3.5 text-accent-muted" />
+          )}
+        </span>
+      ),
+    },
+    {
+      key: 'eventType',
+      label: 'Tipo',
+      sortValue: (e) => e.eventType ?? 'j+',
+      filterValue: (e) => (e.eventType === 'j+' ? 'J+' : 'Iglesia'),
+      render: (e) => {
+        const type = e.eventType ?? 'j+';
+        return (
+          <span
+            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+              type === 'j+'
+                ? 'bg-accent-dim text-accent-bright'
+                : 'bg-bg-elevated text-text-muted'
+            }`}
+          >
+            {type === 'j+' ? 'J+' : 'Iglesia'}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'date',
+      label: 'Fecha',
+      sortValue: (e) => new Date(e.date).getTime(),
+      render: (e) => new Date(e.date).toLocaleDateString('es-CO'),
+    },
+    {
+      key: 'location',
+      label: 'Lugar',
+      sortValue: (e) => e.location.toLowerCase(),
+      filterValue: (e) => e.location,
+      render: (e) => e.location,
+    },
+    {
+      key: 'featured',
+      label: 'Destacado',
+      sortValue: (e) => (e.featured ? 1 : 0),
+      render: (e) => (e.featured ? 'Sí' : 'No'),
+    },
+    {
+      key: 'actions',
+      label: '',
+      className: 'w-24',
+      render: (e) => (
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => openEdit(e)}
+            className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
+          >
+            <Pencil className="size-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setDeleteTarget({ id: e.id, name: e.title })}
+            className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
+          >
+            <Trash2 className="size-3.5" />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   function openCreate() {
     setEditing(null);
@@ -159,73 +234,13 @@ export function EventsAdminPage() {
         </div>
       )}
 
-      <div className="rounded-lg border border-border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Título</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Fecha</TableHead>
-              <TableHead>Lugar</TableHead>
-              <TableHead>Destacado</TableHead>
-              <TableHead className="w-24" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {events.map((event) => {
-              const type = event.eventType ?? 'j+';
-              return (
-                <TableRow key={event.id}>
-                  <TableCell className="font-medium">
-                    <span className="flex items-center gap-2">
-                      {event.title}
-                      {event.googleCalendarEventId && (
-                        <Calendar className="size-3.5 text-accent-muted" />
-                      )}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                        type === 'j+'
-                          ? 'bg-accent-dim text-accent-bright'
-                          : 'bg-bg-elevated text-text-muted'
-                      }`}
-                    >
-                      {type === 'j+' ? 'J+' : 'Iglesia'}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(event.date).toLocaleDateString('es-CO')}
-                  </TableCell>
-                  <TableCell>{event.location}</TableCell>
-                  <TableCell>{event.featured ? 'Sí' : 'No'}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <button
-                        type="button"
-                        onClick={() => openEdit(event)}
-                        className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-text-primary"
-                      >
-                        <Pencil className="size-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setDeleteTarget({ id: event.id, name: event.title })
-                        }
-                        className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
-                      >
-                        <Trash2 className="size-3.5" />
-                      </button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        columns={eventColumns}
+        data={events}
+        keyFn={(e) => e.id}
+        searchable
+        searchPlaceholder="Buscar eventos..."
+      />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-bg-elevated shadow-[0_8px_30px_rgba(0,0,0,0.5)] sm:max-w-lg">
