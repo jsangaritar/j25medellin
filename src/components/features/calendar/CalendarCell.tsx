@@ -6,6 +6,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import {
   Sheet,
   SheetContent,
@@ -63,11 +64,10 @@ function EventCard({ event }: { event: Event }) {
       <div className="min-w-0 flex-1">
         {isJPlus && event.imageUrl && (
           <div className="mb-2 aspect-[16/9]">
-            <img
+            <OptimizedImage
               src={event.imageUrl}
               alt={event.title}
               className="h-full w-full rounded object-cover"
-              referrerPolicy="no-referrer"
             />
           </div>
         )}

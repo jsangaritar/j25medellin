@@ -1,5 +1,5 @@
-import { Clock, ImageOff, MapPin } from 'lucide-react';
-import { useState } from 'react';
+import { Clock, MapPin } from 'lucide-react';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Tag } from '@/components/ui/tag';
 import type { Event } from '@/types';
 import { formatEventDate, formatEventTime } from '@/utils/dates';
@@ -10,25 +10,16 @@ interface EventCardProps {
 
 export function EventCard({ event }: EventCardProps) {
   const date = new Date(event.date);
-  const [imgError, setImgError] = useState(false);
 
   return (
     <div className="group overflow-hidden rounded-xl border border-border-light bg-bg-card transition-colors hover:border-border">
       {/* Image with date badge */}
       <div className="relative aspect-[16/10]">
-        {event.imageUrl && !imgError ? (
-          <img
-            src={event.imageUrl}
-            alt={event.title}
-            className="size-full object-cover"
-            referrerPolicy="no-referrer"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center bg-bg-elevated">
-            <ImageOff className="size-8 text-text-dim" />
-          </div>
-        )}
+        <OptimizedImage
+          src={event.imageUrl}
+          alt={event.title}
+          className="size-full object-cover"
+        />
 
         {/* Date badge */}
         <div className="absolute left-3 top-3 flex flex-col items-center rounded-lg bg-bg-primary/90 px-3 py-2 backdrop-blur-sm">

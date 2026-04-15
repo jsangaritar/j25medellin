@@ -1,5 +1,5 @@
-import { Calendar, ImageOff, MapPin, MessageCircle } from 'lucide-react';
-import { useState } from 'react';
+import { Calendar, MapPin, MessageCircle } from 'lucide-react';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Tag } from '@/components/ui/tag';
 import type { Event } from '@/types';
 import { formatEventDate } from '@/utils/dates';
@@ -11,27 +11,17 @@ interface FeaturedEventProps {
 }
 
 export function FeaturedEvent({ event, whatsappNumber }: FeaturedEventProps) {
-  const [imgError, setImgError] = useState(false);
-
   return (
     <div className="overflow-hidden rounded-2xl border border-border-light bg-bg-card">
       <div className="grid grid-cols-1 lg:grid-cols-2">
         {/* Image — 16:9 on mobile, letterboxed on desktop when text is taller */}
-        {event.imageUrl && !imgError ? (
-          <div className="flex items-center bg-black max-lg:aspect-[16/9]">
-            <img
-              src={event.imageUrl}
-              alt={event.title}
-              className="aspect-[16/9] w-full object-cover"
-              referrerPolicy="no-referrer"
-              onError={() => setImgError(true)}
-            />
-          </div>
-        ) : (
-          <div className="flex items-center justify-center bg-bg-elevated max-lg:aspect-[16/9]">
-            <ImageOff className="size-12 text-text-dim" />
-          </div>
-        )}
+        <div className="flex items-center bg-black max-lg:aspect-[16/9]">
+          <OptimizedImage
+            src={event.imageUrl}
+            alt={event.title}
+            className="aspect-[16/9] w-full object-cover"
+          />
+        </div>
 
         {/* Content */}
         <div className="flex flex-col justify-center gap-5 p-8 max-md:p-5">

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ContentCard } from '@/components/features/media/ContentCard';
 import { MediaDetailSkeleton } from '@/components/features/media/MediaDetailSkeleton';
 import { MediaNotFound } from '@/components/features/media/MediaNotFound';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Tag } from '@/components/ui/tag';
 import { useMedia, useMediaBySlug } from '@/hooks/useMedia';
 
@@ -32,11 +33,10 @@ export function DocumentDetailPage() {
           {/* Document preview */}
           <div className="mb-6 overflow-hidden rounded-xl border border-border-light bg-bg-card">
             {item.thumbnailUrl && (
-              <img
+              <OptimizedImage
                 src={item.thumbnailUrl}
                 alt={item.title}
                 className="aspect-[4/3] w-full object-cover"
-                referrerPolicy="no-referrer"
               />
             )}
             <div className="flex items-center justify-center gap-3 border-t border-border-light p-4">

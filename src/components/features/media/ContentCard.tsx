@@ -1,5 +1,6 @@
 import { FileText, Headphones, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Tag } from '@/components/ui/tag';
 import type { MediaContent } from '@/types';
 
@@ -40,18 +41,12 @@ export function ContentCard({ item }: ContentCardProps) {
     >
       {/* Thumbnail */}
       <div className="relative aspect-video">
-        {item.thumbnailUrl ? (
-          <img
-            src={item.thumbnailUrl}
-            alt={item.title}
-            className="size-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center bg-bg-elevated">
-            <Icon className="size-10 text-text-dim" />
-          </div>
-        )}
+        <OptimizedImage
+          src={item.thumbnailUrl}
+          alt={item.title}
+          className="size-full object-cover"
+          fallback={<Icon className="size-10 text-text-dim" />}
+        />
         {/* Type badge */}
         <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-md bg-bg-primary/80 px-2 py-1 backdrop-blur-sm">
           <Icon className="size-3.5 text-accent-bright" />

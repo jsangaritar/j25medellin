@@ -1,4 +1,5 @@
 import { MessageCircle } from 'lucide-react';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface HeroSectionProps {
@@ -19,13 +20,13 @@ export function HeroSection({
   return (
     <section className="relative h-[680px] w-full overflow-hidden max-md:h-[520px]">
       {/* Background image */}
-      <img
+      <OptimizedImage
         src={imageUrl || '/images/church.png'}
         alt=""
         className="absolute inset-0 size-full object-cover object-top"
         loading="eager"
+        decoding="sync"
         fetchPriority="high"
-        referrerPolicy="no-referrer"
       />
 
       {/* Gradient overlay */}
