@@ -1,23 +1,23 @@
-import { Film } from 'lucide-react';
-import { useState } from 'react';
-import { ContentCard } from '@/components/features/media/ContentCard';
-import { PageBanner } from '@/components/layout/PageBanner';
-import { EmptyState } from '@/components/ui/empty-state';
-import { SectionHeader } from '@/components/ui/section-header';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useMedia } from '@/hooks/useMedia';
-import type { MediaType } from '@/types';
+import { Film } from "lucide-react";
+import { useState } from "react";
+import { ContentCard } from "@/components/features/media/ContentCard";
+import { PageBanner } from "@/components/layout/PageBanner";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SectionHeader } from "@/components/ui/section-header";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useMedia } from "@/hooks/useMedia";
+import type { MediaType } from "@/types";
 
-const TABS: { label: string; value: MediaType | 'ALL' }[] = [
-  { label: 'Todo', value: 'ALL' },
-  { label: 'Videos', value: 'VIDEO' },
-  { label: 'Audios', value: 'AUDIO' },
-  { label: 'Documentos', value: 'DOCUMENT' },
+const TABS: { label: string; value: MediaType | "ALL" }[] = [
+  { label: "Todo", value: "ALL" },
+  { label: "Videos", value: "VIDEO" },
+  { label: "Audios", value: "AUDIO" },
+  { label: "Documentos", value: "DOCUMENT" },
 ];
 
 export function MediaPage() {
-  const [activeTab, setActiveTab] = useState<MediaType | 'ALL'>('ALL');
+  const [activeTab, setActiveTab] = useState<MediaType | "ALL">("ALL");
   const { data: allMediaRaw = [], isLoading } = useMedia();
   const { data: featuredMediaRaw = [] } = useMedia({ featured: true });
 
@@ -25,7 +25,7 @@ export function MediaPage() {
   const featuredMedia = featuredMediaRaw.filter((m) => m.visible !== false);
 
   const filtered =
-    activeTab === 'ALL'
+    activeTab === "ALL"
       ? allMedia
       : allMedia.filter((m) => m.type === activeTab);
 
@@ -33,7 +33,7 @@ export function MediaPage() {
     <>
       <PageBanner
         title="Media"
-        subtitle="Videos, podcasts y recursos para tu crecimiento espiritual."
+        subtitle="Videos, listas de reproducción y recursos para tu crecimiento espiritual."
       />
 
       <section className="mx-auto max-w-[1440px] px-14 py-16 max-md:px-5 max-md:py-10">
@@ -90,7 +90,7 @@ export function MediaPage() {
                 <SectionHeader label="EXPLORAR" title="Todo el contenido" />
                 <Tabs
                   value={activeTab}
-                  onValueChange={(v) => setActiveTab(v as MediaType | 'ALL')}
+                  onValueChange={(v) => setActiveTab(v as MediaType | "ALL")}
                 >
                   <TabsList className="gap-1 rounded-xl bg-bg-elevated p-1">
                     {TABS.map((tab) => (

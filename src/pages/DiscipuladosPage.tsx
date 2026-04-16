@@ -1,23 +1,23 @@
-import { BookOpen } from 'lucide-react';
-import { useState } from 'react';
-import { CourseCard } from '@/components/features/courses/CourseCard';
-import { QuarterlyBanner } from '@/components/features/courses/QuarterlyBanner';
-import { RegistrationModal } from '@/components/features/registration/RegistrationModal';
-import { PageBanner } from '@/components/layout/PageBanner';
-import { EmptyState } from '@/components/ui/empty-state';
-import { SectionHeader } from '@/components/ui/section-header';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useAllCourseTopics } from '@/hooks/useCourses';
-import type { Course } from '@/types';
+import { BookOpen } from "lucide-react";
+import { useState } from "react";
+import { CourseCard } from "@/components/features/courses/CourseCard";
+import { QuarterlyBanner } from "@/components/features/courses/QuarterlyBanner";
+import { RegistrationModal } from "@/components/features/registration/RegistrationModal";
+import { PageBanner } from "@/components/layout/PageBanner";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SectionHeader } from "@/components/ui/section-header";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAllCourseTopics } from "@/hooks/useCourses";
+import type { Course } from "@/types";
 
 export function DiscipuladosPage() {
   const { data: allTopics = [], isLoading } = useAllCourseTopics();
   const [registerCourse, setRegisterCourse] = useState<Course | null>(null);
 
-  const activeTopics = allTopics.filter((t) => t.status === 'ACTIVE');
-  const comingSoonTopics = allTopics.filter((t) => t.status === 'COMING_SOON');
+  const activeTopics = allTopics.filter((t) => t.status === "ACTIVE");
+  const comingSoonTopics = allTopics.filter((t) => t.status === "COMING_SOON");
   const completedTopics = allTopics
-    .filter((t) => t.status === 'COMPLETED')
+    .filter((t) => t.status === "COMPLETED")
     .sort(
       (a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime(),
     );
@@ -29,7 +29,7 @@ export function DiscipuladosPage() {
     <>
       <PageBanner
         title="Discipulados"
-        subtitle="Crece en tu fe a través de líneas de profundización con cupo limitado."
+        subtitle="Crece en tu fe a través de líneas de profundización."
       />
 
       <section className="mx-auto max-w-[1440px] px-14 py-16 max-md:px-5 max-md:py-10">
