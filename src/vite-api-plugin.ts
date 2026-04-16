@@ -1,5 +1,9 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { loadEnv, type Plugin } from 'vite';
+import {
+  contactNotificationHtml,
+  registrationConfirmationHtml,
+} from '../api/email-templates';
 
 /**
  * Vite dev middleware that replicates Vercel serverless endpoints locally,
@@ -154,6 +158,9 @@ export function apiDevPlugin(): Plugin {
             }
 
             let registrationId: string;
+            let courseName: string | undefined;
+            let topicName: string | undefined;
+            let eventName: string | undefined;
 
             if (courseId) {
               const courseRef = db.collection('courses').doc(courseId);
@@ -166,6 +173,7 @@ export function apiDevPlugin(): Plugin {
               if (!courseSnap.exists) {
                 return json(res, 404, { error: 'COURSE_NOT_FOUND' });
               }
+              courseName = courseSnap.data()?.title as string | undefined;
               const topicId = courseSnap.data()?.topicId as string | undefined;
 
               if (topicId) {
@@ -173,6 +181,7 @@ export function apiDevPlugin(): Plugin {
                   .collection('courseTopics')
                   .doc(topicId)
                   .get();
+                topicName = topicSnap.data()?.title as string | undefined;
                 const topicCourseIds =
                   (topicSnap.data()?.courseIds as string[] | undefined) ?? [];
 
@@ -244,6 +253,14 @@ export function apiDevPlugin(): Plugin {
 
               registrationId = regDocId;
             } else {
+              if (eventId) {
+                const eventSnap = await db
+                  .collection('events')
+                  .doc(eventId as string)
+                  .get();
+                eventName = eventSnap.data()?.title as string | undefined;
+              }
+
               const docRef = await db.collection('registrations').add({
                 fullName,
                 whatsApp,
@@ -261,16 +278,30 @@ export function apiDevPlugin(): Plugin {
               try {
                 const { Resend } = await import('resend');
                 const resend = new Resend(resendKey);
+                const isCourse = Boolean(courseId);
+                const itemName = isCourse ? courseName : eventName;
+                const configSnap = await db.doc('settings/config').get();
+                const configData = configSnap.data();
                 await resend.emails.send({
                   from: 'J+ Medellin <noreply@j25medellin.com>',
                   to: email as string,
-                  subject: '¡Inscripción confirmada! — J+',
-                  html: `
-                    <h2>¡Hola ${fullName}!</h2>
-                    <p>Tu inscripción ha sido registrada exitosamente.</p>
-                    <p>Te contactaremos por WhatsApp al número ${whatsApp} con más detalles.</p>
-                    <p>— Equipo J+</p>
-                  `,
+                  subject: itemName
+                    ? `¡Inscripción confirmada — ${itemName}! — J+`
+                    : '¡Inscripción confirmada! — J+',
+                  html: registrationConfirmationHtml({
+                    fullName: fullName as string,
+                    type: isCourse ? 'course' : 'event',
+                    courseName,
+                    topicName,
+                    eventName,
+                    siteConfig: {
+                      instagramUrl: configData?.instagramUrl as
+                        | string
+                        | undefined,
+                      youtubeUrl: configData?.youtubeUrl as string | undefined,
+                      calendarUrl: env.GOOGLE_CALENDAR_J_URL,
+                    },
+                  }),
                 });
               } catch (emailError) {
                 console.error('Email send error:', emailError);
@@ -357,7 +388,8 @@ export function apiDevPlugin(): Plugin {
             // Forward email
             const resendKey = env.RESEND_API_KEY;
             const configSnap = await db.doc('settings/config').get();
-            const contactEmail = configSnap.data()?.contactEmail;
+            const configData = configSnap.data();
+            const contactEmail = configData?.contactEmail;
 
             if (resendKey && contactEmail) {
               try {
@@ -368,14 +400,18 @@ export function apiDevPlugin(): Plugin {
                   to: contactEmail,
                   replyTo: email as string,
                   subject: `Nuevo mensaje de contacto — ${fullName}`,
-                  html: `
-                    <h2>Nuevo mensaje de contacto</h2>
-                    <p><strong>Nombre:</strong> ${fullName}</p>
-                    <p><strong>WhatsApp:</strong> ${whatsApp}</p>
-                    <p><strong>Correo:</strong> ${email}</p>
-                    <p><strong>Mensaje:</strong></p>
-                    <p>${(message as string).replace(/\n/g, '<br>')}</p>
-                  `,
+                  html: contactNotificationHtml({
+                    fullName: fullName as string,
+                    whatsApp: whatsApp as string,
+                    email: email as string,
+                    message: message as string,
+                    siteConfig: {
+                      instagramUrl: configData?.instagramUrl as
+                        | string
+                        | undefined,
+                      youtubeUrl: configData?.youtubeUrl as string | undefined,
+                    },
+                  }),
                 });
               } catch (emailError) {
                 console.error('Email send error:', emailError);

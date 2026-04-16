@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import admin from 'firebase-admin';
 import { Resend } from 'resend';
+import { contactNotificationHtml } from './email-templates';
 
 if (!admin.apps.length) {
   const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
@@ -44,7 +45,8 @@ export default async function handler(
     // Forward email to contact address
     const resendKey = process.env.RESEND_API_KEY;
     const configSnap = await db.doc('settings/config').get();
-    const contactEmail = configSnap.data()?.contactEmail;
+    const configData = configSnap.data();
+    const contactEmail = configData?.contactEmail;
 
     if (resendKey && contactEmail) {
       const resend = new Resend(resendKey);
@@ -53,14 +55,16 @@ export default async function handler(
         to: contactEmail,
         replyTo: email,
         subject: `Nuevo mensaje de contacto — ${fullName}`,
-        html: `
-          <h2>Nuevo mensaje de contacto</h2>
-          <p><strong>Nombre:</strong> ${fullName}</p>
-          <p><strong>WhatsApp:</strong> ${whatsApp}</p>
-          <p><strong>Correo:</strong> ${email}</p>
-          <p><strong>Mensaje:</strong></p>
-          <p>${message.replace(/\n/g, '<br>')}</p>
-        `,
+        html: contactNotificationHtml({
+          fullName,
+          whatsApp,
+          email,
+          message,
+          siteConfig: {
+            instagramUrl: configData?.instagramUrl as string | undefined,
+            youtubeUrl: configData?.youtubeUrl as string | undefined,
+          },
+        }),
       });
     }
 

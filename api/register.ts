@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import admin from 'firebase-admin';
 import { Resend } from 'resend';
+import { registrationConfirmationHtml } from './email-templates';
 
 if (!admin.apps.length) {
   const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
@@ -33,6 +34,9 @@ export default async function handler(
 
   try {
     let registrationId: string;
+    let courseName: string | undefined;
+    let topicName: string | undefined;
+    let eventName: string | undefined;
 
     if (courseId) {
       // ── Course registration: atomic transaction with capacity check ──
@@ -47,6 +51,7 @@ export default async function handler(
       if (!courseSnap.exists) {
         return res.status(404).json({ error: 'COURSE_NOT_FOUND' });
       }
+      courseName = courseSnap.data()?.title as string | undefined;
       const topicId = courseSnap.data()?.topicId as string | undefined;
 
       if (topicId) {
@@ -54,6 +59,7 @@ export default async function handler(
           .collection('courseTopics')
           .doc(topicId)
           .get();
+        topicName = topicSnap.data()?.title as string | undefined;
         const topicCourseIds =
           (topicSnap.data()?.courseIds as string[] | undefined) ?? [];
 
@@ -135,6 +141,11 @@ export default async function handler(
       registrationId = regDocId;
     } else {
       // ── Event-only registration: simple write ──
+      if (eventId) {
+        const eventSnap = await db.collection('events').doc(eventId).get();
+        eventName = eventSnap.data()?.title as string | undefined;
+      }
+
       const docRef = await db.collection('registrations').add({
         fullName,
         whatsApp,
@@ -151,16 +162,28 @@ export default async function handler(
     if (resendKey) {
       try {
         const resend = new Resend(resendKey);
+        const isCourse = Boolean(courseId);
+        const itemName = isCourse ? courseName : eventName;
+        const configSnap = await db.doc('settings/config').get();
+        const configData = configSnap.data();
         await resend.emails.send({
           from: 'J+ Medellin <noreply@j25medellin.com>',
           to: email,
-          subject: '¡Inscripción confirmada! — J+',
-          html: `
-            <h2>¡Hola ${fullName}!</h2>
-            <p>Tu inscripción ha sido registrada exitosamente.</p>
-            <p>Te contactaremos por WhatsApp al número ${whatsApp} con más detalles.</p>
-            <p>— Equipo J+</p>
-          `,
+          subject: itemName
+            ? `¡Inscripción confirmada — ${itemName}! — J+`
+            : '¡Inscripción confirmada! — J+',
+          html: registrationConfirmationHtml({
+            fullName,
+            type: isCourse ? 'course' : 'event',
+            courseName,
+            topicName,
+            eventName,
+            siteConfig: {
+              instagramUrl: configData?.instagramUrl as string | undefined,
+              youtubeUrl: configData?.youtubeUrl as string | undefined,
+              calendarUrl: process.env.GOOGLE_CALENDAR_J_URL,
+            },
+          }),
         });
       } catch (emailError) {
         console.error('Email send error:', emailError);
