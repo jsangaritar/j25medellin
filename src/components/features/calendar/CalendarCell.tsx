@@ -67,7 +67,8 @@ function EventCard({ event }: { event: Event }) {
             <OptimizedImage
               src={event.imageUrl}
               alt={event.title}
-              className="h-full w-full rounded object-cover"
+              className="size-full rounded"
+              imgClassName="object-cover"
             />
           </div>
         )}

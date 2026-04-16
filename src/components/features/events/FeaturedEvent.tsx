@@ -19,7 +19,8 @@ export function FeaturedEvent({ event, whatsappNumber }: FeaturedEventProps) {
           <OptimizedImage
             src={event.imageUrl}
             alt={event.title}
-            className="aspect-[16/9] w-full object-cover"
+            className="aspect-[16/9] w-full"
+            imgClassName="object-cover"
           />
         </div>
 

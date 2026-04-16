@@ -3,8 +3,15 @@ import { type ReactNode, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface OptimizedImageProps
-  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'onError' | 'alt'> {
+  extends Omit<
+    React.ImgHTMLAttributes<HTMLImageElement>,
+    'onError' | 'alt' | 'className'
+  > {
   alt: string;
+  /** Classes applied to the wrapper (layout, sizing, positioning, rounding) */
+  className?: string;
+  /** Classes applied to the inner <img> (object-fit, etc.) */
+  imgClassName?: string;
   /** Custom fallback content shown when src is missing or fails to load */
   fallback?: ReactNode;
 }
@@ -12,6 +19,7 @@ interface OptimizedImageProps
 export function OptimizedImage({
   alt,
   className,
+  imgClassName,
   fallback,
   src,
   ...props
@@ -21,14 +29,19 @@ export function OptimizedImage({
 
   if (!src || error) {
     return (
-      <div className="flex size-full items-center justify-center bg-bg-elevated">
+      <div
+        className={cn(
+          'flex items-center justify-center bg-bg-elevated',
+          className,
+        )}
+      >
         {fallback ?? <ImageOff className="size-8 text-text-dim" />}
       </div>
     );
   }
 
   return (
-    <div className="relative size-full overflow-hidden">
+    <div className={cn('relative overflow-hidden', className)}>
       {!loaded && (
         <div className="absolute inset-0 animate-pulse bg-bg-elevated" />
       )}
@@ -37,9 +50,9 @@ export function OptimizedImage({
         src={src}
         alt={alt}
         className={cn(
-          'transition-opacity duration-300',
+          'size-full transition-opacity duration-300',
           loaded ? 'opacity-100' : 'opacity-0',
-          className,
+          imgClassName,
         )}
         loading={props.loading ?? 'lazy'}
         decoding={props.decoding ?? 'async'}

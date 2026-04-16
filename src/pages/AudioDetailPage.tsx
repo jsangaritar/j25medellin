@@ -37,7 +37,8 @@ export function AudioDetailPage() {
               <OptimizedImage
                 src={item.thumbnailUrl}
                 alt={item.title}
-                className="aspect-video w-full object-cover"
+                className="aspect-video w-full"
+                imgClassName="object-cover"
               />
             )}
             {item.externalUrl && (

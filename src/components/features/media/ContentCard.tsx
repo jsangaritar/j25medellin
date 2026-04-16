@@ -44,7 +44,8 @@ export function ContentCard({ item }: ContentCardProps) {
         <OptimizedImage
           src={item.thumbnailUrl}
           alt={item.title}
-          className="size-full object-cover"
+          className="size-full"
+          imgClassName="object-cover"
           fallback={<Icon className="size-10 text-text-dim" />}
         />
         {/* Type badge */}

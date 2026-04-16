@@ -18,7 +18,8 @@ export function EventCard({ event }: EventCardProps) {
         <OptimizedImage
           src={event.imageUrl}
           alt={event.title}
-          className="size-full object-cover"
+          className="size-full"
+          imgClassName="object-cover"
         />
 
         {/* Date badge */}

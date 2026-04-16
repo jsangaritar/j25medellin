@@ -47,7 +47,8 @@ export function VideoDetailPage() {
               <OptimizedImage
                 src={item.thumbnailUrl}
                 alt={item.title}
-                className="size-full object-cover"
+                className="size-full"
+                imgClassName="object-cover"
               />
             ) : null}
           </div>

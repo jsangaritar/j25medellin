@@ -37,7 +37,8 @@ export function DocumentDetailPage() {
               <OptimizedImage
                 src={item.thumbnailUrl}
                 alt={item.title}
-                className="aspect-[4/3] w-full object-cover"
+                className="aspect-[4/3] w-full"
+                imgClassName="object-cover"
               />
             )}
             <div className="flex items-center justify-center gap-3 border-t border-border-light p-4">

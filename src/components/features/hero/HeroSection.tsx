@@ -23,7 +23,8 @@ export function HeroSection({
       <OptimizedImage
         src={imageUrl || '/images/church.png'}
         alt=""
-        className="absolute inset-0 size-full object-cover object-top"
+        className="absolute inset-0"
+        imgClassName="object-cover object-top"
         loading="eager"
         decoding="sync"
         fetchPriority="high"

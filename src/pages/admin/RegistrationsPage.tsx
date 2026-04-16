@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { Download, Plus } from 'lucide-react';
+import { Download, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { ConfirmDelete } from '@/components/ui/confirm-delete';
 import { type Column, DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
@@ -71,6 +72,10 @@ export function RegistrationsPage() {
   const { data: events = [] } = useEvents();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [fullName, setFullName] = useState('');
   const [whatsApp, setWhatsApp] = useState('');
   const [email, setEmail] = useState('');
@@ -111,6 +116,29 @@ export function RegistrationsPage() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const token = await auth.currentUser?.getIdToken();
+      const res = await fetch('/api/delete-registration', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? 'Delete failed');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['registrations'] });
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['courseTopics'] });
+    },
+  });
+
   // Map IDs to names for display
   const courseMap = new Map(courses.map((c) => [c.id, c.title]));
   const eventMap = new Map(events.map((e) => [e.id, e.title]));
@@ -148,6 +176,20 @@ export function RegistrationsPage() {
       filterValue: (r) => (r.courseId ? (courseMap.get(r.courseId) ?? '') : ''),
       render: (r) =>
         r.courseId ? (courseMap.get(r.courseId) ?? r.courseId) : '—',
+    },
+    {
+      key: 'actions',
+      label: '',
+      className: 'w-12',
+      render: (r) => (
+        <button
+          type="button"
+          onClick={() => setDeleteTarget({ id: r.id, name: r.fullName })}
+          className="rounded p-1.5 text-text-muted hover:bg-bg-elevated hover:text-destructive"
+        >
+          <Trash2 className="size-3.5" />
+        </button>
+      ),
     },
   ];
 
@@ -262,6 +304,16 @@ export function RegistrationsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDelete
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        itemName={deleteTarget?.name}
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget.id);
+          setDeleteTarget(null);
+        }}
+      />
     </div>
   );
 }

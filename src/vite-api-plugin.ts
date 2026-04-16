@@ -284,6 +284,51 @@ export function apiDevPlugin(): Plugin {
           }
         }
 
+        // ── /api/delete-registration ──
+        if (req.url === '/api/delete-registration' && req.method === 'DELETE') {
+          try {
+            const db = await getDb();
+            const body = await parseBody(req);
+            const { id } = body as Record<string, string>;
+
+            if (!id) {
+              return json(res, 400, { error: 'Registration id is required' });
+            }
+
+            const regRef = db.collection('registrations').doc(id);
+            const regSnap = await regRef.get();
+
+            if (!regSnap.exists) {
+              return json(res, 404, { error: 'Registration not found' });
+            }
+
+            const courseId = regSnap.data()?.courseId as string | null;
+
+            if (courseId) {
+              const courseRef = db.collection('courses').doc(courseId);
+              await db.runTransaction(async (transaction) => {
+                const courseSnap = await transaction.get(courseRef);
+                if (courseSnap.exists) {
+                  const enrolled = (courseSnap.data()?.enrolled as number) ?? 0;
+                  transaction.update(courseRef, {
+                    enrolled: Math.max(0, enrolled - 1),
+                  });
+                }
+                transaction.delete(regRef);
+              });
+            } else {
+              await regRef.delete();
+            }
+
+            return json(res, 200, { success: true });
+          } catch (error) {
+            console.error('Delete registration error:', error);
+            return json(res, 500, {
+              error: 'Failed to delete registration',
+            });
+          }
+        }
+
         // ── /api/contact ──
         if (req.url === '/api/contact' && req.method === 'POST') {
           try {
