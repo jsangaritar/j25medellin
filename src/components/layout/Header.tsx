@@ -1,28 +1,28 @@
-import { Menu, MessageCircle, X } from "lucide-react";
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Menu, MessageCircle, X } from 'lucide-react';
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetClose,
   SheetContent,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { useSiteConfig } from "@/hooks/useSiteConfig";
-import { buildWhatsAppUrl } from "@/utils/whatsapp";
+} from '@/components/ui/sheet';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { buildWhatsAppUrl } from '@/utils/whatsapp';
 
 const navLinks = [
-  { label: "Inicio", href: "/" },
-  { label: "Discipulados", href: "/discipulados" },
-  { label: "Media", href: "/media" },
-  { label: "Eventos", href: "/eventos" },
+  { label: 'Inicio', href: '/' },
+  { label: 'Discipulados', href: '/discipulados' },
+  { label: 'Media', href: '/media' },
+  { label: 'Eventos', href: '/eventos' },
 ];
 
 export function Header() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const { data: config } = useSiteConfig();
-  const whatsappUrl = buildWhatsAppUrl(config?.whatsappNumber ?? "");
+  const whatsappUrl = buildWhatsAppUrl(config?.whatsappNumber ?? '');
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg-primary/95 backdrop-blur-sm">
@@ -39,8 +39,8 @@ export function Header() {
               to={link.href}
               className={`font-body text-[13px] transition-colors hover:text-text-primary ${
                 location.pathname === link.href
-                  ? "font-semibold text-text-primary"
-                  : "font-medium text-text-muted"
+                  ? 'font-semibold text-text-primary'
+                  : 'font-medium text-text-muted'
               }`}
             >
               {link.label}
@@ -49,11 +49,7 @@ export function Header() {
         </nav>
 
         <Button size="sm" className="text-xs" asChild>
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
             <MessageCircle className="size-3.5" />
             Contáctanos
           </a>
@@ -100,8 +96,8 @@ export function Header() {
                   onClick={() => setOpen(false)}
                   className={`rounded-lg px-3 py-2.5 font-body text-sm transition-colors ${
                     location.pathname === link.href
-                      ? "bg-bg-elevated font-semibold text-text-primary"
-                      : "font-medium text-text-muted hover:bg-bg-surface hover:text-text-primary"
+                      ? 'bg-bg-elevated font-semibold text-text-primary'
+                      : 'font-medium text-text-muted hover:bg-bg-surface hover:text-text-primary'
                   }`}
                 >
                   {link.label}
@@ -110,11 +106,7 @@ export function Header() {
             </nav>
             <div className="mt-6 px-3">
               <Button className="w-full" asChild>
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="size-4" />
                   Contáctanos
                 </a>

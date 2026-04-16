@@ -1,4 +1,5 @@
-import { MessageCircle } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -57,15 +58,16 @@ export function HeroSection({
               {/* CTA */}
               {whatsappNumber && (
                 <div className="flex gap-3">
-                  <a
-                    href={`https://wa.me/${whatsappNumber}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-[10px] bg-accent-bright px-7 py-3.5 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
-                  >
-                    Contáctanos
-                    <MessageCircle className="size-4" />
-                  </a>
+                  <Button size="lg" asChild>
+                    <a
+                      href={`https://whatsapp.com/channel/0029VbAyz0L4IBhNRp2WUY1b`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Únete
+                      <ArrowRight className="size-4" />
+                    </a>
+                  </Button>
                 </div>
               )}
             </>

@@ -1,8 +1,8 @@
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { Calendar } from "lucide-react";
-import type { Topic } from "@/types";
-import { capitalizeFirst } from "@/utils/dates";
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { Calendar } from 'lucide-react';
+import type { Topic } from '@/types';
+import { capitalizeFirst } from '@/utils/dates';
 
 interface QuarterlyBannerProps {
   topic: Topic;

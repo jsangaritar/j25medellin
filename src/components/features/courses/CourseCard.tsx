@@ -1,4 +1,4 @@
-import { CheckCircle, Clock, Users, UserX } from 'lucide-react';
+import { Clock, Users, UserX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tag } from '@/components/ui/tag';
 import type { Course, CourseStatus } from '@/types';
@@ -84,33 +84,25 @@ export function CourseCard({
           </div>
         )}
 
-        {/* CTA */}
-        <div className="mt-auto pt-1">
-          {isCompleted ? (
-            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-border bg-bg-elevated px-4 py-3 font-body text-sm font-medium text-text-muted">
-              <CheckCircle className="size-4" />
-              Completado
-            </div>
-          ) : isComingSoon ? (
-            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-border bg-bg-elevated px-4 py-3 font-body text-sm font-medium text-text-muted">
-              <Clock className="size-4" />
-              Próximamente
-            </div>
-          ) : isFull ? (
-            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-border bg-bg-elevated px-4 py-3 font-body text-sm font-medium text-text-muted">
-              <UserX className="size-4" />
-              Cupos completos
-            </div>
-          ) : (
-            <Button
-              className="w-full rounded-[10px] py-3"
-              style={{ backgroundColor: course.accentColor ?? '#4ADE80' }}
-              onClick={() => onRegister?.(course)}
-            >
-              Inscribirse
-            </Button>
-          )}
-        </div>
+        {/* CTA — hidden for completed and coming soon courses */}
+        {!isCompleted && !isComingSoon && (
+          <div className="mt-auto pt-1">
+            {isFull ? (
+              <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-border bg-bg-elevated px-4 py-3 font-body text-sm font-medium text-text-muted">
+                <UserX className="size-4" />
+                Cupos completos
+              </div>
+            ) : (
+              <Button
+                className="w-full rounded-[10px] py-3"
+                style={{ backgroundColor: course.accentColor ?? '#4ADE80' }}
+                onClick={() => onRegister?.(course)}
+              >
+                Ingresar
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
