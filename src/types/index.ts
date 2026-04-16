@@ -93,6 +93,7 @@ export interface MediaContent {
   fileUrl?: string;
   tags: string[];
   featured: boolean;
+  visible?: boolean;
   episodeCount?: number;
   platform?: string;
   topicId?: string;

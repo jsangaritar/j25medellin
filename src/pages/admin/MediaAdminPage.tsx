@@ -1,49 +1,51 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { ConfirmDelete } from '@/components/ui/confirm-delete';
-import { type Column, DataTable } from '@/components/ui/data-table';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Pencil, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ConfirmDelete } from "@/components/ui/confirm-delete";
+import { type Column, DataTable } from "@/components/ui/data-table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { useCourses, useTopics } from '@/hooks/useCourses';
-import { useMedia } from '@/hooks/useMedia';
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useCourses, useTopics } from "@/hooks/useCourses";
+import { useMedia } from "@/hooks/useMedia";
 import {
   createDocument,
   deleteDocument,
   updateDocument,
-} from '@/lib/firestore';
-import { MEDIA_TYPE_LABELS, type MediaContent, type MediaType } from '@/types';
+} from "@/lib/firestore";
+import { formatDriveIdToFetchableImage } from "@/lib/utils";
+import { MEDIA_TYPE_LABELS, type MediaContent, type MediaType } from "@/types";
 
 const MEDIA_TYPES = Object.keys(MEDIA_TYPE_LABELS) as MediaType[];
 
-type MediaForm = Omit<MediaContent, 'id'>;
+type MediaForm = Omit<MediaContent, "id">;
 
 const emptyForm: MediaForm = {
-  title: '',
-  slug: '',
-  description: '',
-  type: 'VIDEO',
-  thumbnailUrl: '',
-  externalUrl: '',
-  fileUrl: '',
+  title: "",
+  slug: "",
+  description: "",
+  type: "VIDEO",
+  thumbnailUrl: "",
+  externalUrl: "",
+  fileUrl: "",
   tags: [],
   featured: false,
-  platform: '',
+  visible: true,
+  platform: "",
 };
 
 export function MediaAdminPage() {
@@ -63,20 +65,25 @@ export function MediaAdminPage() {
     mutationFn: async () => {
       const data = {
         ...form,
-        slug: form.slug || form.title.toLowerCase().replace(/\s+/g, '-'),
+        slug: form.slug || form.title.toLowerCase().replace(/\s+/g, "-"),
         tags:
-          typeof form.tags === 'string'
-            ? (form.tags as string).split(',').map((t: string) => t.trim())
+          typeof form.tags === "string"
+            ? (form.tags as string).split(",").map((t: string) => t.trim())
             : form.tags,
+        thumbnailUrl: form.thumbnailUrl
+          ? form.thumbnailUrl.includes("drive.google.com")
+            ? formatDriveIdToFetchableImage(form.thumbnailUrl)
+            : form.thumbnailUrl
+          : undefined,
       };
       if (editing) {
-        await updateDocument('mediaContents', editing.id, data);
+        await updateDocument("mediaContents", editing.id, data);
       } else {
-        await createDocument('mediaContents', data);
+        await createDocument("mediaContents", data);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['media'] });
+      queryClient.invalidateQueries({ queryKey: ["media"] });
       setDialogOpen(false);
       setEditing(null);
       setForm(emptyForm);
@@ -84,42 +91,48 @@ export function MediaAdminPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteDocument('mediaContents', id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['media'] }),
+    mutationFn: (id: string) => deleteDocument("mediaContents", id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["media"] }),
   });
 
   const mediaColumns: Column<MediaContent>[] = [
     {
-      key: 'title',
-      label: 'Título',
+      key: "title",
+      label: "Título",
       sortValue: (m) => m.title.toLowerCase(),
       filterValue: (m) => m.title,
       render: (m) => <span className="font-medium">{m.title}</span>,
     },
     {
-      key: 'type',
-      label: 'Tipo',
+      key: "type",
+      label: "Tipo",
       sortValue: (m) => m.type,
       filterValue: (m) => MEDIA_TYPE_LABELS[m.type],
       render: (m) => MEDIA_TYPE_LABELS[m.type],
     },
     {
-      key: 'platform',
-      label: 'Plataforma',
-      sortValue: (m) => (m.platform ?? '').toLowerCase(),
-      filterValue: (m) => m.platform ?? '',
-      render: (m) => m.platform ?? '—',
+      key: "platform",
+      label: "Plataforma",
+      sortValue: (m) => (m.platform ?? "").toLowerCase(),
+      filterValue: (m) => m.platform ?? "",
+      render: (m) => m.platform ?? "—",
     },
     {
-      key: 'featured',
-      label: 'Destacado',
+      key: "visible",
+      label: "Visible",
+      sortValue: (m) => (m.visible !== false ? 1 : 0),
+      render: (m) => (m.visible !== false ? "Sí" : "No"),
+    },
+    {
+      key: "featured",
+      label: "Destacado",
       sortValue: (m) => (m.featured ? 1 : 0),
-      render: (m) => (m.featured ? 'Sí' : 'No'),
+      render: (m) => (m.featured ? "Sí" : "No"),
     },
     {
-      key: 'actions',
-      label: '',
-      className: 'w-24',
+      key: "actions",
+      label: "",
+      className: "w-24",
       render: (m) => (
         <div className="flex gap-1">
           <button
@@ -177,7 +190,7 @@ export function MediaAdminPage() {
         <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-bg-elevated shadow-[0_8px_30px_rgba(0,0,0,0.5)] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-text-primary">
-              {editing ? 'Editar contenido' : 'Crear contenido'}
+              {editing ? "Editar contenido" : "Crear contenido"}
             </DialogTitle>
           </DialogHeader>
           <form
@@ -209,7 +222,9 @@ export function MediaAdminPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Tipo</Label>
+                <Label>
+                  Tipo<span className="text-destructive">*</span>
+                </Label>
                 <Select
                   value={form.type}
                   onValueChange={(v) =>
@@ -231,7 +246,7 @@ export function MediaAdminPage() {
               <div className="space-y-2">
                 <Label>Plataforma</Label>
                 <Input
-                  value={form.platform ?? ''}
+                  value={form.platform ?? ""}
                   onChange={(e) =>
                     setForm({ ...form, platform: e.target.value })
                   }
@@ -242,7 +257,7 @@ export function MediaAdminPage() {
             <div className="space-y-2">
               <Label>URL externa</Label>
               <Input
-                value={form.externalUrl ?? ''}
+                value={form.externalUrl ?? ""}
                 onChange={(e) =>
                   setForm({ ...form, externalUrl: e.target.value })
                 }
@@ -252,7 +267,7 @@ export function MediaAdminPage() {
             <div className="space-y-2">
               <Label>URL de thumbnail</Label>
               <Input
-                value={form.thumbnailUrl ?? ''}
+                value={form.thumbnailUrl ?? ""}
                 onChange={(e) =>
                   setForm({ ...form, thumbnailUrl: e.target.value })
                 }
@@ -262,7 +277,7 @@ export function MediaAdminPage() {
               <Label>Tags (separados por coma)</Label>
               <Input
                 value={
-                  Array.isArray(form.tags) ? form.tags.join(', ') : form.tags
+                  Array.isArray(form.tags) ? form.tags.join(", ") : form.tags
                 }
                 onChange={(e) =>
                   setForm({
@@ -276,9 +291,9 @@ export function MediaAdminPage() {
               <div className="space-y-2">
                 <Label>Tema</Label>
                 <Select
-                  value={form.topicId ?? '_none'}
+                  value={form.topicId ?? "_none"}
                   onValueChange={(v) =>
-                    setForm({ ...form, topicId: v === '_none' ? undefined : v })
+                    setForm({ ...form, topicId: v === "_none" ? undefined : v })
                   }
                 >
                   <SelectTrigger>
@@ -297,11 +312,11 @@ export function MediaAdminPage() {
               <div className="space-y-2">
                 <Label>Curso</Label>
                 <Select
-                  value={form.courseId ?? '_none'}
+                  value={form.courseId ?? "_none"}
                   onValueChange={(v) =>
                     setForm({
                       ...form,
-                      courseId: v === '_none' ? undefined : v,
+                      courseId: v === "_none" ? undefined : v,
                     })
                   }
                 >
@@ -319,19 +334,32 @@ export function MediaAdminPage() {
                 </Select>
               </div>
             </div>
-            <label className="flex items-center gap-2 text-sm text-text-secondary">
-              <input
-                type="checkbox"
-                checked={form.featured}
-                onChange={(e) =>
-                  setForm({ ...form, featured: e.target.checked })
-                }
-                className="rounded"
-              />
-              Destacado
-            </label>
+            <div className="flex gap-6">
+              <label className="flex items-center gap-2 text-sm text-text-secondary">
+                <input
+                  type="checkbox"
+                  checked={form.visible !== false}
+                  onChange={(e) =>
+                    setForm({ ...form, visible: e.target.checked })
+                  }
+                  className="rounded"
+                />
+                Visible
+              </label>
+              <label className="flex items-center gap-2 text-sm text-text-secondary">
+                <input
+                  type="checkbox"
+                  checked={form.featured}
+                  onChange={(e) =>
+                    setForm({ ...form, featured: e.target.checked })
+                  }
+                  className="rounded"
+                />
+                Destacado
+              </label>
+            </div>
             <Button type="submit" disabled={saveMutation.isPending}>
-              {saveMutation.isPending ? 'Guardando...' : 'Guardar'}
+              {saveMutation.isPending ? "Guardando..." : "Guardar"}
             </Button>
           </form>
         </DialogContent>

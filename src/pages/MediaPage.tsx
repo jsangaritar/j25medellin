@@ -18,8 +18,11 @@ const TABS: { label: string; value: MediaType | 'ALL' }[] = [
 
 export function MediaPage() {
   const [activeTab, setActiveTab] = useState<MediaType | 'ALL'>('ALL');
-  const { data: allMedia = [], isLoading } = useMedia();
-  const { data: featuredMedia = [] } = useMedia({ featured: true });
+  const { data: allMediaRaw = [], isLoading } = useMedia();
+  const { data: featuredMediaRaw = [] } = useMedia({ featured: true });
+
+  const allMedia = allMediaRaw.filter((m) => m.visible !== false);
+  const featuredMedia = featuredMediaRaw.filter((m) => m.visible !== false);
 
   const filtered =
     activeTab === 'ALL'

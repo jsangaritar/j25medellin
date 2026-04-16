@@ -6,6 +6,7 @@ import { MediaNotFound } from '@/components/features/media/MediaNotFound';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Tag } from '@/components/ui/tag';
 import { useMedia, useMediaBySlug } from '@/hooks/useMedia';
+import { getDriveDownloadUrl, getDrivePreviewUrl } from '@/lib/utils';
 import { getRelatedMedia, getRelatedMediaLabel } from '@/utils/media';
 
 export function DocumentDetailPage() {
@@ -18,6 +19,12 @@ export function DocumentDetailPage() {
   if (!item) return <MediaNotFound />;
 
   const related = getRelatedMedia(item, allMedia, 3);
+  const previewUrl = item.externalUrl
+    ? getDrivePreviewUrl(item.externalUrl)
+    : null;
+  const downloadUrl = item.externalUrl
+    ? getDriveDownloadUrl(item.externalUrl)
+    : null;
 
   return (
     <section className="mx-auto max-w-[1440px] px-14 py-10 max-md:px-5">
@@ -33,29 +40,35 @@ export function DocumentDetailPage() {
         <div>
           {/* Document preview */}
           <div className="mb-6 overflow-hidden rounded-xl border border-border-light bg-bg-card">
-            {item.thumbnailUrl && (
+            {previewUrl ? (
+              <iframe
+                src={previewUrl}
+                title={item.title}
+                className="aspect-[4/3] w-full"
+                allow="autoplay"
+              />
+            ) : item.thumbnailUrl ? (
               <OptimizedImage
                 src={item.thumbnailUrl}
                 alt={item.title}
                 className="aspect-[4/3] w-full"
                 imgClassName="object-cover"
               />
-            )}
+            ) : null}
             <div className="flex items-center justify-center gap-3 border-t border-border-light p-4">
-              {item.fileUrl && (
+              {downloadUrl ? (
                 <a
-                  href={item.fileUrl}
+                  href={downloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 rounded-lg bg-accent-bright px-4 py-2.5 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
                 >
                   <Download className="size-4" />
-                  Descargar PDF
+                  Descargar
                 </a>
-              )}
-              {item.fileUrl && (
+              ) : item.externalUrl ? (
                 <a
-                  href={item.fileUrl}
+                  href={item.externalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 font-body text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
@@ -63,7 +76,7 @@ export function DocumentDetailPage() {
                   <ExternalLink className="size-4" />
                   Abrir
                 </a>
-              )}
+              ) : null}
             </div>
           </div>
 

@@ -5,15 +5,29 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const DRIVE_ID_REGEX = /\/d\/([a-zA-Z0-9_-]+)/;
+
 export function formatDriveIdToFetchableImage(url: string): string {
-  // Regex looks for the segment between '/d/' and the next '/'
-  const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  const idMatch = url.match(DRIVE_ID_REGEX);
 
   if (idMatch?.[1]) {
-    const id = idMatch[1];
-    return `https://lh3.googleusercontent.com/d/${id}`;
+    return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
   }
 
   console.error('Invalid Google Drive URL: Could not extract ID');
   return url;
+}
+
+export function getDrivePreviewUrl(url: string): string | null {
+  const idMatch = url.match(DRIVE_ID_REGEX);
+  return idMatch?.[1]
+    ? `https://drive.google.com/file/d/${idMatch[1]}/preview`
+    : null;
+}
+
+export function getDriveDownloadUrl(url: string): string | null {
+  const idMatch = url.match(DRIVE_ID_REGEX);
+  return idMatch?.[1]
+    ? `https://drive.google.com/uc?export=download&id=${idMatch[1]}`
+    : null;
 }

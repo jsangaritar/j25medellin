@@ -311,16 +311,21 @@ export function EventsAdminPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Lugar</Label>
+                <Label>
+                  Lugar<span className="text-destructive">*</span>
+                </Label>
                 <Input
                   value={form.location}
                   onChange={(e) =>
                     setForm({ ...form, location: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label>Tipo de evento</Label>
+                <Label>
+                  Tipo de evento<span className="text-destructive">*</span>
+                </Label>
                 <Select
                   value={form.eventType}
                   onValueChange={(v) =>
