@@ -1,0 +1,7 @@
+echo "Running TypeScript check..."
+pnpm tsc -b || { echo "\n❌ TypeScript errors found. Fix them before committing."; exit 1; }
+
+echo "Running Biome lint & format check..."
+pnpm check || { echo "\n❌ Linting/formatting issues found. Run 'pnpm check:fix' and try again."; exit 1; }
+
+echo "✅ All checks passed."
