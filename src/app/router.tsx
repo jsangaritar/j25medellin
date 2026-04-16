@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { RootLayout } from '@/components/layout/RootLayout';
+import { ErrorPage } from '@/pages/ErrorPage';
 
 // Public pages — eager load for fast navigation
 import { HomePage } from '@/pages/HomePage';
@@ -103,6 +104,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <RootLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
       {
@@ -158,6 +160,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/admin/login',
+    errorElement: <ErrorPage />,
     element: (
       <SuspenseWrapper>
         <LoginPage />
@@ -166,6 +169,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/admin',
+    errorElement: <ErrorPage />,
     element: (
       <SuspenseWrapper>
         <AdminLayout />
