@@ -1,4 +1,5 @@
 import { Calendar, MapPin, MessageCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Tag } from '@/components/ui/tag';
 import type { Event } from '@/types';
@@ -66,15 +67,16 @@ export function FeaturedEvent({ event, whatsappNumber }: FeaturedEventProps) {
           </div>
 
           {event.requiresRegistration && (
-            <a
-              href={buildWhatsAppUrl(whatsappNumber, event.whatsappMessage)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex w-fit items-center gap-2 rounded-[10px] bg-accent-bright px-6 py-3 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
-            >
-              <MessageCircle className="size-4" />
-              Inscribirse
-            </a>
+            <Button className="w-fit rounded-[10px] px-6 py-3" asChild>
+              <a
+                href={buildWhatsAppUrl(whatsappNumber, event.whatsappMessage)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle className="size-4" />
+                Inscribirse
+              </a>
+            </Button>
           )}
         </div>
       </div>

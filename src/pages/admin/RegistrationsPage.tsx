@@ -201,7 +201,7 @@ export function RegistrationsPage() {
         </h1>
         <div className="flex gap-2">
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={() => exportCsv(registrations, courseMap, eventMap)}
             disabled={registrations.length === 0}
           >
@@ -239,7 +239,7 @@ export function RegistrationsPage() {
           >
             <div className="space-y-2">
               <Label>
-                Nombre completo<span className="text-destructive">*</span>
+                Nombre completo<span className="text-text-primary">*</span>
               </Label>
               <Input
                 value={fullName}
@@ -249,7 +249,7 @@ export function RegistrationsPage() {
             </div>
             <div className="space-y-2">
               <Label>
-                WhatsApp<span className="text-destructive">*</span>
+                WhatsApp<span className="text-text-primary">*</span>
               </Label>
               <Input
                 value={whatsApp}
@@ -259,7 +259,7 @@ export function RegistrationsPage() {
             </div>
             <div className="space-y-2">
               <Label>
-                Correo electrónico<span className="text-destructive">*</span>
+                Correo electrónico<span className="text-text-primary">*</span>
               </Label>
               <Input
                 type="email"

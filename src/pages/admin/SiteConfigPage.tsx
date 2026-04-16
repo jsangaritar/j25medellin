@@ -60,7 +60,7 @@ export function SiteConfigPage() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>
-                Título<span className="text-destructive">*</span>
+                Título<span className="text-text-primary">*</span>
               </Label>
               <Textarea
                 value={form.heroTitle}
@@ -72,7 +72,7 @@ export function SiteConfigPage() {
             </div>
             <div className="space-y-2">
               <Label>
-                Subtítulo<span className="text-destructive">*</span>
+                Subtítulo<span className="text-text-primary">*</span>
               </Label>
               <Textarea
                 value={form.heroSubtitle}
@@ -101,7 +101,7 @@ export function SiteConfigPage() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>
-                Número de WhatsApp<span className="text-destructive">*</span>
+                Número de WhatsApp<span className="text-text-primary">*</span>
               </Label>
               <Input
                 value={form.whatsappNumber}
@@ -113,7 +113,7 @@ export function SiteConfigPage() {
             </div>
             <div className="space-y-2">
               <Label>
-                Email de contacto<span className="text-destructive">*</span>
+                Email de contacto<span className="text-text-primary">*</span>
               </Label>
               <Input
                 type="email"
@@ -124,7 +124,9 @@ export function SiteConfigPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Instagram URL</Label>
+              <Label>
+                Instagram URL<span className="text-text-primary">*</span>
+              </Label>
               <Input
                 value={form.instagramUrl}
                 onChange={(e) =>
@@ -133,7 +135,9 @@ export function SiteConfigPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>YouTube URL</Label>
+              <Label>
+                YouTube URL<span className="text-text-primary">*</span>
+              </Label>
               <Input
                 value={form.youtubeUrl}
                 onChange={(e) =>

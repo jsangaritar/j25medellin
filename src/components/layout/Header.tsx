@@ -1,6 +1,7 @@
 import { Menu, MessageCircle, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetClose,
@@ -47,15 +48,16 @@ export function Header() {
           ))}
         </nav>
 
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 rounded-lg bg-accent-bright px-3.5 py-2 font-body text-xs font-semibold text-bg-primary transition-opacity hover:opacity-90"
-        >
-          <MessageCircle className="size-3.5" />
-          Contáctanos
-        </a>
+        <Button size="sm" className="text-xs" asChild>
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageCircle className="size-3.5" />
+            Contáctanos
+          </a>
+        </Button>
       </div>
 
       {/* Mobile */}
@@ -107,15 +109,16 @@ export function Header() {
               ))}
             </nav>
             <div className="mt-6 px-3">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-bright px-4 py-3 font-body text-sm font-semibold text-bg-primary"
-              >
-                <MessageCircle className="size-4" />
-                Contáctanos
-              </a>
+              <Button className="w-full" asChild>
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle className="size-4" />
+                  Contáctanos
+                </a>
+              </Button>
             </div>
           </SheetContent>
         </Sheet>

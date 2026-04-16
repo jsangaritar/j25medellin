@@ -1,5 +1,6 @@
 import { Mail, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { ContactModal } from '@/components/features/contact/ContactModal';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { buildWhatsAppUrl } from '@/utils/whatsapp';
@@ -27,23 +28,24 @@ export function ContactCTA() {
           </p>
 
           <div className="flex gap-3">
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-[10px] bg-accent-bright px-7 py-3.5 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
-            >
-              <MessageCircle className="size-4" />
-              WhatsApp
-            </a>
-            <button
-              type="button"
+            <Button className="rounded-[10px] px-7 py-3.5" asChild>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle className="size-4" />
+                WhatsApp
+              </a>
+            </Button>
+            <Button
+              variant="secondary"
+              className="rounded-[10px] px-7 py-3.5"
               onClick={() => setContactOpen(true)}
-              className="flex items-center gap-2 rounded-[10px] border border-border px-7 py-3.5 font-body text-sm font-medium text-text-secondary transition-colors hover:border-text-muted hover:text-text-primary"
             >
               <Mail className="size-4" />
               Formulario
-            </button>
+            </Button>
           </div>
         </div>
       </section>

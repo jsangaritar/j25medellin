@@ -77,7 +77,7 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
             <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
               <div className="space-y-2">
                 <Label htmlFor="contactName">
-                  Nombre completo<span className="text-destructive">*</span>
+                  Nombre completo<span className="text-text-primary">*</span>
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
@@ -94,7 +94,7 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="contactWhatsApp">
-                  WhatsApp<span className="text-destructive">*</span>
+                  WhatsApp<span className="text-text-primary">*</span>
                 </Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
@@ -111,7 +111,7 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="contactEmail">
-                  Correo electrónico<span className="text-destructive">*</span>
+                  Correo electrónico<span className="text-text-primary">*</span>
                 </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
@@ -129,7 +129,7 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="contactMessage">
-                  Mensaje<span className="text-destructive">*</span>
+                  Mensaje<span className="text-text-primary">*</span>
                 </Label>
                 <div className="relative">
                   <MessageSquare className="absolute left-3 top-3 size-4 text-text-muted" />

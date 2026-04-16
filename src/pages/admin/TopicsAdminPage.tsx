@@ -189,7 +189,7 @@ export function TopicsAdminPage() {
           >
             <div className="space-y-2">
               <Label>
-                Título<span className="text-destructive">*</span>
+                Título<span className="text-text-primary">*</span>
               </Label>
               <Input
                 value={form.title}
@@ -209,7 +209,7 @@ export function TopicsAdminPage() {
             </div>
             <div className="space-y-2">
               <Label>
-                Etiqueta<span className="text-destructive">*</span>
+                Etiqueta<span className="text-text-primary">*</span>
               </Label>
               <Input
                 value={form.tag}
@@ -220,7 +220,7 @@ export function TopicsAdminPage() {
             </div>
             <div className="space-y-2">
               <Label>
-                Estado<span className="text-destructive">*</span>
+                Estado<span className="text-text-primary">*</span>
               </Label>
               <Select
                 value={form.status}
@@ -243,7 +243,7 @@ export function TopicsAdminPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>
-                  Fecha inicio<span className="text-destructive">*</span>
+                  Fecha inicio<span className="text-text-primary">*</span>
                 </Label>
                 <Input
                   type="date"
@@ -261,7 +261,7 @@ export function TopicsAdminPage() {
               </div>
               <div className="space-y-2">
                 <Label>
-                  Fecha fin<span className="text-destructive">*</span>
+                  Fecha fin<span className="text-text-primary">*</span>
                 </Label>
                 <Input
                   type="date"

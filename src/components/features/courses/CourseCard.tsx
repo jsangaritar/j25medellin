@@ -1,4 +1,5 @@
 import { CheckCircle, Clock, Users, UserX } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Tag } from '@/components/ui/tag';
 import type { Course, CourseStatus } from '@/types';
 
@@ -101,13 +102,13 @@ export function CourseCard({
               Cupos completos
             </div>
           ) : (
-            <button
-              type="button"
+            <Button
+              className="w-full rounded-[10px] py-3"
+              style={{ backgroundColor: course.accentColor ?? '#4ADE80' }}
               onClick={() => onRegister?.(course)}
-              className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-accent-bright px-4 py-3 font-body text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
             >
               Inscribirse
-            </button>
+            </Button>
           )}
         </div>
       </div>

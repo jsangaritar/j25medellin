@@ -200,7 +200,7 @@ export function CoursesAdminPage() {
           >
             <div className="space-y-2">
               <Label>
-                Título<span className="text-destructive">*</span>
+                Título<span className="text-text-primary">*</span>
               </Label>
               <Input
                 value={form.title}
@@ -235,7 +235,7 @@ export function CoursesAdminPage() {
             </div>
             <div className="space-y-2">
               <Label>
-                Tema<span className="text-destructive">*</span>
+                Tema<span className="text-text-primary">*</span>
               </Label>
               <Select
                 value={form.topicId}

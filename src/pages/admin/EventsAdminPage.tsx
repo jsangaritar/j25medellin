@@ -206,7 +206,7 @@ export function EventsAdminPage() {
         </h1>
         <div className="flex gap-2">
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={() => syncMutation.mutate()}
             disabled={syncMutation.isPending}
           >
@@ -258,7 +258,7 @@ export function EventsAdminPage() {
           >
             <div className="space-y-2">
               <Label>
-                Título<span className="text-destructive">*</span>
+                Título<span className="text-text-primary">*</span>
               </Label>
               <Input
                 value={form.title}
@@ -279,7 +279,7 @@ export function EventsAdminPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>
-                  Fecha inicio<span className="text-destructive">*</span>
+                  Fecha inicio<span className="text-text-primary">*</span>
                 </Label>
                 <Input
                   type="datetime-local"
@@ -312,7 +312,7 @@ export function EventsAdminPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>
-                  Lugar<span className="text-destructive">*</span>
+                  Lugar<span className="text-text-primary">*</span>
                 </Label>
                 <Input
                   value={form.location}
@@ -324,7 +324,7 @@ export function EventsAdminPage() {
               </div>
               <div className="space-y-2">
                 <Label>
-                  Tipo de evento<span className="text-destructive">*</span>
+                  Tipo de evento<span className="text-text-primary">*</span>
                 </Label>
                 <Select
                   value={form.eventType}

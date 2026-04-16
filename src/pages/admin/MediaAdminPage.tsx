@@ -202,7 +202,7 @@ export function MediaAdminPage() {
           >
             <div className="space-y-2">
               <Label>
-                Título<span className="text-destructive">*</span>
+                Título<span className="text-text-primary">*</span>
               </Label>
               <Input
                 value={form.title}
@@ -223,7 +223,7 @@ export function MediaAdminPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>
-                  Tipo<span className="text-destructive">*</span>
+                  Tipo<span className="text-text-primary">*</span>
                 </Label>
                 <Select
                   value={form.type}

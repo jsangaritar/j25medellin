@@ -130,7 +130,9 @@ export function RegistrationModal({
 
             <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Nombre completo</Label>
+                <Label htmlFor="fullName">
+                  Nombre completo<span className="text-text-primary">*</span>
+                </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
                   <Input
@@ -145,7 +147,9 @@ export function RegistrationModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="whatsApp">WhatsApp</Label>
+                <Label htmlFor="whatsApp">
+                  WhatsApp<span className="text-text-primary">*</span>
+                </Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
                   <Input
@@ -160,7 +164,9 @@ export function RegistrationModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Correo electrónico</Label>
+                <Label htmlFor="email">
+                  Correo electrónico<span className="text-text-primary">*</span>
+                </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
                   <Input
