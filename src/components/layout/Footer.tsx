@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ContactModal } from '@/components/features/contact/ContactModal';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
-import { Button } from '../ui/button';
 
 export function Footer() {
   const { data: config } = useSiteConfig();
