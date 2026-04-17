@@ -70,11 +70,6 @@ export function AudioDetailPage() {
           <p className="whitespace-pre-line text-sm leading-relaxed text-text-secondary">
             {item.description}
           </p>
-          {item.episodeCount && (
-            <p className="mt-2 text-xs text-text-muted">
-              {item.episodeCount} {item.episodeCount === 1 ? 'pista' : 'pistas'}
-            </p>
-          )}
         </div>
 
         {/* Related sidebar */}

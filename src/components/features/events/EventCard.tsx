@@ -1,4 +1,5 @@
 import { Clock, MapPin } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Tag } from '@/components/ui/tag';
 import type { Event } from '@/types';
@@ -9,10 +10,19 @@ interface EventCardProps {
 }
 
 export function EventCard({ event }: EventCardProps) {
+  const [expanded, setExpanded] = useState(false);
+  const [overflows, setOverflows] = useState(false);
+  const descRef = useRef<HTMLParagraphElement>(null);
   const date = new Date(event.date);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-check overflow when description changes
+  useEffect(() => {
+    const el = descRef.current;
+    if (el) setOverflows(el.scrollHeight > el.clientHeight);
+  }, [event.description]);
+
   return (
-    <div className="group overflow-hidden rounded-xl border border-border-light bg-bg-card transition-colors hover:border-border">
+    <div className="break-inside-avoid overflow-hidden rounded-xl border border-border-light bg-bg-card transition-colors hover:border-border">
       {/* Image with date badge */}
       <div className="relative aspect-[16/10]">
         <OptimizedImage
@@ -45,9 +55,25 @@ export function EventCard({ event }: EventCardProps) {
           {event.title}
         </h3>
 
-        <p className="line-clamp-2 whitespace-pre-line text-sm text-text-secondary">
-          {event.description}
-        </p>
+        {event.description && (
+          <div>
+            <p
+              ref={descRef}
+              className={`whitespace-pre-line text-sm text-text-secondary ${expanded ? '' : 'line-clamp-2'}`}
+            >
+              {event.description}
+            </p>
+            {(overflows || expanded) && (
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                className="mt-1 text-xs font-medium text-accent-bright hover:underline"
+              >
+                {expanded ? 'Ver menos' : 'Ver más'}
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-col gap-1.5 text-xs text-text-muted">
           <span className="flex items-center gap-1.5">

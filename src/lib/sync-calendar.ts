@@ -58,12 +58,18 @@ export async function syncCalendarEvents(): Promise<{
     const existing = existingByCalId.get(calEvent.id);
 
     if (existing) {
-      const updates: Record<string, string> = {};
+      const updates: Record<string, string | boolean> = {};
       if (existing.date !== calEvent.start) {
         updates.date = calEvent.start;
       }
       if (existing.endDate !== calEvent.end) {
         updates.endDate = calEvent.end;
+      }
+      const hasCustomContent =
+        existing.title !== calEvent.title ||
+        existing.description !== (calEvent.description || '');
+      if (existing.hasCustomContent !== hasCustomContent) {
+        updates.hasCustomContent = hasCustomContent;
       }
       if (Object.keys(updates).length > 0) {
         await updateDocument('events', existing.id, updates);

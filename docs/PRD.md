@@ -81,7 +81,7 @@ courseIds[] (references to courses)
 ```
 title, slug, description, type (VIDEO|AUDIO|DOCUMENT),
 thumbnailUrl?, externalUrl?, fileUrl?, tags[],
-featured (bool), episodeCount?, platform?
+featured (bool), platform?
 ```
 
 ### Registration

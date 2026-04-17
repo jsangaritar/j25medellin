@@ -1,4 +1,5 @@
 import { FileText, Headphones, Play } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Tag } from '@/components/ui/tag';
@@ -31,8 +32,17 @@ interface ContentCardProps {
 }
 
 export function ContentCard({ item }: ContentCardProps) {
+  const [expanded, setExpanded] = useState(false);
+  const [overflows, setOverflows] = useState(false);
+  const descRef = useRef<HTMLParagraphElement>(null);
   const Icon = getMediaIcon(item.type);
   const route = getMediaRoute(item);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-check overflow when description changes
+  useEffect(() => {
+    const el = descRef.current;
+    if (el) setOverflows(el.scrollHeight > el.clientHeight);
+  }, [item.description]);
 
   return (
     <Link
@@ -67,13 +77,28 @@ export function ContentCard({ item }: ContentCardProps) {
         <h3 className="font-body text-sm font-semibold text-text-primary group-hover:text-accent-bright">
           {item.title}
         </h3>
-        <p className="line-clamp-2 whitespace-pre-line text-xs text-text-secondary">
-          {item.description}
-        </p>
-        {item.episodeCount && (
-          <span className="text-xs text-text-muted">
-            {item.episodeCount} {item.episodeCount === 1 ? 'pista' : 'pistas'}
-          </span>
+        {item.description && (
+          <div>
+            <p
+              ref={descRef}
+              className={`whitespace-pre-line text-xs text-text-secondary ${expanded ? '' : 'line-clamp-2'}`}
+            >
+              {item.description}
+            </p>
+            {(overflows || expanded) && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setExpanded((v) => !v);
+                }}
+                className="mt-1 text-xs font-medium text-accent-bright hover:underline"
+              >
+                {expanded ? 'Ver menos' : 'Ver más'}
+              </button>
+            )}
+          </div>
         )}
       </div>
     </Link>

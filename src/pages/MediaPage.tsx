@@ -77,7 +77,7 @@ export function MediaPage() {
                   title="Contenido destacado"
                   className="mb-8"
                 />
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
                   {featuredMedia.map((item) => (
                     <ContentCard key={item.id} item={item} />
                   ))}
@@ -113,7 +113,7 @@ export function MediaPage() {
                   description="No hay contenido en esta categoría."
                 />
               ) : (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {filtered.map((item) => (
                     <ContentCard key={item.id} item={item} />
                   ))}

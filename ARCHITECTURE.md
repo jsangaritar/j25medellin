@@ -115,7 +115,7 @@ All endpoints live in `api/` and are replicated in `src/vite-api-plugin.ts` for 
 
 ### MediaContent
 
-`id`, `title`, `slug`, `description`, `type` (VIDEO/AUDIO/DOCUMENT), `thumbnailUrl?`, `externalUrl?`, `fileUrl?`, `tags[]`, `featured`, `episodeCount?`, `platform?`, `topicId?`, `courseId?`
+`id`, `title`, `slug`, `description`, `type` (VIDEO/AUDIO/DOCUMENT), `thumbnailUrl?`, `externalUrl?`, `fileUrl?`, `tags[]`, `featured`, `platform?`, `topicId?`, `courseId?`
 
 ### Registration
 

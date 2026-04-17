@@ -71,6 +71,7 @@ export interface Event {
   requiresRegistration: boolean;
   whatsappMessage?: string;
   googleCalendarEventId?: string;
+  hasCustomContent?: boolean;
   eventType: EventType;
 }
 
@@ -119,7 +120,6 @@ export interface MediaContent {
   tags: string[];
   featured: boolean;
   visible?: boolean;
-  episodeCount?: number;
   platform?: string;
   topicId?: string;
   courseId?: string;

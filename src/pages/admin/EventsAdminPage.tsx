@@ -117,7 +117,19 @@ export function EventsAdminPage() {
         <span className="flex items-center gap-2 font-medium">
           {e.title}
           {e.googleCalendarEventId && (
-            <Calendar className="size-3.5 text-accent-muted" />
+            <span
+              className="relative"
+              title={
+                e.hasCustomContent
+                  ? 'Contenido personalizado (difiere de Google Calendar)'
+                  : 'Sincronizado con Google Calendar'
+              }
+            >
+              <Calendar className="size-3.5 text-accent-muted" />
+              {e.hasCustomContent && (
+                <span className="absolute -right-1 -top-1 size-2 rounded-full bg-yellow-500" />
+              )}
+            </span>
           )}
         </span>
       ),

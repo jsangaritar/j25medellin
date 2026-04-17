@@ -214,7 +214,6 @@ const mediaContents = [
     externalUrl: 'https://open.spotify.com/episode/example1',
     tags: ['Podcast', 'Fe'],
     featured: true,
-    episodeCount: 12,
     platform: 'Spotify',
   },
   {
@@ -228,7 +227,6 @@ const mediaContents = [
     externalUrl: 'https://open.spotify.com/episode/example2',
     tags: ['Podcast', 'Salud Mental'],
     featured: false,
-    episodeCount: 8,
     platform: 'Spotify',
   },
   {
