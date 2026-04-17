@@ -22,6 +22,7 @@ import type {
   RegistrationInput,
   SiteConfig,
   Topic,
+  VerseOfTheDay,
 } from '@/types';
 import { db } from './firebase';
 
@@ -132,6 +133,15 @@ export async function getMediaBySlug(
   const q = query(collection(db, 'mediaContents'), where('slug', '==', slug));
   const snapshot = await getDocs(q);
   return snapshot.empty ? null : queryDocToData<MediaContent>(snapshot.docs[0]);
+}
+
+// ── Verse of the Day ──
+
+export async function getVerseOfTheDay(
+  date: string,
+): Promise<VerseOfTheDay | null> {
+  const snapshot = await getDoc(doc(db, 'votd', date));
+  return snapshot.exists() ? (snapshot.data() as VerseOfTheDay) : null;
 }
 
 // ── Site Config ──

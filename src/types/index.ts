@@ -30,6 +30,31 @@ export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
   DOCUMENT: 'Documento',
 };
 
+export type BibleVersion = 'nvi' | 'nbla' | 'rves';
+
+export const BIBLE_VERSION_LABELS: Record<BibleVersion, string> = {
+  nvi: 'NVI',
+  nbla: 'NBLA',
+  rves: 'RVES',
+};
+
+// ── Verse of the Day ──
+
+export interface VerseTranslation {
+  bibleId: number;
+  abbreviation: string;
+  citation: string;
+  passage: string;
+}
+
+export interface VerseOfTheDay {
+  date: string;
+  year: number;
+  reference: string;
+  translations: Record<BibleVersion, VerseTranslation>;
+  seededAt: string;
+}
+
 // ── Content Types ──
 
 export interface Event {

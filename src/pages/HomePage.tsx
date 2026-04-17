@@ -1,6 +1,7 @@
 import { MonthlyCalendar } from '@/components/features/calendar/MonthlyCalendar';
 import { UpcomingHighlights } from '@/components/features/calendar/UpcomingHighlights';
 import { HeroSection } from '@/components/features/hero/HeroSection';
+import { VerseOfTheDay } from '@/components/features/votd/VerseOfTheDay';
 import { useEvents } from '@/hooks/useEvents';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 
@@ -17,6 +18,8 @@ export function HomePage() {
         whatsappNumber={config?.whatsappNumber}
         isLoading={configLoading}
       />
+
+      <VerseOfTheDay />
 
       {/* Calendar Section */}
       <section className="mx-auto max-w-[1440px] px-14 py-16 max-md:px-5 max-md:py-10">
