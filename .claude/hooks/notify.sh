@@ -5,7 +5,17 @@
 
 INPUT=$(cat 2>/dev/null)
 
-# Extract the notification message if jq is available
+# Only notify for input-waiting events (skip task-complete, progress, etc.)
+if command -v jq >/dev/null 2>&1 && [ -n "$INPUT" ]; then
+  HOOK_TYPE=$(echo "$INPUT" | jq -r '.type // empty' 2>/dev/null)
+  # Skip unless it's a prompt/input event — empty type also skipped
+  case "$HOOK_TYPE" in
+    permission_prompt|elicitation_dialog|idle_prompt) ;;
+    *) exit 0 ;;
+  esac
+fi
+
+# Extract the notification message
 MESSAGE="Claude Code needs your attention"
 if command -v jq >/dev/null 2>&1 && [ -n "$INPUT" ]; then
   MSG=$(echo "$INPUT" | jq -r '.message // empty' 2>/dev/null)
