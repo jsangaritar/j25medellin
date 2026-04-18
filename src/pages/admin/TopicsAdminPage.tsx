@@ -32,6 +32,8 @@ const STATUSES = Object.keys(COURSE_STATUS_LABELS) as CourseStatus[];
 
 type TopicForm = Omit<Topic, 'id' | 'courses'>;
 
+const MODALITY_OPTIONS = ['Presencial', 'Virtual', 'Híbrido'] as const;
+
 const emptyForm: TopicForm = {
   title: '',
   description: '',
@@ -39,6 +41,8 @@ const emptyForm: TopicForm = {
   startDate: '',
   endDate: '',
   status: 'DRAFT',
+  modality: 'Presencial',
+  location: '',
   courseIds: [],
 };
 
@@ -239,6 +243,36 @@ export function TopicsAdminPage() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Modalidad</Label>
+                <Select
+                  value={form.modality ?? 'Presencial'}
+                  onValueChange={(v) => setForm({ ...form, modality: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MODALITY_OPTIONS.map((m) => (
+                      <SelectItem key={m} value={m}>
+                        {m}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Ubicación</Label>
+                <Input
+                  value={form.location ?? ''}
+                  onChange={(e) =>
+                    setForm({ ...form, location: e.target.value })
+                  }
+                  placeholder="Casa Sobre la Roca - Medellín"
+                />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

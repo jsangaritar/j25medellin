@@ -101,6 +101,8 @@ export interface Topic {
   startDate: string;
   endDate: string;
   status: CourseStatus;
+  modality?: string;
+  location?: string;
   courseIds: string[];
   courses?: Course[]; // populated client-side
 }

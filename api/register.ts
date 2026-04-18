@@ -1,7 +1,28 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import admin from 'firebase-admin';
 import { Resend } from 'resend';
 import { registrationConfirmationHtml } from './email-templates.js';
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function formatDateRange(startDate: string, endDate: string): string {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const sameYear = start.getFullYear() === end.getFullYear();
+  const startStr = capitalize(
+    format(start, sameYear ? "d 'de' MMM" : "d 'de' MMM, yyyy", {
+      locale: es,
+    }),
+  );
+  const endStr = capitalize(
+    format(end, "d 'de' MMM, yyyy", { locale: es }),
+  );
+  return `${startStr} \u2014 ${endStr}`;
+}
 
 if (!admin.apps.length) {
   const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
@@ -36,6 +57,9 @@ export default async function handler(
     let registrationId: string;
     let courseName: string | undefined;
     let topicName: string | undefined;
+    let topicDateRange: string | undefined;
+    let topicModality: string | undefined;
+    let topicLocation: string | undefined;
     let eventName: string | undefined;
 
     if (courseId) {
@@ -59,9 +83,17 @@ export default async function handler(
           .collection('courseTopics')
           .doc(topicId)
           .get();
-        topicName = topicSnap.data()?.title as string | undefined;
+        const topicData = topicSnap.data();
+        topicName = topicData?.title as string | undefined;
+        topicModality = topicData?.modality as string | undefined;
+        topicLocation = topicData?.location as string | undefined;
+        const startDate = topicData?.startDate as string | undefined;
+        const endDate = topicData?.endDate as string | undefined;
+        if (startDate && endDate) {
+          topicDateRange = formatDateRange(startDate, endDate);
+        }
         const topicCourseIds =
-          (topicSnap.data()?.courseIds as string[] | undefined) ?? [];
+          (topicData?.courseIds as string[] | undefined) ?? [];
 
         if (topicCourseIds.length > 0) {
           // Firestore 'in' supports up to 30 values
@@ -177,6 +209,9 @@ export default async function handler(
             type: isCourse ? 'course' : 'event',
             courseName,
             topicName,
+            topicDateRange,
+            topicModality,
+            topicLocation,
             eventName,
             siteConfig: {
               instagramUrl: configData?.instagramUrl as string | undefined,

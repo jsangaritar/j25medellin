@@ -134,6 +134,9 @@ interface RegistrationEmailData {
   type: "course" | "event";
   courseName?: string;
   topicName?: string;
+  topicDateRange?: string;
+  topicModality?: string;
+  topicLocation?: string;
   eventName?: string;
   siteConfig?: EmailSiteConfig;
 }
@@ -145,7 +148,13 @@ export function registrationConfirmationHtml(
 
   const detailCard =
     type === "course"
-      ? courseDetailCard(data.topicName, data.courseName)
+      ? courseDetailCard(
+          data.topicName,
+          data.courseName,
+          data.topicDateRange,
+          data.topicModality,
+          data.topicLocation,
+        )
       : eventDetailCard(data.eventName);
 
   const calendarUrl = data.siteConfig?.calendarUrl;
@@ -213,7 +222,15 @@ export function registrationConfirmationHtml(
 function courseDetailCard(
   topicName: string | undefined,
   courseName: string | undefined,
+  dateRange: string | undefined,
+  modality: string | undefined,
+  location: string | undefined,
 ): string {
+  const metaItems: string[] = [];
+  if (dateRange) metaItems.push(escapeHtml(dateRange));
+  const modalityLabel = [modality, location].filter(Boolean).join(" en ");
+  if (modalityLabel) metaItems.push(escapeHtml(modalityLabel));
+
   return `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;background-color:${C.bgCard};border:1px solid ${C.border};border-radius:8px;border-left:4px solid ${C.accentBright};">
       <tr>
@@ -223,8 +240,15 @@ function courseDetailCard(
               ? `<p style="margin:0 0 4px;font-family:'Inter',Arial,Helvetica,sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:${C.accentBright};">
               Discipulado
             </p>
-            <p style="margin:0 0 16px;font-family:'Montserrat',Arial,Helvetica,sans-serif;font-size:18px;font-weight:700;color:${C.textPrimary};line-height:1.4;">
+            <p style="margin:0 0 ${metaItems.length > 0 ? "8" : "16"}px;font-family:'Montserrat',Arial,Helvetica,sans-serif;font-size:18px;font-weight:700;color:${C.textPrimary};line-height:1.4;">
               ${escapeHtml(topicName)}
+            </p>`
+              : ""
+          }
+          ${
+            metaItems.length > 0
+              ? `<p style="margin:0 0 16px;font-family:'Inter',Arial,Helvetica,sans-serif;font-size:13px;color:${C.textSecondary};line-height:1.5;">
+              ${metaItems.join(" &middot; ")}
             </p>`
               : ""
           }

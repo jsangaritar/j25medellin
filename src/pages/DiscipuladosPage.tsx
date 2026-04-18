@@ -1,6 +1,5 @@
 import { BookOpen } from 'lucide-react';
 import { useState } from 'react';
-import { CourseCard } from '@/components/features/courses/CourseCard';
 import { QuarterlyBanner } from '@/components/features/courses/QuarterlyBanner';
 import { RegistrationModal } from '@/components/features/registration/RegistrationModal';
 import { PageBanner } from '@/components/layout/PageBanner';
@@ -29,7 +28,7 @@ export function DiscipuladosPage() {
     <>
       <PageBanner
         title="Discipulados"
-        subtitle="Crece en tu fe a través de líneas de profundización."
+        subtitle="Inscríbete y haz parte de nuestros discipulados a través de las diferentes líneas de profundización."
       />
 
       <section className="mx-auto max-w-[1440px] px-14 py-16 max-md:px-5 max-md:py-10">
@@ -52,20 +51,11 @@ export function DiscipuladosPage() {
           <div className="flex flex-col gap-16">
             {/* Active topics */}
             {activeTopics.map((topic) => (
-              <div key={topic.id} className="flex flex-col gap-10">
-                <QuarterlyBanner topic={topic} />
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {(topic.courses ?? []).map((course) => (
-                    <CourseCard
-                      key={course.id}
-                      course={course}
-                      enrolled={course.enrolled ?? 0}
-                      topicStatus={topic.status}
-                      onRegister={setRegisterCourse}
-                    />
-                  ))}
-                </div>
-              </div>
+              <QuarterlyBanner
+                key={topic.id}
+                topic={topic}
+                onRegister={setRegisterCourse}
+              />
             ))}
 
             {/* Coming soon topics */}
@@ -73,18 +63,7 @@ export function DiscipuladosPage() {
               <div className="flex flex-col gap-10">
                 <SectionHeader label="PRÓXIMOS" title="Próximos discipulados" />
                 {comingSoonTopics.map((topic) => (
-                  <div key={topic.id} className="flex flex-col gap-6">
-                    <QuarterlyBanner topic={topic} />
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                      {(topic.courses ?? []).map((course) => (
-                        <CourseCard
-                          key={course.id}
-                          course={course}
-                          topicStatus={topic.status}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                  <QuarterlyBanner key={topic.id} topic={topic} />
                 ))}
               </div>
             )}
@@ -97,18 +76,7 @@ export function DiscipuladosPage() {
                   title="Discipulados anteriores"
                 />
                 {completedTopics.map((topic) => (
-                  <div key={topic.id} className="flex flex-col gap-6">
-                    <QuarterlyBanner topic={topic} />
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                      {(topic.courses ?? []).map((course) => (
-                        <CourseCard
-                          key={course.id}
-                          course={course}
-                          topicStatus={topic.status}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                  <QuarterlyBanner key={topic.id} topic={topic} />
                 ))}
               </div>
             )}
