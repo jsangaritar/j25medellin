@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import admin from 'firebase-admin';
 import { Resend } from 'resend';
-import { registrationConfirmationHtml } from './email-templates';
+import { registrationConfirmationHtml } from './email-templates.js';
 
 if (!admin.apps.length) {
   const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
