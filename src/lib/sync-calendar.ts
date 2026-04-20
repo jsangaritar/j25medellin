@@ -1,3 +1,4 @@
+import { serverTimestamp } from 'firebase/firestore';
 import { createDocument, getEvents, updateDocument } from './firestore';
 
 interface CalendarEventRaw {
@@ -89,6 +90,7 @@ export async function syncCalendarEvents(): Promise<{
         requiresRegistration: false,
         eventType: calEvent.source === 'church' ? 'church' : 'j+',
         googleCalendarEventId: calEvent.id,
+        createdAt: serverTimestamp(),
       });
       created++;
     }

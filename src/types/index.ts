@@ -73,6 +73,7 @@ export interface Event {
   googleCalendarEventId?: string;
   hasCustomContent?: boolean;
   eventType: EventType;
+  createdAt?: string;
 }
 
 export interface Course {
@@ -91,6 +92,7 @@ export interface Course {
   capacity?: number;
   enrolled?: number;
   topicId: string;
+  createdAt?: string;
 }
 
 export interface Topic {
@@ -105,6 +107,7 @@ export interface Topic {
   location?: string;
   courseIds: string[];
   courses?: Course[]; // populated client-side
+  createdAt?: string;
 }
 
 /** @deprecated Use Topic instead */
@@ -125,6 +128,7 @@ export interface MediaContent {
   platform?: string;
   topicId?: string;
   courseId?: string;
+  createdAt?: string;
 }
 
 // ── Registration ──

@@ -1,5 +1,14 @@
 import type { MediaContent } from '@/types';
 
+function getCreatedAtMs(item: { createdAt?: unknown }): number {
+  const v = item.createdAt;
+  if (!v) return 0;
+  if (typeof v === 'object' && v !== null && 'seconds' in v)
+    return (v as { seconds: number }).seconds;
+  if (typeof v === 'string') return new Date(v).getTime() / 1000;
+  return 0;
+}
+
 /**
  * Returns related media items sorted by relevance:
  * same course > same topic > shared tags > same type fallback.
@@ -29,7 +38,10 @@ export function getRelatedMedia(
   });
 
   return scored
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return getCreatedAtMs(b.item) - getCreatedAtMs(a.item);
+    })
     .slice(0, limit)
     .map((s) => s.item);
 }

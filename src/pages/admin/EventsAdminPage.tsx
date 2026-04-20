@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { serverTimestamp } from 'firebase/firestore';
 import { Calendar, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -76,7 +77,10 @@ export function EventsAdminPage() {
       if (editing) {
         await updateDocument('events', editing.id, data);
       } else {
-        await createDocument('events', data);
+        await createDocument('events', {
+          ...data,
+          createdAt: serverTimestamp(),
+        });
       }
     },
     onSuccess: () => {

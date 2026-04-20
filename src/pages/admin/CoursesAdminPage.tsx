@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { serverTimestamp } from 'firebase/firestore';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -78,7 +79,10 @@ export function CoursesAdminPage() {
           }
         }
       } else {
-        courseId = await createDocument('courses', data);
+        courseId = await createDocument('courses', {
+          ...data,
+          createdAt: serverTimestamp(),
+        });
       }
       // Add to new topic's courseIds
       if (form.topicId) {

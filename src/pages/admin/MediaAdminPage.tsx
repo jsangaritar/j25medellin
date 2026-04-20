@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { serverTimestamp } from 'firebase/firestore';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -79,7 +80,10 @@ export function MediaAdminPage() {
       if (editing) {
         await updateDocument('mediaContents', editing.id, data);
       } else {
-        await createDocument('mediaContents', data);
+        await createDocument('mediaContents', {
+          ...data,
+          createdAt: serverTimestamp(),
+        });
       }
     },
     onSuccess: () => {

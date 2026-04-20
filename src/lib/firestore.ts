@@ -28,6 +28,19 @@ import { db } from './firebase';
 
 // ── Helpers ──
 
+function getCreatedAtMs(item: { createdAt?: unknown }): number {
+  const v = item.createdAt;
+  if (!v) return 0;
+  if (typeof v === 'object' && v !== null && 'seconds' in v)
+    return (v as { seconds: number }).seconds;
+  if (typeof v === 'string') return new Date(v).getTime() / 1000;
+  return 0;
+}
+
+function sortByNewest<T extends { createdAt?: unknown }>(items: T[]): T[] {
+  return items.sort((a, b) => getCreatedAtMs(b) - getCreatedAtMs(a));
+}
+
 function queryDocToData<T>(
   snapshot: QueryDocumentSnapshot,
 ): T & { id: string } {
@@ -52,7 +65,7 @@ export async function getEvents(filters?: {
   }
   const q = query(collection(db, 'events'), ...constraints);
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(queryDocToData<Event>);
+  return sortByNewest(snapshot.docs.map(queryDocToData<Event>));
 }
 
 export async function getEventBySlug(slug: string): Promise<Event | null> {
@@ -66,7 +79,7 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
 export async function getCourses(): Promise<Course[]> {
   const q = query(collection(db, 'courses'));
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(queryDocToData<Course>);
+  return sortByNewest(snapshot.docs.map(queryDocToData<Course>));
 }
 
 export async function getCourseBySlug(slug: string): Promise<Course | null> {
@@ -99,14 +112,14 @@ export async function getCourseTopic(): Promise<Topic | null> {
 export async function getAllCourseTopics(): Promise<Topic[]> {
   const q = query(collection(db, 'courseTopics'));
   const snapshot = await getDocs(q);
-  const topics = snapshot.docs.map(queryDocToData<Topic>);
+  const topics = sortByNewest(snapshot.docs.map(queryDocToData<Topic>));
   return Promise.all(topics.map(populateTopicCourses));
 }
 
 export async function getTopics(): Promise<Topic[]> {
   const q = query(collection(db, 'courseTopics'));
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(queryDocToData<Topic>);
+  return sortByNewest(snapshot.docs.map(queryDocToData<Topic>));
 }
 
 // ── Media ──
@@ -124,7 +137,7 @@ export async function getMediaContents(filters?: {
   }
   const q = query(collection(db, 'mediaContents'), ...constraints);
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(queryDocToData<MediaContent>);
+  return sortByNewest(snapshot.docs.map(queryDocToData<MediaContent>));
 }
 
 export async function getMediaBySlug(

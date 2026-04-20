@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { serverTimestamp } from 'firebase/firestore';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -63,7 +64,10 @@ export function TopicsAdminPage() {
       if (editing) {
         await updateDocument('courseTopics', editing.id, data);
       } else {
-        await createDocument('courseTopics', data);
+        await createDocument('courseTopics', {
+          ...data,
+          createdAt: serverTimestamp(),
+        });
       }
     },
     onSuccess: () => {
