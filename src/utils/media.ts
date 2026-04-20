@@ -9,7 +9,9 @@ export function getRelatedMedia(
   allMedia: MediaContent[],
   limit: number,
 ): MediaContent[] {
-  const candidates = allMedia.filter((m) => m.id !== current.id);
+  const candidates = allMedia.filter(
+    (m) => m.id !== current.id && m.visible !== false,
+  );
 
   const scored = candidates.map((m) => {
     let score = 0;
