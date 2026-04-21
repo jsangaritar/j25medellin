@@ -199,7 +199,7 @@ export default async function handler(
         const configSnap = await db.doc('settings/config').get();
         const configData = configSnap.data();
         await resend.emails.send({
-          from: 'J+ Medellin <noreply@j25medellin.com>',
+          from: 'J+ Medellín <noreply@j25medellin.com>',
           to: email,
           subject: itemName
             ? `¡Inscripción confirmada — ${itemName}! — J+`

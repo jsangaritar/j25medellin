@@ -40,7 +40,7 @@ function emailLayout(content: string, config?: EmailSiteConfig): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
   <meta name="supported-color-schemes" content="dark">
-  <title>J+ Medellin</title>
+  <title>J+ Medellín</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body style="margin:0;padding:0;background-color:${C.bgPage};-webkit-font-smoothing:antialiased;">
@@ -110,7 +110,7 @@ function emailLayout(content: string, config?: EmailSiteConfig): string {
                 </tr>
                 <tr>
                   <td align="center" style="font-family:'Inter',Arial,Helvetica,sans-serif;font-size:11px;color:${C.textDim};line-height:1.5;">
-                    &copy; ${new Date().getFullYear()} J+ Medellin. Todos los derechos reservados.
+                    &copy; ${new Date().getFullYear()} J+ Medellín. Todos los derechos reservados.
                   </td>
                 </tr>
               </table>

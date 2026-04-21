@@ -50,7 +50,7 @@ export function VerseOfTheDay() {
             <BookOpen className="size-8 text-accent-bright" />
             <div>
               <h2 className="font-display text-lg font-semibold text-text-primary">
-                Versiculo del Dia
+                Versículo del Día
               </h2>
               <p className="text-sm text-text-muted">{todayFormatted}</p>
             </div>

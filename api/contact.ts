@@ -51,7 +51,7 @@ export default async function handler(
     if (resendKey && contactEmail) {
       const resend = new Resend(resendKey);
       await resend.emails.send({
-        from: 'J+ Medellin <noreply@j25medellin.com>',
+        from: 'J+ Medellín <noreply@j25medellin.com>',
         to: contactEmail,
         replyTo: email,
         subject: `Nuevo mensaje de contacto — ${fullName}`,

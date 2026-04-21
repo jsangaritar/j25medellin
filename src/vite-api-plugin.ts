@@ -313,7 +313,7 @@ export function apiDevPlugin(): Plugin {
                 const configSnap = await db.doc('settings/config').get();
                 const configData = configSnap.data();
                 await resend.emails.send({
-                  from: 'J+ Medellin <noreply@j25medellin.com>',
+                  from: 'J+ Medellín <noreply@j25medellin.com>',
                   to: email as string,
                   subject: itemName
                     ? `¡Inscripción confirmada — ${itemName}! — J+`
@@ -429,7 +429,7 @@ export function apiDevPlugin(): Plugin {
                 const { Resend } = await import('resend');
                 const resend = new Resend(resendKey);
                 await resend.emails.send({
-                  from: 'J+ Medellin <noreply@j25medellin.com>',
+                  from: 'J+ Medellín <noreply@j25medellin.com>',
                   to: contactEmail,
                   replyTo: email as string,
                   subject: `Nuevo mensaje de contacto — ${fullName}`,
