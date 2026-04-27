@@ -10,7 +10,7 @@ export function Footer() {
 
   return (
     <>
-      <footer className="border-t border-border bg-bg-surface">
+      <footer className="border-t border-border bg-bg-surface max-md:pb-14">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-14 py-7 max-md:flex-col max-md:gap-4 max-md:px-5 max-md:py-5">
           <div className="flex items-center gap-3">
             <Link to="/">

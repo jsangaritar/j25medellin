@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { BottomNav } from './BottomNav';
 import { ContactCTA } from './ContactCTA';
 import { Footer } from './Footer';
 import { Header } from './Header';
@@ -28,6 +29,7 @@ export function RootLayout() {
       </main>
       <ContactCTA />
       <Footer />
+      <BottomNav />
     </div>
   );
 }

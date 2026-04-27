@@ -64,9 +64,28 @@ export function MediaAdminPage() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      let processedExternalUrl = form.externalUrl;
+      if (processedExternalUrl) {
+        const ytMatch = processedExternalUrl.match(
+          /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|live\/))([\w-]{11})/,
+        );
+        if (ytMatch?.[1]) {
+          processedExternalUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
+        }
+      }
+
+      let processedSlug = form.slug || form.title;
+      processedSlug = processedSlug
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
       const data = {
         ...form,
-        slug: form.slug || form.title.toLowerCase().replace(/\s+/g, '-'),
+        slug: processedSlug,
+        externalUrl: processedExternalUrl,
         tags:
           typeof form.tags === 'string'
             ? (form.tags as string).split(',').map((t: string) => t.trim())
