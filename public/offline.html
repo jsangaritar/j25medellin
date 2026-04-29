@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>J+ Medellín — Sin conexión</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        background: #0A0A0A;
+        color: #fafafa;
+        font-family: Inter, system-ui, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100dvh;
+        padding: 2rem;
+        text-align: center;
+      }
+      .logo { width: 120px; margin-bottom: 2rem; opacity: 0.8; }
+      h1 { font-family: Montserrat, sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+      p { color: #b4b4bc; font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.5; }
+      button {
+        background: #4ade80;
+        color: #0A0A0A;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:active { opacity: 0.8; }
+    </style>
+  </head>
+  <body>
+    <img class="logo" src="/j25-logo.svg" alt="J+" />
+    <h1>Sin conexión</h1>
+    <p>Parece que no tienes conexión a internet.<br/>Revisa tu conexión e intenta de nuevo.</p>
+    <button onclick="location.reload()">Intentar de nuevo</button>
+  </body>
+</html>
