@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { InstallPrompt } from '@/components/pwa/InstallPrompt';
+import { UpdatePrompt } from '@/components/pwa/UpdatePrompt';
 import { BottomNav } from './BottomNav';
 import { ContactCTA } from './ContactCTA';
 import { Footer } from './Footer';
@@ -30,6 +32,8 @@ export function RootLayout() {
       <ContactCTA />
       <Footer />
       <BottomNav />
+      <InstallPrompt />
+      <UpdatePrompt />
     </div>
   );
 }
