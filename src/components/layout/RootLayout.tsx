@@ -26,14 +26,14 @@ export function RootLayout() {
     <div className="flex min-h-dvh flex-col bg-bg-primary">
       <ScrollToTop />
       <Header />
+      <InstallPrompt />
+      <UpdatePrompt />
       <main className="flex-1">
         <Outlet />
       </main>
       <ContactCTA />
       <Footer />
       <BottomNav />
-      <InstallPrompt />
-      <UpdatePrompt />
     </div>
   );
 }

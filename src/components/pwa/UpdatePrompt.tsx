@@ -10,11 +10,11 @@ export function UpdatePrompt() {
   return (
     <div
       className={cn(
-        'fixed bottom-20 left-4 right-4 z-50 mx-auto max-w-sm md:hidden',
-        'animate-in slide-in-from-bottom-4 fade-in duration-300',
+        'border-b border-border bg-bg-card/95 backdrop-blur-sm md:hidden',
+        'animate-in slide-in-from-top-2 fade-in duration-300',
       )}
     >
-      <div className="flex items-center gap-3 rounded-xl border border-border bg-bg-card/95 p-3 shadow-lg backdrop-blur-sm">
+      <div className="mx-auto flex max-w-[1440px] items-center gap-3 px-4 py-2.5">
         <RefreshCw className="size-5 shrink-0 text-accent-bright" />
 
         <p className="min-w-0 flex-1 text-sm font-medium text-text-primary">
