@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { InstallPrompt } from '@/components/pwa/InstallPrompt';
+import { UpdatePrompt } from '@/components/pwa/UpdatePrompt';
 import { BottomNav } from './BottomNav';
 import { ContactCTA } from './ContactCTA';
 import { Footer } from './Footer';
@@ -24,6 +26,8 @@ export function RootLayout() {
     <div className="flex min-h-dvh flex-col bg-bg-primary">
       <ScrollToTop />
       <Header />
+      <InstallPrompt />
+      <UpdatePrompt />
       <main className="flex-1">
         <Outlet />
       </main>
