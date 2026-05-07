@@ -10,14 +10,15 @@ export function UpdatePrompt() {
   return (
     <div
       className={cn(
-        'border-b border-border bg-bg-card/95 backdrop-blur-sm md:hidden',
-        'animate-in slide-in-from-top-2 fade-in duration-300',
+        'fixed top-16 left-4 right-4 z-40 md:hidden',
+        'rounded-xl bg-white px-3 py-2.5 shadow-lg',
+        'animate-in slide-in-from-top-4 fade-in duration-300',
       )}
     >
-      <div className="mx-auto flex max-w-[1440px] items-center gap-3 px-4 py-2.5">
-        <RefreshCw className="size-5 shrink-0 text-accent-bright" />
+      <div className="flex items-center gap-3">
+        <RefreshCw className="size-5 shrink-0 text-neutral-900" />
 
-        <p className="min-w-0 flex-1 text-sm font-medium text-text-primary">
+        <p className="min-w-0 flex-1 text-sm font-medium text-neutral-900">
           Nueva versión disponible
         </p>
 
@@ -32,7 +33,7 @@ export function UpdatePrompt() {
         <button
           type="button"
           onClick={dismiss}
-          className="shrink-0 rounded-full p-1 text-text-muted transition-colors hover:text-text-primary"
+          className="shrink-0 rounded-full p-1 text-neutral-500 transition-colors hover:text-neutral-900"
           aria-label="Cerrar"
         >
           <X className="size-4" />
